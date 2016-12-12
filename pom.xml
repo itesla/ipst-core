@@ -145,6 +145,11 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${maven.jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.groovy</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
