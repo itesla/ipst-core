@@ -7,11 +7,12 @@
 package eu.itesla_project.computation.script;
 
 import eu.itesla_project.computation.ComputationManager;
+import groovy.lang.Binding;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-interface GroovyExtension {
+public interface GroovyExtensionLoader {
 
     void load(Binding binding, ComputationManager computationManager);
 }
