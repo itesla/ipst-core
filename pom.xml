@@ -331,7 +331,7 @@
                 <artifactId>groovy-all</artifactId>
                 <version>${groovy.version}</version>
             </dependency>
-            
+
             <!-- Runtime dependencies -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
