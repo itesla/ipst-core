@@ -145,11 +145,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${maven.jacoco.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*.groovy</exclude>
-                    </excludes>
-                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -229,6 +224,14 @@
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>${maven.coveralls.version}</version>
+                    <configuration>
+                        <!-- groovy source roots need to be manually added -->
+                        <sourceDirectories>
+                            <sourceDirectory>${project.basedir}/computation/src/main/groovy</sourceDirectory>
+                            <sourceDirectory>${project.basedir}/iidm-converter-api/src/main/groovy</sourceDirectory>
+                            <sourceDirectory>${project.basedir}/loadflow-api/src/main/groovy</sourceDirectory>
+                        </sourceDirectories>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
