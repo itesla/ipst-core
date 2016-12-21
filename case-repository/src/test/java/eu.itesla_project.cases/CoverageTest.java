@@ -14,6 +14,6 @@ import org.junit.Test;
 public class CoverageTest {
 
     @Test
-    public void doNothing() {
+    public void testNothing() {
     }
 }
