@@ -69,6 +69,7 @@ public class XmlPlatformConfigTest {
                 Assert.fail();
             } catch (Exception e) {
             }
+            Assert.assertNull(modConfig.getOptionalIntProperty("i2"));
             Assert.assertFalse(modConfig.getOptionalIntProperty2("i2").isPresent());
             Assert.assertTrue(modConfig.getIntProperty("i2", 4) == 4);
             Assert.assertFalse(modConfig.getBooleanProperty("b"));
@@ -77,6 +78,8 @@ public class XmlPlatformConfigTest {
                 Assert.fail();
             } catch (Exception e) {
             }
+            Assert.assertNull(modConfig.getOptinalBooleanProperty("b2"));
+            Assert.assertFalse(modConfig.getOptionalBooleanProperty("b2").isPresent());
             Assert.assertTrue(modConfig.getBooleanProperty("b2", true));
             Assert.assertTrue(modConfig.getDoubleProperty("d") == 2.3);
             try {
