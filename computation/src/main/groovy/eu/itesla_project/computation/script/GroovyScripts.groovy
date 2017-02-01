@@ -10,29 +10,41 @@ import eu.itesla_project.computation.ComputationManager
 import org.codehaus.groovy.control.CompilerConfiguration
 
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class GroovyScript {
+class GroovyScripts {
 
-    static void run(File file, ComputationManager computationManager) {
+    static void run(Path file, ComputationManager computationManager) {
+        run(file, computationManager, null)
+    }
+
+    static void run(Path file, ComputationManager computationManager, Writer out) {
         file.withReader(StandardCharsets.UTF_8.name(), { reader ->
-            run(reader, computationManager)
+            run(reader, computationManager, out)
         })
     }
 
-    static void run(Reader reader, ComputationManager computationManager) {
-        run(reader, computationManager, new ServiceLoaderGroovyExtensionLoader(), null)
+    static void run(Reader codeReader, ComputationManager computationManager, Writer out) {
+        run(codeReader, computationManager, new Binding(), out)
+    }
+
+    static void run(Reader codeReader, ComputationManager computationManager, Binding binding, Writer out) {
+        run(codeReader, computationManager, binding, new ServiceLoaderGroovyExtensionLoader(), out)
     }
 
     static void run(Reader codeReader, ComputationManager computationManager, GroovyExtensionLoader extensionLoader, Writer out) {
+        run(codeReader, computationManager, new Binding(), extensionLoader, out)
+    }
+
+    static void run(Reader codeReader, ComputationManager computationManager, Binding binding, GroovyExtensionLoader extensionLoader, Writer out) {
         assert codeReader
         assert computationManager
         assert extensionLoader
 
         CompilerConfiguration conf = new CompilerConfiguration()
-        Binding binding = new Binding()
 
         if (out != null) {
             binding.setProperty("out", out)
