@@ -70,7 +70,7 @@ public class XmlPlatformConfigTest {
             } catch (Exception e) {
             }
             Assert.assertNull(modConfig.getOptionalIntProperty("i2"));
-            Assert.assertFalse(modConfig.getOptionalIntProperty2("i2").isPresent());
+            Assert.assertFalse(modConfig.getOptionalIntegerProperty("i2").isPresent());
             Assert.assertTrue(modConfig.getIntProperty("i2", 4) == 4);
             Assert.assertFalse(modConfig.getBooleanProperty("b"));
             try {

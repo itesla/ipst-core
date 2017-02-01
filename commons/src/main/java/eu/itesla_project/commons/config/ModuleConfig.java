@@ -41,7 +41,7 @@ public interface ModuleConfig {
     @Deprecated
     Integer getOptionalIntProperty(String name);
 
-    Optional<Integer> getOptionalIntProperty2(String name);
+    Optional<Integer> getOptionalIntegerProperty(String name);
 
     int getIntProperty(String name, int defaultValue);
 

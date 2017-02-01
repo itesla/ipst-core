@@ -135,7 +135,7 @@ public class MapModuleConfig implements ModuleConfig {
     }
 
     @Override
-    public Optional<Integer> getOptionalIntProperty2(String name) {
+    public Optional<Integer> getOptionalIntegerProperty(String name) {
         String value = getStringProperty(name, null);
         return Optional.ofNullable(value != null ? Integer.parseInt(value) : null);
     }
