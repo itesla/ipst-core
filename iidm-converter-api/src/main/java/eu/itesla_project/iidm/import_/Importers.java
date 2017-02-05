@@ -342,7 +342,7 @@ public class Importers {
             MapModuleConfig moduleConfig = new MapModuleConfig(parameters);
             switch (configuredParameter.getType()) {
                 case BOOLEAN:
-                    value = moduleConfig.getOptinalBooleanProperty(configuredParameter.getName());
+                    value = moduleConfig.getOptionalBooleanProperty(configuredParameter.getName()).get();
                     break;
                 case STRING:
                     value = moduleConfig.getStringProperty(configuredParameter.getName(), null);
@@ -377,7 +377,8 @@ public class Importers {
         if (!Files.isRegularFile(file)) {
             throw new RuntimeException("File " + file + " does not exist or is not a regular file");
         }
-        return createReadOnly(file.getParent(), file.getFileName().toString());
+        Path absFile = file.toAbsolutePath();
+        return createReadOnly(absFile.getParent(), absFile.getFileName().toString());
     }
 
     public static Network loadNetwork(Path file, ComputationManager computationManager, ImportConfig config, Properties parameters) {
