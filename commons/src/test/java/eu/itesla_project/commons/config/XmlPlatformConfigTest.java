@@ -9,7 +9,6 @@ package eu.itesla_project.commons.config;
 import com.google.common.collect.Sets;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
-import org.junit.Assert;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
