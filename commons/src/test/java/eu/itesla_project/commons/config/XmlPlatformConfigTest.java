@@ -9,6 +9,7 @@ package eu.itesla_project.commons.config;
 import com.google.common.collect.Sets;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+import org.junit.Assert;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -72,6 +73,7 @@ public class XmlPlatformConfigTest {
             } catch (Exception e) {
             }
             assertNull(modConfig.getOptionalIntProperty("i2"));
+            assertFalse(modConfig.getOptionalIntegerProperty("i2").isPresent());
             assertEquals(4, modConfig.getIntProperty("i2", 4));
             assertFalse(modConfig.getBooleanProperty("b"));
             try {
@@ -79,6 +81,8 @@ public class XmlPlatformConfigTest {
                 fail();
             } catch (Exception e) {
             }
+            assertNull(modConfig.getOptinalBooleanProperty("b2"));
+            assertFalse(modConfig.getOptionalBooleanProperty("b2").isPresent());
             assertTrue(modConfig.getBooleanProperty("b2", true));
             assertEquals(2.3d, modConfig.getDoubleProperty("d"), 0d);
             try {

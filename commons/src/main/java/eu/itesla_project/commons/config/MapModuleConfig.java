@@ -148,6 +148,12 @@ public class MapModuleConfig implements ModuleConfig {
     }
 
     @Override
+    public Optional<Integer> getOptionalIntegerProperty(String name) {
+        String value = getStringProperty(name, null);
+        return Optional.ofNullable(value != null ? Integer.parseInt(value) : null);
+    }
+
+    @Override
     public int getIntProperty(String name, int defaultValue) {
         return Integer.parseInt(getStringProperty(name, Integer.toString(defaultValue)));
     }
@@ -186,6 +192,12 @@ public class MapModuleConfig implements ModuleConfig {
     public Boolean getOptinalBooleanProperty(String name) {
         String value = getStringProperty(name, null);
         return value != null ? Boolean.parseBoolean(value) : null;
+    }
+
+    @Override
+    public Optional<Boolean> getOptionalBooleanProperty(String name) {
+        String value = getStringProperty(name, null);
+        return Optional.ofNullable(value != null ? Boolean.parseBoolean(value) : null);
     }
 
     @Override
