@@ -527,6 +527,15 @@ class NetworkImpl extends IdentifiableImpl<Network> implements Network, MultiSta
             connectedComponents = null;
         }
 
+        private void addToAdjacencyList(Bus bus1, Bus bus2, Map<String, Integer> id2num, TIntArrayList[] adjacencyList) {
+            if (bus1 != null && bus2 != null) {
+                int busNum1 = id2num.get(bus1.getId());
+                int busNum2 = id2num.get(bus2.getId());
+                adjacencyList[busNum1].add(busNum2);
+                adjacencyList[busNum2].add(busNum1);
+            }
+        }
+
         void update() {
             if (connectedComponents != null) {
                 return;
@@ -554,45 +563,25 @@ class NetworkImpl extends IdentifiableImpl<Network> implements Network, MultiSta
             for (LineImpl line : Sets.union(objectStore.getAll(LineImpl.class), objectStore.getAll(TieLineImpl.class))) {
                 BusExt bus1 = line.getTerminal1().getBusView().getBus();
                 BusExt bus2 = line.getTerminal2().getBusView().getBus();
-                if (bus1 != null && bus2 != null) {
-                    int busNum1 = id2num.get(bus1.getId());
-                    int busNum2 = id2num.get(bus2.getId());
-                    adjacencyList[busNum1].add(busNum2);
-                    adjacencyList[busNum2].add(busNum1);
-                }
+                addToAdjacencyList(bus1, bus2, id2num, adjacencyList);
             }
             for (TwoWindingsTransformerImpl transfo : objectStore.getAll(TwoWindingsTransformerImpl.class)) {
                 BusExt bus1 = transfo.getTerminal1().getBusView().getBus();
                 BusExt bus2 = transfo.getTerminal2().getBusView().getBus();
-                if (bus1 != null && bus2 != null) {
-                    int busNum1 = id2num.get(bus1.getId());
-                    int busNum2 = id2num.get(bus2.getId());
-                    adjacencyList[busNum1].add(busNum2);
-                    adjacencyList[busNum2].add(busNum1);
-                }
+                addToAdjacencyList(bus1, bus2, id2num, adjacencyList);
             }
             for (ThreeWindingsTransformerImpl transfo : objectStore.getAll(ThreeWindingsTransformerImpl.class)) {
                 BusExt bus1 = transfo.getLeg1().getTerminal().getBusView().getBus();
                 BusExt bus2 = transfo.getLeg2().getTerminal().getBusView().getBus();
                 BusExt bus3 = transfo.getLeg3().getTerminal().getBusView().getBus();
-                if (bus1 != null && bus2 != null) {
-                    int busNum1 = id2num.get(bus1.getId());
-                    int busNum2 = id2num.get(bus2.getId());
-                    adjacencyList[busNum1].add(busNum2);
-                    adjacencyList[busNum2].add(busNum1);
-                }
-                if (bus1 != null && bus3 != null) {
-                    int busNum1 = id2num.get(bus1.getId());
-                    int busNum3 = id2num.get(bus3.getId());
-                    adjacencyList[busNum1].add(busNum3);
-                    adjacencyList[busNum3].add(busNum1);
-                }
-                if (bus2 != null && bus3 != null) {
-                    int busNum2 = id2num.get(bus2.getId());
-                    int busNum3 = id2num.get(bus3.getId());
-                    adjacencyList[busNum2].add(busNum3);
-                    adjacencyList[busNum3].add(busNum2);
-                }
+                addToAdjacencyList(bus1, bus2, id2num, adjacencyList);
+                addToAdjacencyList(bus1, bus3, id2num, adjacencyList);
+                addToAdjacencyList(bus2, bus3, id2num, adjacencyList);
+            }
+            for (HvdcLineImpl line : objectStore.getAll(HvdcLineImpl.class)) {
+                BusExt bus1 = line.getConverterStation1().getTerminal().getBusView().getBus();
+                BusExt bus2 = line.getConverterStation2().getTerminal().getBusView().getBus();
+                addToAdjacencyList(bus1, bus2, id2num, adjacencyList);
             }
 
             ConnectedComponentsComputationResult result = GraphUtil.computeConnectedComponents(adjacencyList);
