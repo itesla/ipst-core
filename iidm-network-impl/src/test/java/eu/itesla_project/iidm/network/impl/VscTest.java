@@ -45,6 +45,8 @@ public class VscTest {
         assertTrue(l.getConverterStation2() == cs2);
         assertTrue(l.getConverterStation1().getTerminal().getBusView().getBus().isInMainConnectedComponent());
         assertTrue(l.getConverterStation2().getTerminal().getBusView().getBus().isInMainConnectedComponent());
+        assertNotEquals(l.getConverterStation1().getTerminal().getBusView().getBus().getSynchronousComponent().getNum(),
+                        l.getConverterStation2().getTerminal().getBusView().getBus().getSynchronousComponent().getNum());
     }
 
     @Test
