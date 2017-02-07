@@ -11,6 +11,7 @@ import eu.itesla_project.iidm.network.Bus;
 import eu.itesla_project.iidm.network.Component;
 import eu.itesla_project.iidm.network.impl.util.Ref;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -28,7 +29,7 @@ class ComponentImpl implements Component {
     ComponentImpl(int num, int size, Ref<NetworkImpl> networkRef) {
         this.num = num;
         this.size = size;
-        this.networkRef = networkRef;
+        this.networkRef = Objects.requireNonNull(networkRef);
     }
 
     @Override

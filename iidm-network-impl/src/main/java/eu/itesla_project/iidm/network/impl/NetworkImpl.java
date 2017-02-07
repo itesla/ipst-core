@@ -564,7 +564,7 @@ class NetworkImpl extends IdentifiableImpl<Network> implements Network, MultiSta
             }
         }
 
-        protected abstract C createComponent(int num, int size, Ref<NetworkImpl> networkRef);
+        protected abstract C createComponent(int num, int size);
 
         protected abstract String getComponentLabel();
 
@@ -600,7 +600,7 @@ class NetworkImpl extends IdentifiableImpl<Network> implements Network, MultiSta
 
             components = new ArrayList<>(result.getComponentSize().length);
             for (int i = 0; i < result.getComponentSize().length; i++) {
-                components.add(createComponent(i, result.getComponentSize()[i], network.ref));
+                components.add(createComponent(i, result.getComponentSize()[i]));
             }
 
             for (int i = 0; i < result.getComponentNumber().length; i++) {
@@ -647,10 +647,11 @@ class NetworkImpl extends IdentifiableImpl<Network> implements Network, MultiSta
 
         @Override
         protected void setComponentNumber(BusExt bus, int num) {
+            Objects.requireNonNull(bus);
             bus.setConnectedComponentNumber(num);
         }
 
-        protected ConnectedComponentImpl createComponent(int num, int size, Ref<NetworkImpl> networkRef) {
+        protected ConnectedComponentImpl createComponent(int num, int size) {
             return new ConnectedComponentImpl(num, size, network.ref);
         }
     }
@@ -661,7 +662,7 @@ class NetworkImpl extends IdentifiableImpl<Network> implements Network, MultiSta
             super(network);
         }
 
-        protected ComponentImpl createComponent(int num, int size, Ref<NetworkImpl> networkRef) {
+        protected ComponentImpl createComponent(int num, int size) {
             return new ComponentImpl(num, size, network.ref);
         }
 
@@ -672,6 +673,7 @@ class NetworkImpl extends IdentifiableImpl<Network> implements Network, MultiSta
 
         @Override
         protected void setComponentNumber(BusExt bus, int num) {
+            Objects.requireNonNull(bus);
             bus.setSynchronousComponentNumber(num);
         }
     }
