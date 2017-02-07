@@ -222,13 +222,15 @@ public class LocalComputationManager implements ComputationManager {
                 }
 
                 int exitValue = 0;
-                Path out = workingDir.resolve(command.getId() + "_" + executionIndex + ".out");
+                Path outFile = workingDir.resolve(command.getId() + "_" + executionIndex + ".out");
+                Path errFile = workingDir.resolve(command.getId() + "_" + executionIndex + ".err");
                 switch (command.getType()) {
                     case SIMPLE:
                         SimpleCommand simpleCmd = (SimpleCommand) command;
                         exitValue = localExecutor.execute(simpleCmd.getProgram(),
                                 simpleCmd.getArgs(Integer.toString(executionIndex)),
-                                out,
+                                outFile,
+                                errFile,
                                 workingDir,
                                 variables);
                         break;
@@ -236,7 +238,8 @@ public class LocalComputationManager implements ComputationManager {
                         for (GroupCommand.SubCommand subCmd : ((GroupCommand) command).getSubCommands()) {
                             exitValue = localExecutor.execute(subCmd.getProgram(),
                                     subCmd.getArgs(Integer.toString(executionIndex)),
-                                    out,
+                                    outFile,
+                                    errFile,
                                     workingDir,
                                     variables);
                             if (exitValue != 0) {

@@ -16,6 +16,6 @@ import java.util.Map;
  */
 public interface LocalExecutor {
 
-    int execute(String program, List<String> args, Path out, Path workingDir, Map<String, String> env) throws IOException, InterruptedException;
+    int execute(String program, List<String> args, Path outFile, Path errFile, Path workingDir, Map<String, String> env) throws IOException, InterruptedException;
 
 }

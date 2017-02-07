@@ -65,7 +65,7 @@ public class LocalComputationManagerTest {
 
     @Test
     public void test1() throws Exception {
-        LocalExecutor localExecutor = (program, args, out, workingDir, env) -> {
+        LocalExecutor localExecutor = (program, args, outFile, errFile, workingDir, env) -> {
             // check command line is correct
             assertEquals("prog1", program);
             assertEquals(ImmutableList.of("file1", "file2", "file3"), args);
@@ -73,7 +73,8 @@ public class LocalComputationManagerTest {
 
             // check working directory exists, contains inout files and standard output file
             assertTrue(Files.exists(workingDir));
-            assertEquals(workingDir.resolve("prog1_cmd_0.out").toString(), out.toString());
+            assertEquals(workingDir.resolve("prog1_cmd_0.out").toString(), outFile.toString());
+            assertEquals(workingDir.resolve("prog1_cmd_0.err").toString(),  errFile.toString());
             assertTrue(Files.exists(workingDir.resolve("file1")));
             assertTrue(Files.exists(workingDir.resolve("file2")));
             assertTrue(Files.exists(workingDir.resolve("file3")));
@@ -124,10 +125,11 @@ public class LocalComputationManagerTest {
 
     @Test
     public void test2() throws Exception {
-        LocalExecutor localExecutor = (program, args, out, workingDir, env) -> {
+        LocalExecutor localExecutor = (program, args, outFile, errFile, workingDir, env) -> {
             // check working directory exists and standard output file
             assertTrue(Files.exists(workingDir));
-            assertEquals(workingDir.resolve("prog2_cmd_0.out").toString(), out.toString());
+            assertEquals(workingDir.resolve("prog2_cmd_0.out").toString(), outFile.toString());
+            assertEquals(workingDir.resolve("prog2_cmd_0.err").toString(), errFile.toString());
 
             switch (program) {
                 case "prog2_1":

@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -24,7 +25,7 @@ public class UnixLocalExecutor implements LocalExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(UnixLocalExecutor.class);
 
     @Override
-    public int execute(String program, List<String> args, Path out, Path workingDir, Map<String, String> env) throws IOException, InterruptedException {
+    public int execute(String program, List<String> args, Path outFile, Path errFile, Path workingDir, Map<String, String> env) throws IOException, InterruptedException {
         // set TMPDIR to working dir to avoid issue with /tmp
         Map<String, String> env2 = ImmutableMap.<String, String>builder()
                 .putAll(env)
@@ -37,13 +38,13 @@ public class UnixLocalExecutor implements LocalExecutor {
             String value = entry.getValue();
             internalCmd.append("export ").append(name).append("=").append(value);
             if (name.endsWith("PATH")) {
-                internalCmd.append(":").append("$").append(name);
+                internalCmd.append(File.pathSeparator).append("$").append(name);
             }
             internalCmd.append("; ");
         }
         internalCmd.append(program);
         for (String arg : args) {
-            internalCmd.append(" ").append(arg);
+            internalCmd.append(" \"").append(arg).append("\"");
         }
 
         List<String> cmdLs = ImmutableList.<String>builder()
@@ -51,11 +52,12 @@ public class UnixLocalExecutor implements LocalExecutor {
                 .add("-c")
                 .add(internalCmd.toString())
                 .build();
-        ProcessBuilder.Redirect redirect = ProcessBuilder.Redirect.appendTo(out.toFile());
+        ProcessBuilder.Redirect outRedirect = ProcessBuilder.Redirect.appendTo(outFile.toFile());
+        ProcessBuilder.Redirect errRedirect = ProcessBuilder.Redirect.appendTo(errFile.toFile());
         Process process = new ProcessBuilder(cmdLs)
                 .directory(workingDir.toFile())
-                .redirectOutput(redirect)
-                .redirectError(redirect)
+                .redirectOutput(outRedirect)
+                .redirectError(errRedirect)
                 .start();
         int exitValue = process.waitFor();
 
