@@ -31,7 +31,7 @@ public class BranchTripping implements ModificationTask {
     }
 
     @Override
-    public void run(Network network, ComputationManager computationManager) {
+    public void modify(Network network, ComputationManager computationManager) {
         TwoTerminalsConnectable branch = network.getLine(branchId);
         if (branch == null) {
             branch = network.getTwoWindingsTransformer(branchId);

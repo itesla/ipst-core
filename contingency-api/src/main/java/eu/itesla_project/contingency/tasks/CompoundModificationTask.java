@@ -28,9 +28,9 @@ public class CompoundModificationTask implements ModificationTask {
     }
 
     @Override
-    public void run(Network network, ComputationManager computationManager) {
+    public void modify(Network network, ComputationManager computationManager) {
         for (ModificationTask subTask : subTasks) {
-            subTask.modify(network);
+            subTask.modify(network, computationManager);
         }
     }
 

@@ -23,7 +23,7 @@ public class GeneratorTripping implements ModificationTask {
     }
 
     @Override
-    public void run(Network network, ComputationManager computationManager) {
+    public void modify(Network network, ComputationManager computationManager) {
         Generator g = network.getGenerator(generatorId);
         if (g == null) {
             throw new ITeslaException("Generator '" + generatorId + "' not found");

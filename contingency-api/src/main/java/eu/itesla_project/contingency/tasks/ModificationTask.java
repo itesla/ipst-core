@@ -16,10 +16,10 @@ public interface ModificationTask {
 
     @Deprecated
     default void modify(Network network) {
-        run(network, null);
+        modify(network, null);
     }
 
-    default void run(Network network, ComputationManager computationManager) {
+    default void modify(Network network, ComputationManager computationManager) {
         modify(network);
     }
 }
