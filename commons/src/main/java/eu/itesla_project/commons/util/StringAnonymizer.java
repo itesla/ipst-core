@@ -27,7 +27,7 @@ public class StringAnonymizer {
         while (num > 0) {
             num--;
             int remainder = num % 26;
-            char digit = (char) (remainder + 97);
+            char digit = (char) (remainder + 'A');
             result.insert(0, digit);
             num = (num - remainder) / 26;
         }
@@ -40,7 +40,7 @@ public class StringAnonymizer {
         }
         String str2 = mapping.get(str);
         if (str2 == null) {
-            str2 = getAlpha(mapping.size() + 1).toUpperCase();
+            str2 = getAlpha(mapping.size() + 1);
             mapping.put(str, str2);
         }
         return str2;
@@ -79,11 +79,10 @@ public class StringAnonymizer {
     }
 
     public void writeCsv(BufferedWriter writer, char separator) {
-        String strSep = Character.toString(separator);
         mapping.forEach((s, s2) -> {
             try {
                 writer.write(s);
-                writer.write(strSep);
+                writer.write(separator);
                 writer.write(s2);
                 writer.newLine();
             } catch (IOException e) {
