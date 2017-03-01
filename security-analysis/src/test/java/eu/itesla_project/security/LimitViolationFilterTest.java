@@ -8,7 +8,6 @@ package eu.itesla_project.security;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.nio.file.FileSystem;
@@ -56,15 +55,15 @@ public class LimitViolationFilterTest {
     @Test
     public void load() throws Exception {
         LimitViolationFilter filter = LimitViolationFilter.load(platformConfig);
-        assertEquals(filter.getViolationTypes(), EnumSet.of(LimitViolationType.CURRENT, LimitViolationType.LOW_VOLTAGE));
-        assertTrue(filter.getMinBaseVoltage() == 150f);
-        assertEquals(filter.getCountries(), EnumSet.of(Country.FR, Country.BE));
+        assertEquals(EnumSet.of(LimitViolationType.CURRENT, LimitViolationType.LOW_VOLTAGE), filter.getViolationTypes());
+        assertEquals(150f, filter.getMinBaseVoltage(), 0f);
+        assertEquals(EnumSet.of(Country.FR, Country.BE), filter.getCountries());
         filter.setViolationTypes(EnumSet.of(LimitViolationType.HIGH_VOLTAGE));
-        assertEquals(filter.getViolationTypes(), EnumSet.of(LimitViolationType.HIGH_VOLTAGE));
+        assertEquals(EnumSet.of(LimitViolationType.HIGH_VOLTAGE), filter.getViolationTypes());
         filter.setMinBaseVoltage(225f);
         filter.setCountries(EnumSet.of(Country.FR));
-        assertEquals(filter.getCountries(), EnumSet.of(Country.FR));
-        assertTrue(filter.getMinBaseVoltage() == 225f);
+        assertEquals(EnumSet.of(Country.FR), filter.getCountries());
+        assertEquals(225f, filter.getMinBaseVoltage(), 0f);
         filter.setViolationTypes(null);
         assertNull(filter.getViolationTypes());
         filter.setCountries(null);
@@ -128,7 +127,7 @@ public class LimitViolationFilterTest {
         assertEquals(1, filteredViolations.size());
         assertEquals(equipmentId, filteredViolations.get(0).getSubject().getId());
         assertEquals(violationType, filteredViolations.get(0).getLimitType());
-        assertEquals(baseVoltage, filteredViolations.get(0).getBaseVoltage(), 0);
+        assertEquals(baseVoltage, filteredViolations.get(0).getBaseVoltage(), 0f);
         assertEquals(country, filteredViolations.get(0).getCountry());
     }
 }
