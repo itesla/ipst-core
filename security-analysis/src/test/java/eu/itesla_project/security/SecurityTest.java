@@ -61,11 +61,12 @@ public class SecurityTest {
         } finally {
             writer.close();
         }
-        assertEquals("Pre-contingency violations" + System.lineSeparator() +
-                     "Action,Equipment,Violation type,Violation name,Value,Limit,Charge %" + System.lineSeparator() +
-                     "action1,,,,,," + System.lineSeparator() +
-                     ",line1,CURRENT,20',1100.00,1000.0,110" + System.lineSeparator(),
-                     writer.toString());
+        assertEquals(String.join(System.lineSeparator(), 
+                                 "Pre-contingency violations",
+                                 "Action,Equipment,Violation type,Violation name,Value,Limit,Charge %",
+                                 "action1,,,,,,",
+                                 ",line1,CURRENT,20',1100.00,1000.0,110"),
+                     writer.toString().trim());
     }
 
     @Test
@@ -76,13 +77,14 @@ public class SecurityTest {
         } finally {
             writer.close();
         }
-        assertEquals("Post-contingency limit violations" + System.lineSeparator() +
-                     "Contingency,Status,Action,Equipment,Violation type,Violation name,Value,Limit,Charge %" + System.lineSeparator() +
-                     "contingency1,converge,,,,,,," + System.lineSeparator() +
-                     ",,action2,,,,,," + System.lineSeparator() +
-                     ",,,line1,CURRENT,20',1100.00,1000.0,110" + System.lineSeparator() +
-                     ",,,line2,CURRENT,10',950.000,900.0,106" + System.lineSeparator(),
-                     writer.toString());
+        assertEquals(String.join(System.lineSeparator(),
+                                 "Post-contingency limit violations",
+                                 "Contingency,Status,Action,Equipment,Violation type,Violation name,Value,Limit,Charge %",
+                                 "contingency1,converge,,,,,,,",
+                                 ",,action2,,,,,,",
+                                 ",,,line1,CURRENT,20',1100.00,1000.0,110",
+                                 ",,,line2,CURRENT,10',950.000,900.0,106"),
+                     writer.toString().trim());
     }
 
     @Test
@@ -93,22 +95,24 @@ public class SecurityTest {
         } finally {
             writer.close();
         }
-        assertEquals("Post-contingency limit violations" + System.lineSeparator() +
-                     "Contingency,Status,Action,Equipment,Violation type,Violation name,Value,Limit,Charge %" + System.lineSeparator() +
-                     "contingency1,converge,,,,,,," + System.lineSeparator() +
-                     ",,action2,,,,,," + System.lineSeparator() +
-                     ",,,line2,CURRENT,10',950.000,900.0,106" + System.lineSeparator(),
-                     writer.toString());
+        assertEquals(String.join(System.lineSeparator(),
+                                 "Post-contingency limit violations",
+                                 "Contingency,Status,Action,Equipment,Violation type,Violation name,Value,Limit,Charge %",
+                                 "contingency1,converge,,,,,,,",
+                                 ",,action2,,,,,,",
+                                 ",,,line2,CURRENT,10',950.000,900.0,106"),
+                     writer.toString().trim());
     }
     
     @Test
     public void printLimitsViolations() {
-        assertEquals("+---------+--------------+---------------+----------------+----------------+--------+--------+------------------+----------+\n" +
-                     "| Country | Base voltage | Equipment (2) | Violation type | Violation name | value  | limit  | abs(value-limit) | charge % |\n" +
-                     "+---------+--------------+---------------+----------------+----------------+--------+--------+------------------+----------+\n" +
-                     "|         |              | line1         | CURRENT        | 20'            | 1100.0 | 1000.0 | 100.0            | 110      |\n" +
-                     "|         |              | line2         | CURRENT        | 10'            | 950.0  | 900.0  | 50.0             | 106      |\n" +
-                     "+---------+--------------+---------------+----------------+----------------+--------+--------+------------------+----------+",
+        assertEquals(String.join("\n",
+                                 "+---------+--------------+---------------+----------------+----------------+--------+--------+------------------+----------+",
+                                 "| Country | Base voltage | Equipment (2) | Violation type | Violation name | value  | limit  | abs(value-limit) | charge % |",
+                                 "+---------+--------------+---------------+----------------+----------------+--------+--------+------------------+----------+",
+                                 "|         |              | line1         | CURRENT        | 20'            | 1100.0 | 1000.0 | 100.0            | 110      |",
+                                 "|         |              | line2         | CURRENT        | 10'            | 950.0  | 900.0  | 50.0             | 106      |",
+                                 "+---------+--------------+---------------+----------------+----------------+--------+--------+------------------+----------+"),
                      Security.printLimitsViolations(Arrays.asList(line1Violation, line2Violation), new LimitViolationFilter()));
     }
     

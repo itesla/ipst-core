@@ -52,8 +52,8 @@ public class LimitViolation {
     }
     
     public LimitViolation(String subjectId, LimitViolationType limitType, float limit, String limitName, float limitReduction, float value, Country country, float baseVoltage) {
+        this.subject = null;
         this.subjectId = Objects.requireNonNull(subjectId);
-        this.subject = new IdentifiableImpl(subjectId); // to avoid null pointer exceptions on getSubject().getId()
         this.limitType = Objects.requireNonNull(limitType);
         this.limit = limit;
         this.limitName = limitName;
@@ -108,54 +108,5 @@ public class LimitViolation {
     public float getBaseVoltage() {
         return baseVoltage;
     }
-    
-    @Deprecated
-    class IdentifiableImpl implements Identifiable {
-        
-        private String id;
-        
-        IdentifiableImpl(String id) {
-            this.id = id;
-        }
 
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public String getName() {
-            return null;
-        }
-
-        @Override
-        public boolean hasProperty() {
-            return false;
-        }
-
-        @Override
-        public Properties getProperties() {
-            return null;
-        }
-
-        @Override
-        public void addExtension(Class type, Extension extension) {
-        }
-
-        @Override
-        public Extension getExtension(Class type) {
-            return null;
-        }
-
-        @Override
-        public boolean removeExtension(Class type) {
-            return false;
-        }
-
-        @Override
-        public Collection getExtensions() {
-            return null;
-        }
-        
-    }
 }
