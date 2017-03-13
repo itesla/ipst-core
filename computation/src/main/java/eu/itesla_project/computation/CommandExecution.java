@@ -18,6 +18,8 @@ import java.util.Objects;
 public class CommandExecution {
 
     public static Map<String, String> getExecutionVariables(Map<String, String> variables, CommandExecution commandExecution) {
+        Objects.requireNonNull(variables);
+        Objects.requireNonNull(commandExecution);
         if (commandExecution.getOverloadedVariables() != null) {
             return ImmutableMap.<String, String>builder()
                     .putAll(variables)
