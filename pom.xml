@@ -45,6 +45,7 @@
 
         <java.version>1.8</java.version>
 
+        <maven.build-helper.version>3.0.0</maven.build-helper.version>
         <maven.compiler.version>3.6.0</maven.compiler.version>
         <maven.findbugs.version>3.0.4</maven.findbugs.version>
         <maven.javadoc.version>2.10.4</maven.javadoc.version>
@@ -119,6 +120,37 @@
                         <version>${groovyeclipsebatch.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${maven.build-helper.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/groovy</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/groovy</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
