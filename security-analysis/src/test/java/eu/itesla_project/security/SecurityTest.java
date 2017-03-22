@@ -119,16 +119,10 @@ public class SecurityTest {
     @Test
     public void checkLimits() {
         Network network = EurostagTutorialExample1Factory.create();
-        ((Bus) network.getIdentifiable("NHV1")).setV(380f);
-        ((Bus) network.getIdentifiable("NHV1")).getVoltageLevel().setLowVoltageLimit(400f);
-        ((Bus) network.getIdentifiable("NHV1")).getVoltageLevel().setHighVoltageLimit(500f);
-        ((Bus) network.getIdentifiable("NHV2")).setV(380f);
-        ((Bus) network.getIdentifiable("NHV2")).getVoltageLevel().setLowVoltageLimit(300f);
-        ((Bus) network.getIdentifiable("NHV2")).getVoltageLevel().setHighVoltageLimit(500f);
-        network.getLine("NHV1_NHV2_1").getTerminal1().setP(560f);
-        network.getLine("NHV1_NHV2_1").getTerminal1().setQ(550f);
-        network.getLine("NHV1_NHV2_1").getTerminal2().setP(560f);
-        network.getLine("NHV1_NHV2_1").getTerminal2().setQ(550f);
+        ((Bus) network.getIdentifiable("NHV1")).setV(380f).getVoltageLevel().setLowVoltageLimit(400f).setHighVoltageLimit(500f);
+        ((Bus) network.getIdentifiable("NHV2")).setV(380f).getVoltageLevel().setLowVoltageLimit(300f).setHighVoltageLimit(500f);
+        network.getLine("NHV1_NHV2_1").getTerminal1().setP(560f).setQ(550f);
+        network.getLine("NHV1_NHV2_1").getTerminal2().setP(560f).setQ(550f);
         network.getLine("NHV1_NHV2_1").newCurrentLimits1().setPermanentLimit(1500f).add();
         network.getLine("NHV1_NHV2_1").newCurrentLimits2()
             .setPermanentLimit(1100f)
@@ -138,10 +132,8 @@ public class SecurityTest {
                 .setValue(1200)
             .endTemporaryLimit()
             .add();
-        network.getLine("NHV1_NHV2_2").getTerminal1().setP(560f);
-        network.getLine("NHV1_NHV2_2").getTerminal1().setQ(550f);
-        network.getLine("NHV1_NHV2_2").getTerminal2().setP(560f);
-        network.getLine("NHV1_NHV2_2").getTerminal2().setQ(550f);
+        network.getLine("NHV1_NHV2_2").getTerminal1().setP(560f).setQ(550f);
+        network.getLine("NHV1_NHV2_2").getTerminal2().setP(560f).setQ(550f);
         network.getLine("NHV1_NHV2_2").newCurrentLimits1()
             .setPermanentLimit(1100f)
             .beginTemporaryLimit()

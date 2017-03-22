@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package eu.itesla_project.security.json;
+package eu.itesla_project.contingency.json;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,6 +53,8 @@ public class ContingencyDeserializer extends StdDeserializer<Contingency> {
                 case GENERATOR: 
                     elements.add(new GeneratorContingency(elementNode.get("id").asText()));
                     break;
+                default:
+                    throw new InternalError();
         }
         });
         return new ContingencyImpl(id, elements);

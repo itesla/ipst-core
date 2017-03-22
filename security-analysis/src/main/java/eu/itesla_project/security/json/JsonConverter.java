@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import eu.itesla_project.contingency.Contingency;
-import eu.itesla_project.iidm.network.Identifiable;
-import eu.itesla_project.iidm.network.Network;
+import eu.itesla_project.contingency.json.ContingencyDeserializer;
 import eu.itesla_project.security.SecurityAnalysisResult;
 
 /**
@@ -37,19 +36,14 @@ public final class JsonConverter {
         Objects.requireNonNull(result);
         Objects.requireNonNull(writer);
         ObjectMapper mapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Identifiable.class, new IdentifiableSerializer());
-        mapper.registerModule(module);
         ObjectWriter jsonWriter = mapper.writer(new DefaultPrettyPrinter());
         jsonWriter.writeValue(writer, result);
     }
 
-    public static SecurityAnalysisResult importSecurityAnalysisResult(Reader reader, Network network) throws JsonParseException, JsonMappingException, IOException {
+    public static SecurityAnalysisResult importSecurityAnalysisResult(Reader reader) throws JsonParseException, JsonMappingException, IOException {
         Objects.requireNonNull(reader);
-        Objects.requireNonNull(network);
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(Identifiable.class, new IdentifiableDeserializer(network));
         module.addDeserializer(Contingency.class, new ContingencyDeserializer());
         mapper.registerModule(module);
         return mapper.readValue(reader, SecurityAnalysisResult.class);
