@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class SecurityAnalysisResult {
+    
+    private static final String VERSION = "1.0";
 
     private final PreContingencyResult preContingencyResult;
 
@@ -32,5 +34,15 @@ public class SecurityAnalysisResult {
 
     public List<PostContingencyResult> getPostContingencyResults() {
         return postContingencyResults;
+    }
+    
+    public String getVersion() {
+        return VERSION;
+    }
+    
+    private void setVersion(String version) {
+        if (!VERSION.equals(version)) {
+            throw new RuntimeException("version not supported: " + version);
+        }
     }
 }

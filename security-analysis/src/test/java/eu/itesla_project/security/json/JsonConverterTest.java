@@ -7,6 +7,7 @@
 package eu.itesla_project.security.json;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -88,6 +89,12 @@ public class JsonConverterTest {
         resultWriter = new StringWriter();
         JsonConverter.exportSecurityAnalysisResult(importedResult, resultWriter);
         assertEquals(jsonResult, resultWriter.toString());
+        
+        try {
+            importedResult = JsonConverter.importSecurityAnalysisResult(new InputStreamReader(getClass().getResourceAsStream("/SecurityAnalysisResult_v0.9.json")));
+            fail();
+        } catch (Exception ignored) {
+        }
     }
 
 }
