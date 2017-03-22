@@ -7,19 +7,18 @@
  */
 package eu.itesla_project.security;
 
-import eu.itesla_project.iidm.network.Country;
-import eu.itesla_project.iidm.network.Identifiable;
-
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import eu.itesla_project.iidm.network.Country;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class LimitViolation {
 
-    private final Identifiable subject;
+    private final String subjectId;
 
     private final LimitViolationType limitType;
 
@@ -35,11 +34,11 @@ public class LimitViolation {
 
     private final float baseVoltage;
 
-    public LimitViolation(@JsonProperty("subject") Identifiable subject, @JsonProperty("limitType") LimitViolationType limitType, 
+    public LimitViolation(@JsonProperty("subjectId") String subjectId, @JsonProperty("limitType") LimitViolationType limitType, 
                           @JsonProperty("limit") float limit, @JsonProperty("limitName") String limitName, 
                           @JsonProperty("limitReduction") float limitReduction, @JsonProperty("value") float value, 
                           @JsonProperty("country") Country country, @JsonProperty("baseVoltage") float baseVoltage) {
-        this.subject = Objects.requireNonNull(subject);
+        this.subjectId = Objects.requireNonNull(subjectId);
         this.limitType = Objects.requireNonNull(limitType);
         this.limit = limit;
         this.limitName = limitName;
@@ -49,12 +48,12 @@ public class LimitViolation {
         this.baseVoltage = baseVoltage;
     }
 
-    public LimitViolation(Identifiable subject, LimitViolationType limitType, float limit, String limitName, float value) {
-        this(subject, limitType, limit, limitName, 1, value, null, Float.NaN);
+    public LimitViolation(String subjectId, LimitViolationType limitType, float limit, String limitName, float value) {
+        this(subjectId, limitType, limit, limitName, 1, value, null, Float.NaN);
     }
 
-    public Identifiable getSubject() {
-        return subject;
+    public String getSubjectId() {
+        return subjectId;
     }
 
     public LimitViolationType getLimitType() {
@@ -84,4 +83,5 @@ public class LimitViolation {
     public float getBaseVoltage() {
         return baseVoltage;
     }
+
 }
