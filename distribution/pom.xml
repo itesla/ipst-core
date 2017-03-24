@@ -147,7 +147,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>afs-nio2-ext</artifactId>
+            <artifactId>afs-nio2-case</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>afs-nio2-virtual-case</artifactId>
             <version>${project.version}</version>
         </dependency>
 

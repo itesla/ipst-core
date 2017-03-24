@@ -1,4 +1,12 @@
 # Maven projects
+/afs/afs-api/target/
+/afs/afs-case/target/
+/afs/afs-hdfs/target/
+/afs/afs-local/target/
+/afs/afs-nio2/target/
+/afs/afs-nio2-case/target/
+/afs/afs-nio2-virtual-case/target/
+/afs/afs-virtual-case/target/
 /case-repository/target/
 /commons/target/
 /computation-local/target/

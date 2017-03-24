@@ -13,24 +13,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
+        <artifactId>afs</artifactId>
         <groupId>eu.itesla_project</groupId>
-        <artifactId>ipst-core</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <packaging>pom</packaging>
-    <artifactId>afs</artifactId>
-    <name>AFS</name>
+    <artifactId>afs-case</artifactId>
+    <name>AFS case API</name>
 
-    <modules>
-        <module>afs-api</module>
-        <module>afs-case</module>
-        <module>afs-nio2</module>
-        <module>afs-nio2-case</module>
-        <module>afs-nio2-virtual-case</module>
-        <module>afs-local</module>
-        <module>afs-hdfs</module>
-        <module>afs-virtual-case</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>afs-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
