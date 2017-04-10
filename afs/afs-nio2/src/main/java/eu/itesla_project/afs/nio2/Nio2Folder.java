@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -51,22 +53,22 @@ public class Nio2Folder extends Nio2Node implements Folder {
         return parent == null;
     }
 
-    private Collection<Node> scanProject(Path path) {
+    private Node scanProject(Path path) {
         if (Files.isDirectory(path)) {
             Path projectMetadataXml = path.resolve(Nio2Project.Metadata.XML_FILE_NAME);
             String nodeName = path.getFileName().toString();
             if (Files.isRegularFile(projectMetadataXml)) {
-                return Collections.singleton(new Nio2Project(path, this, fileSystem, nodeName, JaxbUtil.unmarchallFile(Nio2Project.Metadata.class, projectMetadataXml)));
+                return new Nio2Project(path, this, fileSystem, nodeName, JaxbUtil.unmarchallFile(Nio2Project.Metadata.class, projectMetadataXml));
             }
         }
-        return Collections.emptyList();
+        return null;
     }
 
-    private Collection<Node> scanFolder(Path path) {
+    private Node scanFolder(Path path) {
         if (Files.isDirectory(path)) {
-            return Collections.singleton(new Nio2Folder(path, this, fileSystem));
+            return new Nio2Folder(path, this, fileSystem);
         }
-        return Collections.emptyList();
+        return null;
     }
 
     @Override
@@ -82,19 +84,21 @@ public class Nio2Folder extends Nio2Node implements Folder {
                 Files.list(path)
                         .filter(Nio2Folder::isNotHidden)
                         .forEach(child -> {
-                            Collection<Node> nodes = scanProject(child);
-                            if (nodes.isEmpty()) {
+                            Node node = scanProject(child);
+                            if (node == null) {
                                 for (Nio2FileScanner scanner : fileSystem.getFileScanners()) {
-                                    nodes = scanner.scan(this, child);
-                                    if (nodes.size() > 0) {
+                                    node = scanner.scan(this, child);
+                                    if (node != null) {
                                         break;
                                     }
                                 }
-                                if (nodes.isEmpty()) {
-                                    nodes = scanFolder(child);
+                                if (node == null) {
+                                    node = scanFolder(child);
                                 }
                             }
-                            children.addAll(nodes);
+                            if ((node != null)) {
+                                children.add(node);
+                            }
                         });
             }
         } catch (IOException e) {

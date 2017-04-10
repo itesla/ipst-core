@@ -93,16 +93,16 @@ public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadat
         return true;
     }
 
-    private static Collection<ProjectNode> scanFolder(Path path, Nio2ProjectFolder parent) {
+    private static ProjectNode scanFolder(Path path, Nio2ProjectFolder parent) {
         if (Files.isDirectory(path)) {
             Path metadataFile = path.resolve(Metadata.XML_FILE_NAME);
             if (Files.exists(metadataFile)) {
                 String name = path.getFileName().toString();
                 Metadata metadata = JaxbUtil.unmarchallFile(Metadata.class, metadataFile);
-                return Collections.singleton(new Nio2ProjectFolder(path, parent, name, parent.getProject()));
+                return new Nio2ProjectFolder(path, parent, name, parent.getProject());
             }
         }
-        return Collections.emptyList();
+        return null;
     }
 
     @Override
@@ -111,16 +111,18 @@ public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadat
         try (Stream<Path> stream = Files.list(dir)) {
             List<ProjectNode> children = new ArrayList<>();
             stream.forEach(path -> {
-                Collection<ProjectNode> nodes = scanFolder(path, this);
-                if (nodes.isEmpty()) {
+                ProjectNode node = scanFolder(path, this);
+                if (node == null) {
                     for (Nio2ProjectFileScanner scanner : project.getFileSystem().getProjectFileScanners()) {
-                        nodes = scanner.scan(Nio2ProjectFolder.this, path);
-                        if (nodes.size() > 0) {
+                        node = scanner.scan(Nio2ProjectFolder.this, path);
+                        if (node != null) {
                             break;
                         }
                     }
                 }
-                children.addAll(nodes);
+                if (node != null) {
+                    children.add(node);
+                }
             });
             return children;
         } catch (IOException e) {

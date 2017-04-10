@@ -9,12 +9,11 @@ package eu.itesla_project.afs.nio2;
 import eu.itesla_project.afs.Node;
 
 import java.nio.file.Path;
-import java.util.Collection;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public interface Nio2FileScanner {
 
-    Collection<Node> scan(Nio2Folder parent, Path path);
+    Node scan(Nio2Folder parent, Path path);
 }

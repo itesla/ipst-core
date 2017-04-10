@@ -19,9 +19,6 @@ import eu.itesla_project.iidm.import_.ImportersLoader;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -30,7 +27,7 @@ import java.util.stream.Collectors;
 public class Nio2CaseScanner implements Nio2FileScanner {
 
     @Override
-    public Collection<Node> scan(Nio2Folder parent, Path path) {
+    public Node scan(Nio2Folder parent, Path path) {
         if (Files.isRegularFile(path)) {
             ReadOnlyDataSource dataSource = Importers.createReadOnly(path);
             Nio2AppFileSystem fileSystem = parent.getFileSystem();
@@ -39,8 +36,9 @@ public class Nio2CaseScanner implements Nio2FileScanner {
             return Importers.list(loader, computationManager, new ImportConfig()).stream()
                     .filter(importer -> importer.exists(dataSource))
                     .map(importer -> new Nio2Case(path, parent, fileSystem, dataSource, importer))
-                    .collect(Collectors.toList());
+                    .findFirst()
+                    .orElse(null);
         }
-        return Collections.emptyList();
+        return null;
     }
 }

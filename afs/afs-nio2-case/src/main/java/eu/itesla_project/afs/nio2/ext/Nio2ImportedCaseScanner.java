@@ -14,8 +14,6 @@ import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -29,13 +27,13 @@ public class Nio2ImportedCaseScanner implements Nio2ProjectFileScanner {
     }
 
     @Override
-    public Collection<ProjectNode> scan(Nio2ProjectFolder parent, Path path) {
+    public ProjectNode scan(Nio2ProjectFolder parent, Path path) {
         if (Files.isDirectory(path)) {
             Path metadataFile = path.resolve(Nio2ImportedCase.Metadata.XML_FILE_NAME);
             if (Files.exists(metadataFile)) {
-                return Collections.singleton(new Nio2ImportedCase(path, parent));
+                return new Nio2ImportedCase(path, parent);
             }
         }
-        return Collections.emptyList();
+        return null;
     }
 }

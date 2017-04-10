@@ -10,7 +10,6 @@ import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ProjectNode;
 
 import java.nio.file.Path;
-import java.util.Collection;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -19,5 +18,5 @@ public interface Nio2ProjectFileScanner {
 
     Class<? extends ProjectFile> getType();
 
-    Collection<ProjectNode> scan(Nio2ProjectFolder parent, Path path);
+    ProjectNode scan(Nio2ProjectFolder parent, Path path);
 }
