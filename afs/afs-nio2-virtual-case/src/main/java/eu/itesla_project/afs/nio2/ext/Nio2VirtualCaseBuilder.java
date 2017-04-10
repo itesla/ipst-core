@@ -14,6 +14,7 @@ import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -76,7 +77,7 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
         try {
             Files.createDirectories(dir);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         String caseId = folder.getProject().getCentralDirectory().getId(casePath);

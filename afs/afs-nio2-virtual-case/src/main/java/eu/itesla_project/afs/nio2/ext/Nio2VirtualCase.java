@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -127,7 +128,7 @@ public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> i
             try {
                 return Files.newBufferedReader(outFile, StandardCharsets.UTF_8);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
         }
         return null;
@@ -138,7 +139,7 @@ public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> i
         try {
             return Files.newBufferedWriter(getOutFile(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -209,7 +210,7 @@ public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> i
             Files.deleteIfExists(getCacheFile());
             Files.deleteIfExists(getOutFile());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         super.invalidateCache();
     }

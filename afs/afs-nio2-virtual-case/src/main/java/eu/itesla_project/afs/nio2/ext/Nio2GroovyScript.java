@@ -15,6 +15,7 @@ import eu.itesla_project.commons.jaxb.JaxbUtil;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -84,7 +85,7 @@ public class Nio2GroovyScript extends Nio2ProjectNode<Nio2GroovyScript.Metadata>
         try {
             return new String(Files.readAllBytes(dir.resolve(SCRIPT_FILE_NAME)), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -94,7 +95,7 @@ public class Nio2GroovyScript extends Nio2ProjectNode<Nio2GroovyScript.Metadata>
         try {
             Files.write(dir.resolve(SCRIPT_FILE_NAME), content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         invalidateCache();
     }

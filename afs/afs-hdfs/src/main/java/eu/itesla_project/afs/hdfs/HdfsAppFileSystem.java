@@ -11,6 +11,7 @@ import hdfs.jsr203.HadoopFileSystem;
 import hdfs.jsr203.HadoopFileSystemProvider;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.FileSystem;
 
 /**
@@ -25,7 +26,7 @@ public class HdfsAppFileSystem extends Nio2AppFileSystem {
         try {
             return new HadoopFileSystem(new HadoopFileSystemProvider(), CONFIG.getHost(), CONFIG.getPort());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

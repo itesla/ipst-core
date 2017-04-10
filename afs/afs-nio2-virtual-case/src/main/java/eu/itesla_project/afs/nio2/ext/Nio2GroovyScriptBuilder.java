@@ -11,6 +11,7 @@ import eu.itesla_project.afs.ext.GroovyScriptBuilder;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,7 +64,7 @@ public class Nio2GroovyScriptBuilder implements GroovyScriptBuilder {
         try {
             Files.createDirectories(dir);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         // create metadata
@@ -74,7 +75,7 @@ public class Nio2GroovyScriptBuilder implements GroovyScriptBuilder {
         try {
             Files.write(dir.resolve(Nio2GroovyScript.SCRIPT_FILE_NAME), content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         // create project node

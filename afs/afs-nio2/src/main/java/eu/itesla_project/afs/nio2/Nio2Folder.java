@@ -13,6 +13,7 @@ import eu.itesla_project.afs.Project;
 import eu.itesla_project.commons.jaxb.JaxbUtil;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -28,7 +29,7 @@ public class Nio2Folder extends Nio2Node implements Folder {
         try {
             return !(SHOW_HIDDEN_FILEs && Files.isHidden(file));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -97,7 +98,7 @@ public class Nio2Folder extends Nio2Node implements Folder {
                         });
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -144,7 +145,7 @@ public class Nio2Folder extends Nio2Node implements Folder {
         try {
             Files.createDirectory(projectDir);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         Nio2Project.Metadata projectMetadata = new Nio2Project.Metadata(description);
         JaxbUtil.marshallElement(Nio2Project.Metadata.class, projectMetadata, projectDir.resolve(Nio2Project.Metadata.XML_FILE_NAME));

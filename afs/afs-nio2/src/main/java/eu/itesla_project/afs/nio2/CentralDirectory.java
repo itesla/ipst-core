@@ -7,6 +7,7 @@
 package eu.itesla_project.afs.nio2;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -25,7 +26,7 @@ public class CentralDirectory {
         try {
             Files.createDirectories(dir);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -38,7 +39,7 @@ public class CentralDirectory {
             Files.write(dir.resolve(id), path.getBytes(StandardCharsets.UTF_8));
             Files.write(dir.resolve(encodePath(path)), id.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -48,7 +49,7 @@ public class CentralDirectory {
             Files.delete(dir.resolve(id));
             Files.delete(dir.resolve(encodePath(path)));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -64,7 +65,7 @@ public class CentralDirectory {
         try {
             return readContent(dir.resolve(encodePath(path)));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -72,7 +73,7 @@ public class CentralDirectory {
         try {
             return readContent(dir.resolve(id));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 }

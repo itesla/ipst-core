@@ -11,6 +11,7 @@ import eu.itesla_project.commons.jaxb.JaxbUtil;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -70,7 +71,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadat
         try {
             Files.createDirectories(childDir);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         // create metadata
@@ -123,7 +124,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadat
             });
             return children;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

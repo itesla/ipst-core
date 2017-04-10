@@ -13,6 +13,7 @@ import eu.itesla_project.commons.io.FileUtil;
 
 import javax.xml.bind.annotation.*;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -134,7 +135,7 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
         try {
             FileUtil.removeDir(dir);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

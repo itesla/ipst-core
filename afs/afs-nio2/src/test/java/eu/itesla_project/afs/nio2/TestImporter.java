@@ -15,6 +15,7 @@ import eu.itesla_project.iidm.parameters.Parameter;
 import eu.itesla_project.iidm.parameters.ParameterType;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -53,7 +54,7 @@ public class TestImporter implements Importer {
         try {
             return dataSource.exists(null, EXT);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

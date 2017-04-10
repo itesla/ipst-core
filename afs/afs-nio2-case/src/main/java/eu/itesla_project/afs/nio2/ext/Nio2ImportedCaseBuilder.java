@@ -14,6 +14,7 @@ import eu.itesla_project.iidm.datasource.FileDataSource;
 import eu.itesla_project.iidm.parameters.Parameter;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -71,7 +72,7 @@ public class Nio2ImportedCaseBuilder implements ImportedCaseBuilder {
         try {
             Files.createDirectories(importedCaseDir);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         // create meta data file
