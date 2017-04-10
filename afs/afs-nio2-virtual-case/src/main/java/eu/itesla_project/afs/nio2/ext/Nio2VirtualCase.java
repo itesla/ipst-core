@@ -16,16 +16,13 @@ import eu.itesla_project.afs.ext.VirtualCase;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
 import eu.itesla_project.commons.jaxb.JaxbUtil;
-import eu.itesla_project.computation.script.GroovyScripts;
 import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.xml.NetworkXml;
-import groovy.lang.Binding;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -123,20 +120,6 @@ public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> i
     }
 
     @Override
-    public Reader getXiidmReader() {
-        checkNotDeleted();
-        Path cacheFile = getCacheFile();
-        if (!Files.exists(cacheFile)) {
-            rebuildNetwork(cacheFile);
-        }
-        try {
-            return Files.newBufferedReader(cacheFile, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public Reader getOutReader() {
         checkNotDeleted();
         Path outFile = getOutFile();
@@ -150,45 +133,32 @@ public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> i
         return null;
     }
 
-    private Network rebuildNetwork(Path cacheFile) {
-        Metadata metadata = readMetadata();
-
-        // load network
-        Network network = getCase(metadata).loadNetwork();
-
-        // load groovy script
-        GroovyScript script = getScript(metadata);
-
-        try (Reader reader = new StringReader(script.read())) {
-            // put network in the binding so that it is accessible from the script
-            Binding binding = new Binding();
-            binding.setProperty("network", network);
-
-            // run groovy script
-            try (Writer out = Files.newBufferedWriter(getOutFile(), StandardCharsets.UTF_8)) {
-                GroovyScripts.run(reader, getProject().getFileSystem().getComputationManager(), binding, out);
-            }
+    @Override
+    public Writer getOutWriter() {
+        try {
+            return Files.newBufferedWriter(getOutFile(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        // store network in the cache
-        NetworkXml.write(network, cacheFile);
-
-        return network;
-
     }
 
     @Override
-    public Network loadNetwork() {
+    public Network loadFromCache() {
         checkNotDeleted();
+        // load network from the cache
         Path cacheFile = getCacheFile();
         if (Files.exists(cacheFile)) {
-            // load network from the cache
             return NetworkXml.read(cacheFile);
-        } else {
-            return rebuildNetwork(cacheFile);
         }
+        return null;
+    }
+
+    @Override
+    public void saveToCache(Network network) {
+        checkNotDeleted();
+        // store network in the cache
+        Path cacheFile = getCacheFile();
+        NetworkXml.write(network, cacheFile);
     }
 
     @Override

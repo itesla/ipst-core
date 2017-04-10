@@ -8,6 +8,7 @@ package eu.itesla_project.afs.ext;
 
 import eu.itesla_project.iidm.datasource.ReadOnlyDataSource;
 import eu.itesla_project.iidm.import_.Importer;
+import eu.itesla_project.iidm.network.Network;
 
 import java.util.Properties;
 
@@ -21,4 +22,12 @@ public interface ImportedCase extends ProjectCase {
     Properties getParameters();
 
     Importer getImporter();
+
+    @Override
+    default Network loadNetwork() {
+        Importer importer = getImporter();
+        ReadOnlyDataSource dataSource = getDataSource();
+        Properties parameters = getParameters();
+        return importer.import_(dataSource, parameters);
+    }
 }

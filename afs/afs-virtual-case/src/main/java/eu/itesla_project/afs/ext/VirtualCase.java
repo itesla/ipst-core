@@ -6,7 +6,11 @@
  */
 package eu.itesla_project.afs.ext;
 
-import java.io.Reader;
+import eu.itesla_project.computation.script.GroovyScripts;
+import eu.itesla_project.iidm.network.Network;
+import groovy.lang.Binding;
+
+import java.io.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -17,7 +21,44 @@ public interface VirtualCase extends ProjectCase {
 
     GroovyScript getScript();
 
-    Reader getXiidmReader();
+    Writer getOutWriter();
 
     Reader getOutReader();
+
+    Network loadFromCache();
+
+    void saveToCache(Network network);
+
+    @Override
+    default Network loadNetwork() {
+        // load network from the cache
+        Network network = loadFromCache();
+
+        // if no network cached, recreate it
+        if (network == null) {
+            // load network
+            network = getCase().loadNetwork();
+
+            // load groovy script
+            GroovyScript script = getScript();
+
+            try (Reader reader = new StringReader(script.read())) {
+                // put network in the binding so that it is accessible from the script
+                Binding binding = new Binding();
+                binding.setProperty("network", network);
+
+                // run groovy script
+                try (Writer out = getOutWriter()) {
+                    GroovyScripts.run(reader, getProject().getFileSystem().getComputationManager(), binding, out);
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+
+            // store network in the cache
+            saveToCache(network);
+        }
+
+        return network;
+    }
 }

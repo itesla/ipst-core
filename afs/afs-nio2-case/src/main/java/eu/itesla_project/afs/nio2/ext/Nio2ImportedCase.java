@@ -149,14 +149,6 @@ public class Nio2ImportedCase extends Nio2ProjectNode<Nio2ImportedCase.Metadata>
     }
 
     @Override
-    public Network loadNetwork() {
-        Metadata metadata = readMetadata();
-        Importer importer = getImporter(metadata);
-        Properties parameters = getParameters(metadata);
-        return importer.import_(getDataSource(), parameters);
-    }
-
-    @Override
     public List<ProjectFile> getDependencies() {
         return Collections.emptyList();
     }

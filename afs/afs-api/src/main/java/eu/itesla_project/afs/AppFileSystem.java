@@ -8,6 +8,7 @@ package eu.itesla_project.afs;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
+import eu.itesla_project.computation.ComputationManager;
 
 import java.util.*;
 
@@ -65,4 +66,7 @@ public abstract class AppFileSystem {
     public abstract Folder getRootFolder();
 
     public abstract Collection<Class<? extends ProjectFile>> getProjectFileTypes();
+
+    public abstract ComputationManager getComputationManager();
+
 }
