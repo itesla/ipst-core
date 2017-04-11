@@ -9,40 +9,26 @@ package eu.itesla_project.security;
 import java.util.List;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class SecurityAnalysisResult {
-    
-    private static final String VERSION = "1.0";
 
-    private final PreContingencyResult preContingencyResult;
+    private final LimitViolationsResult preContingencyResult;
 
     private final List<PostContingencyResult> postContingencyResults;
 
-    public SecurityAnalysisResult(@JsonProperty("preContingencyResult") PreContingencyResult preContingencyResult, 
-                                  @JsonProperty("postContingencyResults") List<PostContingencyResult> postContingencyResults) {
+    public SecurityAnalysisResult(LimitViolationsResult preContingencyResult,
+                                  List<PostContingencyResult> postContingencyResults) {
         this.preContingencyResult = Objects.requireNonNull(preContingencyResult);
         this.postContingencyResults = Objects.requireNonNull(postContingencyResults);
     }
 
-    public PreContingencyResult getPreContingencyResult() {
+    public LimitViolationsResult getPreContingencyResult() {
         return preContingencyResult;
     }
 
     public List<PostContingencyResult> getPostContingencyResults() {
         return postContingencyResults;
-    }
-    
-    public String getVersion() {
-        return VERSION;
-    }
-    
-    private void setVersion(String version) {
-        if (!VERSION.equals(version)) {
-            throw new RuntimeException("version not supported: " + version);
-        }
     }
 }

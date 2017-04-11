@@ -12,29 +12,49 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@ at rte-france.com>
  * @author Mathieu Bague <mathieu.bague at rte-france.com>
  */
-public class PostContingencyResult extends LimitViolationsResult {
+public class PostContingencyResult {
 
     private final Contingency contingency;
 
-    public PostContingencyResult(Contingency contingency, boolean computationOk, List<LimitViolation> limitViolations) {
-        this(contingency, computationOk, limitViolations, Collections.emptyList());
+    private final LimitViolationsResult limitViolationsResult;
+
+    public PostContingencyResult(Contingency contingency, LimitViolationsResult limitViolationsResult) {
+        this.contingency = Objects.requireNonNull(contingency);
+        this.limitViolationsResult = Objects.requireNonNull(limitViolationsResult);
     }
 
-    public PostContingencyResult(@JsonProperty("contingency") Contingency contingency, 
-                                 @JsonProperty("computationOk") boolean computationOk, 
-                                 @JsonProperty("limitViolations") List<LimitViolation> limitViolations, 
-                                 @JsonProperty("actionsTaken") List<String> actionsTaken) {
-        super(computationOk, limitViolations, actionsTaken);
-        this.contingency = Objects.requireNonNull(contingency);
+    public PostContingencyResult(Contingency contingency, boolean computationOk, List<LimitViolation> limitViolations) {
+        this(contingency, new LimitViolationsResult(computationOk, limitViolations, Collections.emptyList()));
+    }
+
+    public PostContingencyResult(Contingency contingency, boolean computationOk, List<LimitViolation> limitViolations, List<String> actionsTaken) {
+        this(contingency, new LimitViolationsResult(computationOk, limitViolations, actionsTaken));
     }
 
     public Contingency getContingency() {
         return contingency;
+    }
+
+    public LimitViolationsResult getLimitViolationsResult() {
+        return limitViolationsResult;
+    }
+
+    @Deprecated
+    public boolean isComputationOk() {
+        return limitViolationsResult.isComputationOk();
+    }
+
+    @Deprecated
+    public List<LimitViolation> getLimitViolations() {
+        return limitViolationsResult.getLimitViolations();
+    }
+
+    @Deprecated
+    public List<String> getActionsTaken() {
+        return limitViolationsResult.getActionsTaken();
     }
 }

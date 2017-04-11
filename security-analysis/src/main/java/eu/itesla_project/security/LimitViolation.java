@@ -9,8 +9,6 @@ package eu.itesla_project.security;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import eu.itesla_project.iidm.network.Country;
 
 /**
@@ -34,10 +32,8 @@ public class LimitViolation {
 
     private final float baseVoltage;
 
-    public LimitViolation(@JsonProperty("subjectId") String subjectId, @JsonProperty("limitType") LimitViolationType limitType, 
-                          @JsonProperty("limit") float limit, @JsonProperty("limitName") String limitName, 
-                          @JsonProperty("limitReduction") float limitReduction, @JsonProperty("value") float value, 
-                          @JsonProperty("country") Country country, @JsonProperty("baseVoltage") float baseVoltage) {
+    public LimitViolation(String subjectId, LimitViolationType limitType, float limit, String limitName,
+                          float limitReduction, float value, Country country, float baseVoltage) {
         this.subjectId = Objects.requireNonNull(subjectId);
         this.limitType = Objects.requireNonNull(limitType);
         this.limit = limit;

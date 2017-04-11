@@ -6,24 +6,20 @@
  */
 package eu.itesla_project.security;
 
-import java.util.Collections;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  * @author Mathieu Bague <mathieu.bague at rte-france.com>
  */
+@Deprecated
 public class PreContingencyResult extends LimitViolationsResult {
 
     public PreContingencyResult(boolean computationOk, List<LimitViolation> limitViolations) {
-        this(computationOk, limitViolations, Collections.emptyList());
+        super(computationOk, limitViolations);
     }
 
-    public PreContingencyResult(@JsonProperty("computationOk") boolean computationOk, 
-                                @JsonProperty("limitViolations") List<LimitViolation> limitViolations, 
-                                @JsonProperty("actionsTaken") List<String> actionsTaken) {
+    public PreContingencyResult(boolean computationOk, List<LimitViolation> limitViolations, List<String> actionsTaken) {
         super(computationOk, limitViolations, actionsTaken);
     }
 }

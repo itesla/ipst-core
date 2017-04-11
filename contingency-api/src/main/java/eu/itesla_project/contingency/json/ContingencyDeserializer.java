@@ -8,20 +8,18 @@ package eu.itesla_project.contingency.json;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-import eu.itesla_project.contingency.BranchContingency;
 import eu.itesla_project.contingency.Contingency;
 import eu.itesla_project.contingency.ContingencyElement;
-import eu.itesla_project.contingency.ContingencyElementType;
 import eu.itesla_project.contingency.ContingencyImpl;
-import eu.itesla_project.contingency.GeneratorContingency;
 
 /**
  *
@@ -30,34 +28,30 @@ import eu.itesla_project.contingency.GeneratorContingency;
 public class ContingencyDeserializer extends StdDeserializer<Contingency> {
     
     public ContingencyDeserializer() {
-        this(null);
-    }
-   
-    public ContingencyDeserializer(Class<Contingency> t) {
-        super(t);
+        super(Contingency.class);
     }
 
     @Override
-    public Contingency deserialize(JsonParser parser, DeserializationContext ctx) throws IOException, JsonProcessingException {
-        JsonNode node = parser.getCodec().readTree(parser);
-        String id = node.get("id").asText();
-        List<ContingencyElement> elements = new ArrayList<>();
-        node.get("elements").forEach( elementNode -> 
-        {
-            switch (ContingencyElementType.valueOf(elementNode.get("type").asText())) {
-                case BRANCH:
-                case LINE:
-                    elements.add(new BranchContingency(elementNode.get("id").asText(), 
-                                                       elementNode.get("substationId").isNull() ? null : elementNode.get("substationId").asText()));
+    public Contingency deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
+        String id = null;
+        List<ContingencyElement> elements = Collections.emptyList();
+
+        while (parser.nextToken() != JsonToken.END_OBJECT) {
+            switch (parser.getCurrentName()) {
+                case "id":
+                    id = parser.nextTextValue();
                     break;
-                case GENERATOR: 
-                    elements.add(new GeneratorContingency(elementNode.get("id").asText()));
+
+                case "elements":
+                    parser.nextToken();
+                    elements = parser.readValueAs(new TypeReference<ArrayList<ContingencyElement>>() {});
                     break;
+
                 default:
-                    throw new InternalError();
+                    throw new AssertionError("Unexpected field: " + parser.getCurrentName());
+            }
         }
-        });
+
         return new ContingencyImpl(id, elements);
     }
-
 }
