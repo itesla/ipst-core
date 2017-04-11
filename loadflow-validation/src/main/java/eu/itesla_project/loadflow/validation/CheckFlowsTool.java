@@ -6,7 +6,6 @@
  */
 package eu.itesla_project.loadflow.validation;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -44,7 +43,7 @@ public class CheckFlowsTool implements Tool {
 
         @Override
         public String getTheme() {
-            return "Loadflow Validation";
+            return "Computation";
         }
 
         @Override
@@ -98,33 +97,26 @@ public class CheckFlowsTool implements Tool {
                                                        line.hasOption("verbose") ? Boolean.parseBoolean(line.getOptionValue("verbose")) : getConfig().isVerbose(),
                                                        getConfig().getLoadFlowFactory(),
                                                        getConfig().getTableFormatterFactory());
-        if (Files.isRegularFile(caseFile)) {
-            System.out.println("Loading case " + caseFile);
-            Network network = Importers.loadNetwork(caseFile);
-            if (network == null) {
-                throw new RuntimeException("Case " + caseFile + " not found");
-            }
-            if (line.hasOption("load-flow")) {
-                System.out.println("Running loadflow on network " + network.getId());
-                try (ComputationManager computationManager = new LocalComputationManager()) {
-                    LoadFlowParameters parameters = new LoadFlowParameters().setVoltageInitMode(LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES)
-                                                                            .setTransformerVoltageControlOn(false)
-                                                                            .setNoGeneratorReactiveLimits(false)
-                                                                            .setPhaseShifterRegulationOn(false); 
-                    LoadFlow loadFlow = config.getLoadFlowFactory().newInstance().create(network, computationManager, 0);
-                    loadFlow.runAsync(StateManager.INITIAL_STATE_ID, parameters)
-                            .thenAccept(loadFlowResult -> {
-                                if (!loadFlowResult.isOk()) {
-                                    throw new RuntimeException("Loadflow on network " + network.getId() + " does not converge");
-                                }
-                            })
-                            .join();
-                }
-            }
-            System.out.println("Check flows on network " + network.getId() + " result = " + Networks.checkFlows(network, config, outputFile));
-        } else {
-            throw new RuntimeException(caseFile + " is not a file");
+        System.out.println("Loading case " + caseFile);
+        Network network = Importers.loadNetwork(caseFile);
+        if (network == null) {
+            throw new RuntimeException("Case " + caseFile + " not found");
         }
+        if (line.hasOption("load-flow")) {
+            System.out.println("Running loadflow on network " + network.getId());
+            try (ComputationManager computationManager = new LocalComputationManager()) {
+                LoadFlowParameters parameters = LoadFlowParameters.load(); 
+                LoadFlow loadFlow = config.getLoadFlowFactory().newInstance().create(network, computationManager, 0);
+                loadFlow.runAsync(StateManager.INITIAL_STATE_ID, parameters)
+                        .thenAccept(loadFlowResult -> {
+                            if (!loadFlowResult.isOk()) {
+                                throw new RuntimeException("Loadflow on network " + network.getId() + " does not converge");
+                            }
+                        })
+                        .join();
+            }
+        }
+        System.out.println("Check flows on network " + network.getId() + " result = " + Networks.checkFlows(network, config, outputFile));
     }
     
     private CheckFlowsConfig getConfig() {
