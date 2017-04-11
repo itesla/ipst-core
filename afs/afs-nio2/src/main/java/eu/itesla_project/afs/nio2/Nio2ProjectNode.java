@@ -30,11 +30,50 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
     @XmlType(name = "")
     public static abstract class Metadata {
 
+        @XmlAccessorType(XmlAccessType.FIELD)
+        @XmlType(name = "")
+        public static class Dependency {
+
+            @XmlAttribute(name = "id", required = true)
+            private String id;
+
+            @XmlAttribute(name = "type", required = true)
+            private String type;
+
+            public Dependency() {
+            }
+
+            public Dependency(String id, String type) {
+                this.id = Objects.requireNonNull(id);
+                this.type = Objects.requireNonNull(type);
+            }
+
+            public String getId() {
+                return id;
+            }
+
+            public void setId(String id) {
+                this.id = Objects.requireNonNull(id);
+            }
+
+            public String getType() {
+                return type;
+            }
+
+            public void setType(String type) {
+                this.type = Objects.requireNonNull(type);
+            }
+        }
+
+
         @XmlAttribute(name = "id", required = true)
         private String id;
 
         @XmlElement(required = true)
         private final List<String> depended = new ArrayList<>();
+
+        @XmlElement(required = true)
+        private final List<Dependency> dependencies = new ArrayList<>();
 
         public Metadata() {
             this("");
@@ -54,6 +93,23 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
 
         public List<String> getDepended() {
             return depended;
+        }
+
+        public List<Dependency> getDependencies() {
+            return dependencies;
+        }
+
+        public void addDependency(String id, String type) {
+            dependencies.add(new Nio2ProjectNode.Metadata.Dependency(id, type));
+        }
+
+        public Dependency findDependencyByType(String type) {
+            for (Dependency dependency : dependencies) {
+                if (dependency.getType().equals(type)) {
+                    return dependency;
+                }
+            }
+            return null;
         }
 
         protected abstract void save(Path dir);

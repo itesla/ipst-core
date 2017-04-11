@@ -90,7 +90,9 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
         }
 
         // create metadata
-        Nio2VirtualCase.Metadata metadata = Nio2VirtualCase.Metadata.create(caseId, scriptId);
+        Nio2VirtualCase.Metadata metadata = Nio2VirtualCase.Metadata.create();
+        metadata.addDependency(caseId, "case");
+        metadata.addDependency(scriptId, "script");
         metadata.save(dir);
 
         // create project node

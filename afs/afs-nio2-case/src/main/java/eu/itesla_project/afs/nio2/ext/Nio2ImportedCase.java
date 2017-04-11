@@ -17,7 +17,6 @@ import eu.itesla_project.iidm.datasource.ReadOnlyDataSource;
 import eu.itesla_project.iidm.import_.ImportConfig;
 import eu.itesla_project.iidm.import_.Importer;
 import eu.itesla_project.iidm.import_.Importers;
-import eu.itesla_project.iidm.network.Network;
 
 import javax.xml.bind.annotation.*;
 import java.nio.file.Path;
@@ -46,6 +45,25 @@ public class Nio2ImportedCase extends Nio2ProjectNode<Nio2ImportedCase.Metadata>
 
         public Metadata(String id) {
             super(id);
+        }
+
+        public void save(Path dir) {
+            JaxbUtil.marshallElement(Metadata.class, this, dir.resolve(XML_FILE_NAME));
+        }
+    }
+
+    @XmlRootElement(name = "importConfiguration")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "")
+    public static class ImportConfiguration {
+
+        public static final String XML_FILE_NAME = "importConfiguration.xml";
+
+        public static ImportConfiguration read(Path dir) {
+            return JaxbUtil.unmarchallFile(ImportConfiguration.class, dir.resolve(XML_FILE_NAME));
+        }
+
+        public ImportConfiguration() {
         }
 
         @XmlElement(required = true)
@@ -94,7 +112,7 @@ public class Nio2ImportedCase extends Nio2ProjectNode<Nio2ImportedCase.Metadata>
         }
 
         public void save(Path dir) {
-            JaxbUtil.marshallElement(Metadata.class, this, dir.resolve(XML_FILE_NAME));
+            JaxbUtil.marshallElement(ImportConfiguration.class, this, dir.resolve(XML_FILE_NAME));
         }
     }
 
@@ -117,7 +135,8 @@ public class Nio2ImportedCase extends Nio2ProjectNode<Nio2ImportedCase.Metadata>
     public FileIcon getIcon() {
         checkNotDeleted();
         return CaseIconCache.INSTANCE.get(getProject().getFileSystem().getImportersLoader(),
-                                          getProject().getFileSystem().getComputationManager(), readMetadata().getFormat());
+                                          getProject().getFileSystem().getComputationManager(),
+                                          ImportConfiguration.read(dir).getFormat());
     }
 
     @Override
@@ -126,7 +145,7 @@ public class Nio2ImportedCase extends Nio2ProjectNode<Nio2ImportedCase.Metadata>
     }
 
     private Importer getImporter(Metadata metadata) {
-        return Importers.getImporter(getProject().getFileSystem().getImportersLoader(), metadata.getFormat(),
+        return Importers.getImporter(getProject().getFileSystem().getImportersLoader(), ImportConfiguration.read(dir).getFormat(),
                                      getProject().getFileSystem().getComputationManager(), new ImportConfig());
     }
 
@@ -137,7 +156,7 @@ public class Nio2ImportedCase extends Nio2ProjectNode<Nio2ImportedCase.Metadata>
 
     private Properties getParameters(Metadata metadata) {
         Properties parameters = new Properties();
-        for (Metadata.Parameter parameter : metadata.getParameter()) {
+        for (ImportConfiguration.Parameter parameter : ImportConfiguration.read(dir).getParameter()) {
             parameters.setProperty(parameter.getName(), parameter.getValue());
         }
         return parameters;

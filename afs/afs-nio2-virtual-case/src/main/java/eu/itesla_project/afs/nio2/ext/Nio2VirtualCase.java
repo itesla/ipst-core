@@ -47,43 +47,19 @@ public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> i
 
         public static final String XML_FILE_NAME = "virtualCaseMetadata.xml";
 
-        public static Metadata create(String caseId, String scriptId) {
-            return new Metadata(UUID.randomUUID().toString(), caseId, scriptId);
+        public static Metadata create() {
+            return new Metadata(UUID.randomUUID().toString());
         }
 
         public static Metadata read(Path dir) {
             return JaxbUtil.unmarchallFile(Metadata.class, dir.resolve(XML_FILE_NAME));
         }
 
-        @XmlAttribute(name = "caseId", required = true)
-        private String caseId;
-
-        @XmlAttribute(name = "scriptId", required = true)
-        private String scriptId;
-
         public Metadata() {
         }
 
-        public Metadata(String id, String caseId, String scriptId) {
+        public Metadata(String id) {
             super(id);
-            this.caseId = Objects.requireNonNull(caseId);
-            this.scriptId = Objects.requireNonNull(scriptId);
-        }
-
-        public String getCaseId() {
-            return caseId;
-        }
-
-        public void setCaseId(String caseId) {
-            this.caseId = caseId;
-        }
-
-        public String getScriptId() {
-            return scriptId;
-        }
-
-        public void setScriptId(String scriptId) {
-            this.scriptId = scriptId;
         }
 
         public void save(Path dir) {
@@ -169,7 +145,7 @@ public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> i
     }
 
     private ProjectCase getCase(Metadata metadata) {
-        String casePath = getProject().getCentralDirectory().getPath(metadata.getCaseId());
+        String casePath = getProject().getCentralDirectory().getPath(metadata.findDependencyByType("case").getId());
         ProjectNode node = getProject().getRootFolder().getChild(casePath);
         if (node == null) {
             throw new RuntimeException("Invalid case path");
@@ -187,7 +163,7 @@ public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> i
     }
 
     private GroovyScript getScript(Metadata metadata) {
-        String scriptPath = getProject().getCentralDirectory().getPath(metadata.getScriptId());
+        String scriptPath = getProject().getCentralDirectory().getPath(metadata.findDependencyByType("script").getId());
         ProjectNode node = getProject().getRootFolder().getChild(scriptPath);
         if (node == null) {
             throw new RuntimeException("Invalid script path");

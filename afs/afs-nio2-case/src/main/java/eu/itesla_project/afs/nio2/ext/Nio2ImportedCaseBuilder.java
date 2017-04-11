@@ -75,9 +75,13 @@ public class Nio2ImportedCaseBuilder implements ImportedCaseBuilder {
             throw new UncheckedIOException(e);
         }
 
-        // create meta data file
+        // create metadata
         Nio2ImportedCase.Metadata metadata = Nio2ImportedCase.Metadata.create();
-        metadata.setFormat(aCase.getImporter().getFormat());
+        metadata.save(importedCaseDir);
+
+        // create import configuration file
+        Nio2ImportedCase.ImportConfiguration importConfiguration = new Nio2ImportedCase.ImportConfiguration();
+        importConfiguration.setFormat(aCase.getImporter().getFormat());
         Map<String, Parameter> parameters = aCase.getImporter().getParameters().stream()
                 .collect(Collectors.toMap(parameter -> parameter.getName(), Function.identity())); // index importer parameters by name
         parameterValues.forEach((name, value) -> {
@@ -85,12 +89,12 @@ public class Nio2ImportedCaseBuilder implements ImportedCaseBuilder {
             if (parameter == null) {
                 throw new RuntimeException("Parameter '" + name + "' not found");
             }
-            Nio2ImportedCase.Metadata.Parameter p = new Nio2ImportedCase.Metadata.Parameter();
+            Nio2ImportedCase.ImportConfiguration.Parameter p = new Nio2ImportedCase.ImportConfiguration.Parameter();
             p.setName(name);
             p.setValue(value);
-            metadata.getParameter().add(p);
+            importConfiguration.getParameter().add(p);
         });
-        metadata.save(importedCaseDir);
+        importConfiguration.save(importedCaseDir);
 
         // copy case data
         aCase.getImporter().copy(aCase.getDataSource(), new FileDataSource(importedCaseDir, aCase.getDataSource().getBaseName()));
