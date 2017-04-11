@@ -107,8 +107,8 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
         if (!(script instanceof GroovyScript)) {
             throw new RuntimeException("'" + scriptPath + "' is not a groovy script");
         }
-        _case.addDepended(virtualCase);
-        script.addDepended(virtualCase);
+        _case.addBackwardDependency(virtualCase);
+        script.addBackwardDependency(virtualCase);
 
         // put id in the central directory
         folder.getProject().getCentralDirectory().add(metadata.getId(), virtualCase.getPath());

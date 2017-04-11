@@ -27,5 +27,5 @@ public interface ProjectNode {
 
     void delete();
 
-    List<ProjectFile> getDepended();
+    List<ProjectFile> getBackwardDependencies();
 }

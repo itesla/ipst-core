@@ -87,8 +87,8 @@ public class Nio2VirtualCaseTest extends Nio2AbstractProjectFileTest {
         assertNotNull(virtualCase.getCase());
         assertNotNull(virtualCase.getScript());
         assertEquals(2, virtualCase.getDependencies().size());
-        assertEquals(1, importedCase.getDepended().size());
-        assertEquals(1, script.getDepended().size());
+        assertEquals(1, importedCase.getBackwardDependencies().size());
+        assertEquals(1, script.getBackwardDependencies().size());
         Network network = virtualCase.loadNetwork();
         assertNotNull(network);
 
@@ -103,8 +103,8 @@ public class Nio2VirtualCaseTest extends Nio2AbstractProjectFileTest {
         assertEquals("bye", CharStreams.toString(virtualCase.getOutReader()));
 
         virtualCase.delete();
-        assertTrue(importedCase.getDepended().isEmpty());
-        assertTrue(script.getDepended().isEmpty());
+        assertTrue(importedCase.getBackwardDependencies().isEmpty());
+        assertTrue(script.getBackwardDependencies().isEmpty());
 
     }
 }

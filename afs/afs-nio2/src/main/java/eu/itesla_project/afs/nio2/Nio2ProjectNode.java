@@ -70,7 +70,7 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
         private String id;
 
         @XmlElement(required = true)
-        private final List<String> depended = new ArrayList<>();
+        private final List<String> backwardDependencies = new ArrayList<>();
 
         @XmlElement(required = true)
         private final List<Dependency> dependencies = new ArrayList<>();
@@ -91,8 +91,8 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
             this.id = Objects.requireNonNull(id);
         }
 
-        public List<String> getDepended() {
-            return depended;
+        public List<String> getBackwardDependencies() {
+            return backwardDependencies;
         }
 
         public List<Dependency> getDependencies() {
@@ -183,7 +183,7 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
         checkNotDeleted();
 
         // remove backward dependency link
-        getDependencies().forEach(projectFile -> ((Nio2ProjectNode) projectFile).removeDepended(this));
+        getDependencies().forEach(projectFile -> ((Nio2ProjectNode) projectFile).removeBackwardDependency(this));
 
         // remove from central directory
         getProject().getCentralDirectory().remove(readMetadata().getId());
@@ -195,22 +195,22 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
         }
     }
 
-    public void addDepended(Nio2ProjectNode projectNode) {
+    public void addBackwardDependency(Nio2ProjectNode projectNode) {
         T metadata = readMetadata();
-        metadata.getDepended().add(projectNode.getId());
+        metadata.getBackwardDependencies().add(projectNode.getId());
         metadata.save(dir);
     }
 
-    public void removeDepended(Nio2ProjectNode projectNode) {
+    public void removeBackwardDependency(Nio2ProjectNode projectNode) {
         T metadata = readMetadata();
-        metadata.getDepended().remove(projectNode.getId());
+        metadata.getBackwardDependencies().remove(projectNode.getId());
         metadata.save(dir);
     }
 
-    private ProjectFile resolveDepended(String id) {
+    private ProjectFile resolveBackwardDependency(String id) {
         String path = getProject().getCentralDirectory().getPath(id);
         if (path == null) {
-            throw new RuntimeException("Depended '" + id + "' not found");
+            throw new RuntimeException("Backward dependency '" + id + "' not found");
         }
         ProjectFile projectFile = (ProjectFile) getProject().getRootFolder().getChild(path);
         if (projectFile == null) {
@@ -219,8 +219,8 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
         return projectFile;
     }
 
-    public List<ProjectFile> getDepended() {
-        return readMetadata().getDepended().stream().map(this::resolveDepended).collect(Collectors.toList());
+    public List<ProjectFile> getBackwardDependencies() {
+        return readMetadata().getBackwardDependencies().stream().map(this::resolveBackwardDependency).collect(Collectors.toList());
     }
 
     public Nio2Project getProject() {
@@ -231,7 +231,7 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
     public abstract String getName();
 
     protected void invalidateCache() {
-        getDepended().forEach(projectFile -> ((Nio2ProjectNode) projectFile).invalidateCache());
+        getBackwardDependencies().forEach(projectFile -> ((Nio2ProjectNode) projectFile).invalidateCache());
     }
 
     @Override
