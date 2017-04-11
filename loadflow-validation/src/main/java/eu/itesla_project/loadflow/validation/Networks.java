@@ -13,17 +13,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Iterators;
-
 import eu.itesla_project.commons.io.table.Column;
-import eu.itesla_project.commons.io.table.CsvTableFormatterFactory;
 import eu.itesla_project.commons.io.table.TableFormatter;
 import eu.itesla_project.commons.io.table.TableFormatterConfig;
+import eu.itesla_project.commons.io.table.TableFormatterFactory;
 import eu.itesla_project.iidm.network.Bus;
 import eu.itesla_project.iidm.network.Line;
 import eu.itesla_project.iidm.network.Network;
@@ -58,13 +57,13 @@ public class Networks {
     }
     
     public static boolean checkFlows(String id, double r, double x, double rho1, double rho2, double u1, double u2, double theta1, double theta2, double alpha1,
-                                     double alpha2, double g1, double g2, double b1, double b2, float p1, float q1, float p2, float q2, float threshold,
-                                     boolean verbose) throws IOException {
+                                     double alpha2, double g1, double g2, double b1, double b2, float p1, float q1, float p2, float q2, CheckFlowsConfig config) 
+                                             throws IOException, InstantiationException, IllegalAccessException {
         Objects.requireNonNull(id);
-        CsvTableFormatterFactory factory = new CsvTableFormatterFactory();
+        TableFormatterFactory factory = config.getTableFormatterFactory().newInstance();
         try (Writer writer = createStdOutputWriter();
              TableFormatter formatter = factory.create(writer, id + " flow check", TABLE_FORMATTER_CONFIG, COLUMNS)) {
-            return checkFlows(id, r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, threshold, verbose, formatter);
+            return checkFlows(id, r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, config.getThreshold(), config.isVerbose(), formatter);
         }
     }
 
@@ -83,14 +82,14 @@ public class Networks {
         double p2_calc = rho2 * rho1 * u2 * u1 * y * Math.sin(theta2 - theta1 - ksi + alpha2 - alpha1) + rho2 * rho2 * u2 * u2 * (y * Math.sin(ksi) + g2);
         double q2_calc = - rho2 * rho1 * u2 * u1 * y * Math.cos(theta2 - theta1 - ksi + alpha2 - alpha1) + rho2 * rho2 * u2 * u2 * (y * Math.cos(ksi) - b2);
 
-        formatter.writeCell(id).writeCell("expected_p1").writeCell(p1)
-                 .writeCell(id).writeCell("calculated_p1").writeCell(p1_calc)
-                 .writeCell(id).writeCell("expected_q1").writeCell(q1)
-                 .writeCell(id).writeCell("calculated_q1").writeCell(q1_calc)
-                 .writeCell(id).writeCell("expected_p2").writeCell(p2)
-                 .writeCell(id).writeCell("calculated_p2").writeCell(p2_calc)
-                 .writeCell(id).writeCell("expected_q2").writeCell(q2)
-                 .writeCell(id).writeCell("calculated_q2").writeCell(q2_calc);
+        formatter.writeCell(id).writeCell("network_p1").writeCell(p1)
+                 .writeCell(id).writeCell("expected_p1").writeCell(p1_calc)
+                 .writeCell(id).writeCell("network_q1").writeCell(q1)
+                 .writeCell(id).writeCell("expected_q1").writeCell(q1_calc)
+                 .writeCell(id).writeCell("network_p2").writeCell(p2)
+                 .writeCell(id).writeCell("expected_p2").writeCell(p2_calc)
+                 .writeCell(id).writeCell("network_q2").writeCell(q2)
+                 .writeCell(id).writeCell("expected_q2").writeCell(q2_calc);
 
         if (verbose) {
             formatter.writeCell(id).writeCell("r").writeCell(r)
@@ -131,12 +130,12 @@ public class Networks {
         return ok;
     }
     
-    public static boolean checkFlows(Line l, float threshold, boolean verbose) throws IOException {
+    public static boolean checkFlows(Line l, CheckFlowsConfig config) throws IOException, InstantiationException, IllegalAccessException {
         Objects.requireNonNull(l);
-        CsvTableFormatterFactory factory = new CsvTableFormatterFactory();
+        TableFormatterFactory factory = config.getTableFormatterFactory().newInstance();
         try (Writer writer = createStdOutputWriter();
              TableFormatter formatter = factory.create(writer, l.getId() + " flow check", TABLE_FORMATTER_CONFIG, COLUMNS)) {
-            return checkFlows(l, threshold, verbose, formatter);
+            return checkFlows(l, config.getThreshold(), config.isVerbose(), formatter);
         }
     }
 
@@ -167,12 +166,12 @@ public class Networks {
         return true;
     }
     
-    public static boolean checkFlows(TwoWindingsTransformer twt, float threshold, boolean verbose) throws IOException {
+    public static boolean checkFlows(TwoWindingsTransformer twt, CheckFlowsConfig config) throws IOException, InstantiationException, IllegalAccessException {
         Objects.requireNonNull(twt);
-        CsvTableFormatterFactory factory = new CsvTableFormatterFactory();
+        TableFormatterFactory factory = config.getTableFormatterFactory().newInstance();
         try (Writer writer = createStdOutputWriter();
              TableFormatter formatter = factory.create(writer, twt.getId() + " flow check", TABLE_FORMATTER_CONFIG, COLUMNS)) {
-            return checkFlows(twt, threshold, verbose, formatter);
+            return checkFlows(twt, config.getThreshold(), config.isVerbose(), formatter);
         }
     }
 
@@ -225,48 +224,43 @@ public class Networks {
         return true;
     }
     
-    public static boolean checkFlows(Network network, float threshold, boolean verbose) throws IOException {
+    public static boolean checkFlows(Network network, CheckFlowsConfig config) throws IOException, InstantiationException, IllegalAccessException {
         Objects.requireNonNull(network);
-        CsvTableFormatterFactory factory = new CsvTableFormatterFactory();
+        TableFormatterFactory factory = config.getTableFormatterFactory().newInstance();
         try (Writer writer = createStdOutputWriter();
              TableFormatter formatter = factory.create(writer, network.getId() + " flow check", TABLE_FORMATTER_CONFIG, COLUMNS)) {
-            return checkFlows(network, threshold, verbose, formatter);
+            return checkFlows(network, config.getThreshold(), config.isVerbose(), formatter);
         }
     }
     
-    public static boolean checkFlows(Network network, float threshold, boolean verbose, Path outFile) throws IOException {
+    public static boolean checkFlows(Network network, CheckFlowsConfig config, Path outFile) throws IOException, InstantiationException, IllegalAccessException {
         Objects.requireNonNull(network);
         Objects.requireNonNull(outFile);
-        CsvTableFormatterFactory factory = new CsvTableFormatterFactory();
+        TableFormatterFactory factory = config.getTableFormatterFactory().newInstance();
         try (Writer writer = Files.newBufferedWriter(outFile, StandardCharsets.UTF_8);
              TableFormatter formatter = factory.create(writer, network.getId() + " flow check", TABLE_FORMATTER_CONFIG, COLUMNS)) {
-            return checkFlows(network, threshold, verbose, formatter);
+            return checkFlows(network, config.getThreshold(), config.isVerbose(), formatter);
         }
     }
 
-    private static boolean checkFlows(Network network, float threshold, boolean verbose, TableFormatter formatter) {
+    private static boolean checkFlows(Network network, float threshold, boolean verbose, TableFormatter formatter) throws IOException {
         LOGGER.info("Checking flows of network {}", network.getId());
-        boolean linesOk = Iterators.size(network.getLines().iterator()) == StreamSupport.stream(network.getLines().spliterator(), false)
-                                                                                         .sorted((l1, l2) -> l1.getId().compareTo(l2.getId()))
-                                                                                         .filter(l -> {
-                                                                                             try {
-                                                                                                 return checkFlows(l, threshold, verbose, formatter);
-                                                                                             } catch (IOException e) {
-                                                                                                 throw new RuntimeException(e);
-                                                                                             }
-                                                                                         })
-                                                                                         .count(); 
-        boolean transformersOk =  Iterators.size(network.getTwoWindingsTransformers().iterator()) == StreamSupport.stream(network.getTwoWindingsTransformers().spliterator(), false)
-                                                                                                                  .sorted((twt1, twt2) -> twt1.getId().compareTo(twt2.getId()))
-                                                                                                                  .filter(twt -> {
-                                                                                                                      try {
-                                                                                                                          return checkFlows(twt, threshold, verbose, formatter);
-                                                                                                                      } catch (IOException e) {
-                                                                                                                          throw new RuntimeException(e);
-                                                                                                                      }
-                                                                                                                  })
-                                                                                                                  .count();
-        return linesOk && transformersOk;
+        boolean ok = true;
+        for (Line l : StreamSupport.stream(network.getLines().spliterator(), false)
+                                   .sorted((l1, l2) -> l1.getId().compareTo(l2.getId()))
+                                   .collect(Collectors.toList())) {
+            if (!checkFlows(l, threshold, verbose, formatter)) {
+                ok = false;
+            }
+        }
+        for (TwoWindingsTransformer twt : StreamSupport.stream(network.getTwoWindingsTransformers().spliterator(), false)
+                                                       .sorted((twt1, twt2) -> twt1.getId().compareTo(twt2.getId()))
+                                                       .collect(Collectors.toList())) {
+            if (!checkFlows(twt, threshold, verbose, formatter)) {
+                ok = false;
+            }
+        }
+        return ok;
     }
 
 }

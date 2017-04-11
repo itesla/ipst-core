@@ -121,7 +121,7 @@ public class CheckFlowsTool implements Tool {
                             .join();
                 }
             }
-            System.out.println("Check flows on network " + network.getId() + " result = " + Networks.checkFlows(network, config.getThreshold(), config.isVerbose(), outputFile));
+            System.out.println("Check flows on network " + network.getId() + " result = " + Networks.checkFlows(network, config, outputFile));
         } else {
             throw new RuntimeException(caseFile + " is not a file");
         }

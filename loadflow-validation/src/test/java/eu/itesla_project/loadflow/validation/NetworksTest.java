@@ -23,6 +23,7 @@ import eu.itesla_project.iidm.network.RatioTapChangerStep;
 import eu.itesla_project.iidm.network.Terminal;
 import eu.itesla_project.iidm.network.Terminal.BusView;
 import eu.itesla_project.iidm.network.TwoWindingsTransformer;
+import eu.itesla_project.loadflow.api.mock.LoadFlowFactoryMock;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -49,6 +50,9 @@ public class NetworksTest {
     Line line1;
     RatioTapChanger ratioTapChanger;
     TwoWindingsTransformer transformer1;
+    
+    CheckFlowsConfig looseConfig;
+    CheckFlowsConfig strictConfig;
     
     @Before
     public void setUp() {
@@ -113,6 +117,9 @@ public class NetworksTest {
         Mockito.when(transformer1.getRatioTapChanger()).thenReturn(ratioTapChanger);
         Mockito.when(transformer1.getRatedU2()).thenReturn((float) rho1);
         Mockito.when(transformer1.getRatedU1()).thenReturn((float) rho1);
+
+        looseConfig = new CheckFlowsConfig(0.1f, true, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT);
+        strictConfig = new CheckFlowsConfig(0.01f, false, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT);
     }
     
     @Test
@@ -122,28 +129,28 @@ public class NetworksTest {
         float p2 = -40.073254f;
         float q2 = -2.3003194f;
         
-        assertTrue(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, 0.1f, true));
-        assertFalse(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, 0.01f, false));
+        assertTrue(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, looseConfig));
+        assertFalse(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, strictConfig));
 
         r= 0.04 / (rho2 * rho2);
         x= 0.423 / (rho2 * rho2);
         rho1 = 1 / rho2;
         rho2 = 1;
 
-        assertTrue(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, 0.1f, true));
-        assertFalse(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, 0.01f, false));
+        assertTrue(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, looseConfig));
+        assertFalse(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, strictConfig));
     }
     
     @Test
     public void checkLineFlows() throws Exception {
-        assertTrue(Networks.checkFlows(line1, 0.1f, true));
-        assertFalse(Networks.checkFlows(line1, 0.01f, false));
+        assertTrue(Networks.checkFlows(line1, looseConfig));
+        assertFalse(Networks.checkFlows(line1, strictConfig));
     }
     
     @Test
     public void checkTransformerFlows() throws Exception {
-        assertTrue(Networks.checkFlows(transformer1, 0.1f, true)); 
-        assertFalse(Networks.checkFlows(transformer1, 0.01f, false));
+        assertTrue(Networks.checkFlows(transformer1, looseConfig)); 
+        assertFalse(Networks.checkFlows(transformer1, strictConfig));
     }
     
     @Test
@@ -176,8 +183,8 @@ public class NetworksTest {
         Mockito.when(network.getLines()).thenReturn(Arrays.asList(line2, line1));
         Mockito.when(network.getTwoWindingsTransformers()).thenReturn(Arrays.asList(transformer2, transformer1));
         
-        assertTrue(Networks.checkFlows(network, 0.1f, true));
-        assertFalse(Networks.checkFlows(network, 0.01f, false));
+        assertTrue(Networks.checkFlows(network, looseConfig));
+        assertFalse(Networks.checkFlows(network, strictConfig));
     }
 
 }
