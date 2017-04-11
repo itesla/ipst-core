@@ -6,22 +6,12 @@
  */
 package eu.itesla_project.afs;
 
-import java.util.List;
-
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface Node {
-
-    String getName();
-
-    boolean isFolder();
+public interface Node extends NodeBase {
 
     Folder getParent();
-
-    List<String> getPathList();
-
-    String getPath();
 
     AppFileSystem getFileSystem();
 }

@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface ProjectNode extends NodeBase {
+public interface NodeBase {
 
-    ProjectFolder getParent();
+    String getName();
 
-    Project getProject();
+    List<String> getPathList();
 
-    void delete();
+    String getPath();
 
-    List<ProjectFile> getBackwardDependencies();
+    boolean isFolder();
 }
