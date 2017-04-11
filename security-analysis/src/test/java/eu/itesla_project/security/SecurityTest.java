@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,14 +44,14 @@ public class SecurityTest {
     public void setUp() {
         // create pre-contingency results, just one violation on line1
         line1Violation = new LimitViolation("line1", LimitViolationType.CURRENT, 1000f, "20'", 1100);
-        PreContingencyResult preContingencyResult = new PreContingencyResult(true, Arrays.asList(line1Violation), Arrays.asList("action1"));
+        LimitViolationsResult preContingencyResult = new LimitViolationsResult(true, Collections.singletonList(line1Violation), Collections.singletonList("action1"));
 
         // create post-contingency results, still the line1 violation plus line2 violation
         Contingency contingency1 = Mockito.mock(Contingency.class);
         Mockito.when(contingency1.getId()).thenReturn("contingency1");
         line2Violation = new LimitViolation("line2", LimitViolationType.CURRENT, 900f, "10'", 950);
-        PostContingencyResult postContingencyResult = new PostContingencyResult(contingency1, true, Arrays.asList(line1Violation, line2Violation), Arrays.asList("action2"));
-        result = new SecurityAnalysisResult(preContingencyResult, Arrays.asList(postContingencyResult));
+        PostContingencyResult postContingencyResult = new PostContingencyResult(contingency1, true, Arrays.asList(line1Violation, line2Violation), Collections.singletonList("action2"));
+        result = new SecurityAnalysisResult(preContingencyResult, Collections.singletonList(postContingencyResult));
     }
 
     @Test
