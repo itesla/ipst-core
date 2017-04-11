@@ -49,6 +49,8 @@ public class Nio2GroovyScriptTest extends Nio2AbstractProjectFileTest {
         assertNotNull(script);
         assertEquals("script", script.getName());
         assertNotNull(script.getIcon());
+        assertFalse(script.isFolder());
+        assertTrue(script.getDependencies().isEmpty());
         assertEquals("println 'hello'", script.read());
         script.write("println 'bye'");
         assertEquals("println 'bye'", script.read());

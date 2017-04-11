@@ -14,7 +14,9 @@ import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.parameters.Parameter;
 import eu.itesla_project.iidm.parameters.ParameterType;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +27,7 @@ import java.util.Properties;
  */
 public class TestImporter implements Importer {
 
-    static final String FORMAT = "TEST";
+    public static final String FORMAT = "TEST";
     public static final String EXT = "tst";
 
     private final Network network;
@@ -45,8 +47,14 @@ public class TestImporter implements Importer {
     }
 
     @Override
+    public InputStream get16x16Icon() {
+        return new ByteArrayInputStream(new byte[16 * 16]);
+    }
+
+    @Override
     public List<Parameter> getParameters() {
-        return ImmutableList.of(new Parameter("param1", ParameterType.BOOLEAN, "", Boolean.TRUE));
+        return ImmutableList.of(new Parameter("param1", ParameterType.BOOLEAN, "", Boolean.TRUE),
+                new Parameter("param2", ParameterType.STRING, "", "value"));
     }
 
     @Override

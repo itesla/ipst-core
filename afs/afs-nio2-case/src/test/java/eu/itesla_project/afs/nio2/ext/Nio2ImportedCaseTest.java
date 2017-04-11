@@ -7,6 +7,7 @@
 package eu.itesla_project.afs.nio2.ext;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import eu.itesla_project.afs.Folder;
 import eu.itesla_project.afs.Project;
 import eu.itesla_project.afs.ProjectFolder;
@@ -66,6 +67,9 @@ public class Nio2ImportedCaseTest extends Nio2AbstractProjectFileTest {
         assertTrue(root.getChildren().get(0) instanceof Case);
         Case _case = (Case) root.getChildren().get(0);
         assertEquals("network", _case.getName());
+        assertEquals("Test format", _case.getDescription());
+        assertFalse(_case.isFolder());
+        assertNotNull(_case.getIcon());
 
         // create project
         Project project = root.createProject("project", "");
@@ -79,16 +83,24 @@ public class Nio2ImportedCaseTest extends Nio2AbstractProjectFileTest {
         ImportedCase importedCase = folder.fileBuilder(ImportedCaseBuilder.class)
                 .withCase(_case)
                 .withParameter("param1", "true")
+                .withParameters(ImmutableMap.of("param2", "1"))
                 .build();
         assertNotNull(importedCase);
+        assertFalse(importedCase.isFolder());
+        assertNotNull(importedCase.getIcon());
         Network network = importedCase.loadNetwork();
         assertNotNull(network);
+        assertTrue(importedCase.getDependencies().isEmpty());
 
         // try to reload the imported case
         assertEquals(1, folder.getChildren().size());
         ProjectNode projectNode = folder.getChildren().get(0);
         assertNotNull(projectNode);
         assertTrue(projectNode instanceof ImportedCase);
+        ImportedCase importedCase2 = (ImportedCase) projectNode;
+        assertEquals(TestImporter.FORMAT, importedCase2.getImporter().getFormat());
+        assertEquals(2, importedCase2.getParameters().size());
+        assertEquals("true", importedCase2.getParameters().getProperty("param1"));
 
         // delete imported case
         projectNode.delete();
