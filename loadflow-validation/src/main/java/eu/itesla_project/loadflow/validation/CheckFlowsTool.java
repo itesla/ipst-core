@@ -16,7 +16,6 @@ import org.apache.commons.cli.Options;
 
 import com.google.auto.service.AutoService;
 
-import eu.itesla_project.commons.config.ComponentDefaultConfig;
 import eu.itesla_project.commons.tools.Command;
 import eu.itesla_project.commons.tools.Tool;
 import eu.itesla_project.computation.ComputationManager;
@@ -25,7 +24,6 @@ import eu.itesla_project.iidm.import_.Importers;
 import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.network.StateManager;
 import eu.itesla_project.loadflow.api.LoadFlow;
-import eu.itesla_project.loadflow.api.LoadFlowFactory;
 import eu.itesla_project.loadflow.api.LoadFlowParameters;
 
 /**
@@ -34,6 +32,8 @@ import eu.itesla_project.loadflow.api.LoadFlowParameters;
  */
 @AutoService(Tool.class)
 public class CheckFlowsTool implements Tool {
+    
+    private CheckFlowsConfig checkFlowsConfig;
 
     private static Command COMMAND = new Command() {
 
@@ -94,10 +94,10 @@ public class CheckFlowsTool implements Tool {
     public void run(CommandLine line) throws Exception {
         Path caseFile = Paths.get(line.getOptionValue("case-file"));
         Path outputFile = Paths.get(line.getOptionValue("output-file"));
-        CheckFlowsConfig config = CheckFlowsConfig.load();
-        if (line.hasOption("verbose")) {
-            config.setVerbose(Boolean.parseBoolean(line.getOptionValue("verbose")));
-        }
+        CheckFlowsConfig config = new CheckFlowsConfig(getConfig().getThreshold(),
+                                                       line.hasOption("verbose") ? Boolean.parseBoolean(line.getOptionValue("verbose")) : getConfig().isVerbose(),
+                                                       getConfig().getLoadFlowFactory(),
+                                                       getConfig().getTableFormatterFactory());
         if (Files.isRegularFile(caseFile)) {
             System.out.println("Loading case " + caseFile);
             Network network = Importers.loadNetwork(caseFile);
@@ -110,11 +110,8 @@ public class CheckFlowsTool implements Tool {
                     LoadFlowParameters parameters = new LoadFlowParameters().setVoltageInitMode(LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES)
                                                                             .setTransformerVoltageControlOn(false)
                                                                             .setNoGeneratorReactiveLimits(false)
-                                                                            .setPhaseShifterRegulationOn(false);
-                    LoadFlowFactory loadFlowFactory = config.getLoadFlowFactory() == null 
-                            ? ComponentDefaultConfig.load().newFactoryImpl(LoadFlowFactory.class) 
-                            : config.getLoadFlowFactory().newInstance();
-                    LoadFlow loadFlow = loadFlowFactory.create(network, computationManager, 0);
+                                                                            .setPhaseShifterRegulationOn(false); 
+                    LoadFlow loadFlow = config.getLoadFlowFactory().newInstance().create(network, computationManager, 0);
                     loadFlow.runAsync(StateManager.INITIAL_STATE_ID, parameters)
                             .thenAccept(loadFlowResult -> {
                                 if (!loadFlowResult.isOk()) {
@@ -128,6 +125,13 @@ public class CheckFlowsTool implements Tool {
         } else {
             throw new RuntimeException(caseFile + " is not a file");
         }
+    }
+    
+    private CheckFlowsConfig getConfig() {
+        if (checkFlowsConfig == null) {
+            checkFlowsConfig = CheckFlowsConfig.load();
+        }
+        return checkFlowsConfig;
     }
 
 }
