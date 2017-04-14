@@ -118,8 +118,10 @@ public class NetworksTest {
         Mockito.when(transformer1.getRatedU2()).thenReturn((float) rho1);
         Mockito.when(transformer1.getRatedU1()).thenReturn((float) rho1);
 
-        looseConfig = new CheckFlowsConfig(0.1f, true, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT);
-        strictConfig = new CheckFlowsConfig(0.01f, false, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT);
+        looseConfig = new CheckFlowsConfig(0.1f, true, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
+                                           CheckFlowsConfig.EPSILON_X_DEFAULT, CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT);
+        strictConfig = new CheckFlowsConfig(0.01f, false, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
+                                            CheckFlowsConfig.EPSILON_X_DEFAULT, CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT);
     }
     
     @Test

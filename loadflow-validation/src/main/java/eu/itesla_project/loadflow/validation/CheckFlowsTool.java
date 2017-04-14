@@ -32,8 +32,6 @@ import eu.itesla_project.loadflow.api.LoadFlowParameters;
 @AutoService(Tool.class)
 public class CheckFlowsTool implements Tool {
     
-    private CheckFlowsConfig checkFlowsConfig;
-
     private static Command COMMAND = new Command() {
 
         @Override
@@ -93,10 +91,10 @@ public class CheckFlowsTool implements Tool {
     public void run(CommandLine line) throws Exception {
         Path caseFile = Paths.get(line.getOptionValue("case-file"));
         Path outputFile = Paths.get(line.getOptionValue("output-file"));
-        CheckFlowsConfig config = new CheckFlowsConfig(getConfig().getThreshold(),
-                                                       line.hasOption("verbose") ? Boolean.parseBoolean(line.getOptionValue("verbose")) : getConfig().isVerbose(),
-                                                       getConfig().getLoadFlowFactory(),
-                                                       getConfig().getTableFormatterFactory());
+        CheckFlowsConfig config = CheckFlowsConfig.load();
+        if (line.hasOption("verbose")) {
+            config.setVerbose(Boolean.parseBoolean(line.getOptionValue("verbose")));
+        }
         System.out.println("Loading case " + caseFile);
         Network network = Importers.loadNetwork(caseFile);
         if (network == null) {
@@ -119,11 +117,4 @@ public class CheckFlowsTool implements Tool {
         System.out.println("Check flows on network " + network.getId() + " result = " + Networks.checkFlows(network, config, outputFile));
     }
     
-    private CheckFlowsConfig getConfig() {
-        if (checkFlowsConfig == null) {
-            checkFlowsConfig = CheckFlowsConfig.load();
-        }
-        return checkFlowsConfig;
-    }
-
 }

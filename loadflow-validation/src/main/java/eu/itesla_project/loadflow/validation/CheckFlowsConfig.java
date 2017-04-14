@@ -20,15 +20,19 @@ import eu.itesla_project.loadflow.api.LoadFlowFactory;
  * @author Massimo Ferraro <massimo.ferraro@techrain.it>
  */
 public class CheckFlowsConfig {
-    
+
     public static final float THRESHOLD_DEFAULT = 0.0f;
     public static final boolean VERBOSE_DEFAULT = false;
-    public static final Class<? extends TableFormatterFactory> TABLE_FORMATTER_FACTORY_DEFAULT =  CsvTableFormatterFactory.class;
-    
-    private final float threshold;
-    private final boolean verbose;
-    private final Class<? extends LoadFlowFactory> loadFlowFactory;
-    private final Class<? extends TableFormatterFactory> tableFormatterFactory;
+    public static final Class<? extends TableFormatterFactory> TABLE_FORMATTER_FACTORY_DEFAULT = CsvTableFormatterFactory.class;
+    public static final float EPSILON_X_DEFAULT = 0.01f;
+    public static final boolean APPLY_REACTANCE_CORRECTION_DEFAULT = false;
+
+    private float threshold;
+    private boolean verbose;
+    private Class<? extends LoadFlowFactory> loadFlowFactory;
+    private Class<? extends TableFormatterFactory> tableFormatterFactory;
+    private float epsilonX;
+    private boolean applyReactanceCorrection;
 
     public static CheckFlowsConfig load() {
         return load(PlatformConfig.defaultConfig());
@@ -40,6 +44,8 @@ public class CheckFlowsConfig {
         ComponentDefaultConfig componentDefaultConfig = ComponentDefaultConfig.load(platformConfig);
         Class<? extends LoadFlowFactory> loadFlowFactory = componentDefaultConfig.findFactoryImplClass(LoadFlowFactory.class);
         Class<? extends TableFormatterFactory> tableFormatterFactory = TABLE_FORMATTER_FACTORY_DEFAULT;
+        float epsilonX = EPSILON_X_DEFAULT;
+        boolean applyReactanceCorrection = APPLY_REACTANCE_CORRECTION_DEFAULT;
         if (platformConfig.moduleExists("check-flows")) {
             ModuleConfig config = platformConfig.getModuleConfig("check-flows");
             threshold = config.getFloatProperty("threshold", THRESHOLD_DEFAULT);
@@ -48,19 +54,26 @@ public class CheckFlowsConfig {
                 loadFlowFactory = config.getClassProperty("load-flow-factory", LoadFlowFactory.class, componentDefaultConfig.findFactoryImplClass(LoadFlowFactory.class));
             }
             tableFormatterFactory = config.getClassProperty("table-formatter-factory", TableFormatterFactory.class, TABLE_FORMATTER_FACTORY_DEFAULT);
+            epsilonX = config.getFloatProperty("epsilon-x", EPSILON_X_DEFAULT);
+            applyReactanceCorrection = config.getBooleanProperty("apply-reactance-correction", APPLY_REACTANCE_CORRECTION_DEFAULT);
         }
-        return new CheckFlowsConfig(threshold, verbose, loadFlowFactory, tableFormatterFactory);
+        return new CheckFlowsConfig(threshold, verbose, loadFlowFactory, tableFormatterFactory, epsilonX, applyReactanceCorrection);
     }
-    
-    public CheckFlowsConfig(float threshold, boolean verbose, Class<? extends LoadFlowFactory> loadFlowFactoryClass, 
-                            Class<? extends TableFormatterFactory> tableFormatterFactory) {
+
+    public CheckFlowsConfig(float threshold, boolean verbose, Class<? extends LoadFlowFactory> loadFlowFactory, 
+                            Class<? extends TableFormatterFactory> tableFormatterFactory, float epsilonX, boolean applyReactanceCorrection) {
         if (threshold < 0) {
            throw new IllegalArgumentException("Negative values for threshold not permitted");
         }
+        if (epsilonX < 0) {
+            throw new IllegalArgumentException("Negative values for epsilonX not permitted");
+         }
         this.threshold = threshold;
         this.verbose = verbose;
-        this.loadFlowFactory = Objects.requireNonNull(loadFlowFactoryClass);
+        this.loadFlowFactory = Objects.requireNonNull(loadFlowFactory);
         this.tableFormatterFactory = Objects.requireNonNull(tableFormatterFactory);
+        this.epsilonX = epsilonX;
+        this.applyReactanceCorrection = applyReactanceCorrection;
     }
 
     public float getThreshold() {
@@ -79,6 +92,38 @@ public class CheckFlowsConfig {
         return tableFormatterFactory;
     }
 
+    public float getEpsilonX() {
+        return epsilonX;
+    }
+
+    public boolean applyReactanceCorrection() {
+        return applyReactanceCorrection;
+    }
+
+    public void setThreshold(float threshold) {
+        this.threshold = threshold;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    public void setLoadFlowFactory(Class<? extends LoadFlowFactory> loadFlowFactory) {
+        this.loadFlowFactory = Objects.requireNonNull(loadFlowFactory);
+    }
+
+    public void setTableFormatterFactory(Class<? extends TableFormatterFactory> tableFormatterFactory) {
+        this.tableFormatterFactory = Objects.requireNonNull(tableFormatterFactory);
+    }
+
+    public void setEpsilonX(float epsilonX) {
+        this.epsilonX = epsilonX;
+    }
+
+    public void setApplyReactanceCorrection(boolean applyReactanceCorrection) {
+        this.applyReactanceCorrection = applyReactanceCorrection;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + " [" + 
@@ -86,6 +131,8 @@ public class CheckFlowsConfig {
                 ", verbose=" + verbose +
                 ", loadFlowFactory=" + loadFlowFactory +
                 ", tableFormatterFactory=" + tableFormatterFactory +
+                ", epsilonX=" + epsilonX +
+                ", applyReactanceCorrection=" + applyReactanceCorrection +
                 "]";
     }
 }

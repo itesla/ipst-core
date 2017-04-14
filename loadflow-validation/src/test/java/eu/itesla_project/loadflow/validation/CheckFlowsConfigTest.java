@@ -51,56 +51,76 @@ public class CheckFlowsConfigTest {
     @Test
     public void testNoConfig() {
         CheckFlowsConfig config = CheckFlowsConfig.load(platformConfig);
-        checkValues(config, CheckFlowsConfig.THRESHOLD_DEFAULT, CheckFlowsConfig.VERBOSE_DEFAULT, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT);
+        checkValues(config, CheckFlowsConfig.THRESHOLD_DEFAULT, CheckFlowsConfig.VERBOSE_DEFAULT, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
+                    CheckFlowsConfig.EPSILON_X_DEFAULT, CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT);
     }
 
     @Test
     public void checkIncompleteConfig() throws Exception {
         float threshold = 0.1f;
         boolean verbose = true;
+        float epsilonX = 0.1f;
+        boolean applyReactanceCorrection = true;
         MapModuleConfig moduleConfig = platformConfig.createModuleConfig("check-flows");
         moduleConfig.setStringProperty("threshold", Float.toString(threshold));
         moduleConfig.setStringProperty("verbose", Boolean.toString(verbose));
+        moduleConfig.setStringProperty("epsilon-x", Float.toString(epsilonX));
+        moduleConfig.setStringProperty("apply-reactance-correction", Boolean.toString(applyReactanceCorrection));
         CheckFlowsConfig config = CheckFlowsConfig.load(platformConfig);
-        checkValues(config, threshold, verbose, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT);
+        checkValues(config, threshold, verbose, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT, epsilonX, applyReactanceCorrection);
     }
 
     @Test
     public void checkCompleteConfig() throws Exception {
         float threshold = 0.1f;
         boolean verbose = true;
+        Class<? extends TableFormatterFactory> tableFormatterFactory = AsciiTableFormatterFactory.class;
+        float epsilonX = 0.1f;
+        boolean applyReactanceCorrection = true;
         MapModuleConfig moduleConfig = platformConfig.createModuleConfig("check-flows");
         moduleConfig.setStringProperty("threshold", Float.toString(threshold));
         moduleConfig.setStringProperty("verbose", Boolean.toString(verbose));
         moduleConfig.setStringProperty("load-flow-factory", loadFlowFactory.getCanonicalName());
-        Class<? extends TableFormatterFactory> tableFormatterFactory = AsciiTableFormatterFactory.class;
         moduleConfig.setStringProperty("table-formatter-factory", tableFormatterFactory.getCanonicalName());
+        moduleConfig.setStringProperty("epsilon-x", Float.toString(epsilonX));
+        moduleConfig.setStringProperty("apply-reactance-correction", Boolean.toString(applyReactanceCorrection));
         CheckFlowsConfig config = CheckFlowsConfig.load(platformConfig);
-        checkValues(config, threshold, verbose, loadFlowFactory, tableFormatterFactory);
+        checkValues(config, threshold, verbose, loadFlowFactory, tableFormatterFactory, epsilonX, applyReactanceCorrection);
     }
 
     private void checkValues(CheckFlowsConfig config, float threshold, boolean verbose, Class<? extends LoadFlowFactory> loadFlowFactory,
-                             Class<? extends TableFormatterFactory> tableFormatterFactory) {
+                             Class<? extends TableFormatterFactory> tableFormatterFactory, float epsilonX, boolean applyReactanceCorrection) {
         assertEquals(threshold, config.getThreshold(), 0f);
         assertEquals(verbose, config.isVerbose());
         assertEquals(loadFlowFactory, config.getLoadFlowFactory());
         assertEquals(tableFormatterFactory, config.getTableFormatterFactory());
+        assertEquals(epsilonX, config.getEpsilonX(), 0f);
+        assertEquals(applyReactanceCorrection, config.applyReactanceCorrection());
     }
     
     @Test
     public void testWrongConfig() {
         try {
-            new CheckFlowsConfig(-1, false, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT);
+            new CheckFlowsConfig(-1, false, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT, 1, 
+                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT);
             fail();
         } catch(Exception ignored) {
         }
         try {
-            new CheckFlowsConfig(1, false, null, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT);
+            new CheckFlowsConfig(1, false, null, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT, 1, 
+                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT);
             fail();
         } catch(Exception ignored) {
         }
         try {
-            new CheckFlowsConfig(1, false, loadFlowFactory, null);
+            new CheckFlowsConfig(1, false, loadFlowFactory, null, CheckFlowsConfig.EPSILON_X_DEFAULT, 
+                                CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT);
+            fail();
+        } catch(Exception ignored) {
+        }
+        try {
+            new CheckFlowsConfig(1, false, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT, -1, 
+                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT);
             fail();
         } catch(Exception ignored) {
         }
