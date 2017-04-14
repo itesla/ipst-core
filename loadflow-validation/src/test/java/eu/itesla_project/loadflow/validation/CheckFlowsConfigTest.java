@@ -87,6 +87,23 @@ public class CheckFlowsConfigTest {
         CheckFlowsConfig config = CheckFlowsConfig.load(platformConfig);
         checkValues(config, threshold, verbose, loadFlowFactory, tableFormatterFactory, epsilonX, applyReactanceCorrection);
     }
+    
+    @Test
+    public void checkSetters() throws Exception {
+        float threshold = 0.1f;
+        boolean verbose = true;
+        Class<? extends TableFormatterFactory> tableFormatterFactory = AsciiTableFormatterFactory.class;
+        float epsilonX = 0.1f;
+        boolean applyReactanceCorrection = true;
+        CheckFlowsConfig config = CheckFlowsConfig.load(platformConfig);
+        config.setThreshold(threshold);
+        config.setVerbose(verbose);
+        config.setLoadFlowFactory(loadFlowFactory);
+        config.setTableFormatterFactory(tableFormatterFactory);
+        config.setEpsilonX(epsilonX);
+        config.setApplyReactanceCorrection(applyReactanceCorrection);
+        checkValues(config, threshold, verbose, loadFlowFactory, tableFormatterFactory, epsilonX, applyReactanceCorrection);
+    }
 
     private void checkValues(CheckFlowsConfig config, float threshold, boolean verbose, Class<? extends LoadFlowFactory> loadFlowFactory,
                              Class<? extends TableFormatterFactory> tableFormatterFactory, float epsilonX, boolean applyReactanceCorrection) {

@@ -131,28 +131,28 @@ public class NetworksTest {
         float p2 = -40.073254f;
         float q2 = -2.3003194f;
         
-        assertTrue(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, looseConfig));
-        assertFalse(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, strictConfig));
+        assertTrue(Validation.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, looseConfig));
+        assertFalse(Validation.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, strictConfig));
 
         r= 0.04 / (rho2 * rho2);
         x= 0.423 / (rho2 * rho2);
         rho1 = 1 / rho2;
         rho2 = 1;
 
-        assertTrue(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, looseConfig));
-        assertFalse(Networks.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, strictConfig));
+        assertTrue(Validation.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, looseConfig));
+        assertFalse(Validation.checkFlows("test", r, x, rho1, rho2, u1, u2, theta1, theta2, alpha1, alpha2, g1, g2, b1, b2, p1, q1, p2, q2, strictConfig));
     }
     
     @Test
     public void checkLineFlows() throws Exception {
-        assertTrue(Networks.checkFlows(line1, looseConfig));
-        assertFalse(Networks.checkFlows(line1, strictConfig));
+        assertTrue(Validation.checkFlows(line1, looseConfig));
+        assertFalse(Validation.checkFlows(line1, strictConfig));
     }
     
     @Test
     public void checkTransformerFlows() throws Exception {
-        assertTrue(Networks.checkFlows(transformer1, looseConfig)); 
-        assertFalse(Networks.checkFlows(transformer1, strictConfig));
+        assertTrue(Validation.checkFlows(transformer1, looseConfig)); 
+        assertFalse(Validation.checkFlows(transformer1, strictConfig));
     }
     
     @Test
@@ -185,8 +185,8 @@ public class NetworksTest {
         Mockito.when(network.getLines()).thenReturn(Arrays.asList(line2, line1));
         Mockito.when(network.getTwoWindingsTransformers()).thenReturn(Arrays.asList(transformer2, transformer1));
         
-        assertTrue(Networks.checkFlows(network, looseConfig));
-        assertFalse(Networks.checkFlows(network, strictConfig));
+        assertTrue(Validation.checkFlows(network, looseConfig));
+        assertFalse(Validation.checkFlows(network, strictConfig));
     }
 
 }

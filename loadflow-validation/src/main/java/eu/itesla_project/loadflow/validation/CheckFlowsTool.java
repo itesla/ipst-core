@@ -68,9 +68,7 @@ public class CheckFlowsTool implements Tool {
                     .desc("run loadflow")
                     .build());
             options.addOption(Option.builder().longOpt("verbose")
-                    .desc("verbose output (true/false)")
-                    .hasArg()
-                    .argName("TRUE/FALSE")
+                    .desc("verbose output")
                     .build());
             return options;
         }
@@ -93,7 +91,7 @@ public class CheckFlowsTool implements Tool {
         Path outputFile = Paths.get(line.getOptionValue("output-file"));
         CheckFlowsConfig config = CheckFlowsConfig.load();
         if (line.hasOption("verbose")) {
-            config.setVerbose(Boolean.parseBoolean(line.getOptionValue("verbose")));
+            config.setVerbose(true);
         }
         System.out.println("Loading case " + caseFile);
         Network network = Importers.loadNetwork(caseFile);
@@ -114,7 +112,7 @@ public class CheckFlowsTool implements Tool {
                         .join();
             }
         }
-        System.out.println("Check flows on network " + network.getId() + " result = " + Networks.checkFlows(network, config, outputFile));
+        System.out.println("Check flows on network " + network.getId() + " result = " + Validation.checkFlows(network, config, outputFile));
     }
     
 }
