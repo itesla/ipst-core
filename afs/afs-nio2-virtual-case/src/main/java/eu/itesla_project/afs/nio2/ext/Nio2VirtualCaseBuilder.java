@@ -111,7 +111,7 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
         script.addBackwardDependency(virtualCase);
 
         // put id in the central directory
-        folder.getProject().getCentralDirectory().add(metadata.getId(), virtualCase.getPath());
+        folder.getProject().getCentralDirectory().add(metadata.getId(), virtualCase.getPath().toString());
 
         return virtualCase;
     }

@@ -9,9 +9,7 @@ package eu.itesla_project.afs;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface Node extends NodeBase {
-
-    Folder getParent();
+public interface Node extends NodeBase<Folder> {
 
     AppFileSystem getFileSystem();
 }

@@ -58,23 +58,23 @@ public class Nio2AppFileSystemTest {
 
     @Test
     public void test() throws IOException {
-        assertEquals(afs.getName(), "mem");
+        assertEquals("mem", afs.getName());
         assertTrue(afs.getProjectFileTypes().isEmpty()); // no plugin
         Folder root = afs.getRootFolder();
         assertNotNull(root);
         Folder dir1 = (Folder) root.getChild("dir1");
         assertNotNull(dir1);
         assertTrue(dir1.isFolder());
-        assertEquals(dir1.getName(), "dir1");
-        assertEquals(dir1.getParent().getName(), "mem");
+        assertEquals("dir1", dir1.getName());
+        assertEquals("mem", dir1.getParent().getName());
         Folder dir2 = (Folder) dir1.getChild("dir2");
         assertNotNull(dir2);
         assertNotNull(dir2.getParent());
-        assertEquals(dir2.getParent().getPath(), "mem:/dir1");
+        assertEquals("mem:/dir1", dir2.getParent().getPath().toString());
         assertEquals(dir1.getChildren().size(), 2);
         Folder dir3 = (Folder) root.getChild("dir3");
         assertNull(dir3);
-        String str = dir2.getPath();
+        String str = dir2.getPath().toString();
         assertEquals("mem:/dir1/dir2", str);
         Folder mayBeDir2 = (Folder) afs.getRootFolder().getChild("dir1/dir2");
         assertNotNull(mayBeDir2);
@@ -82,16 +82,16 @@ public class Nio2AppFileSystemTest {
 
         Project project1 = dir2.createProject("project1", "test project");
         assertNotNull(project1);
-        assertEquals(project1.getName(), "project1");
-        assertEquals(project1.getDescription(), "test project");
+        assertEquals("project1", project1.getName());
+        assertEquals("test project", project1.getDescription());
         assertNotNull(project1.getParent());
-        assertEquals(project1.getParent().getPath(), "mem:/dir1/dir2");
+        assertEquals("mem:/dir1/dir2", project1.getParent().getPath().toString());
         assertTrue(project1.getRootFolder().getChildren().isEmpty());
         assertTrue(project1.getFileSystem() == afs);
 
         ProjectFolder dir4 = project1.getRootFolder().createFolder("dir4");
         assertTrue(dir4.isFolder());
-        assertEquals(dir4.getName(), "dir4");
+        assertEquals("dir4", dir4.getName());
         assertNotNull(dir4.getParent());
         assertTrue(dir4.getChildren().isEmpty());
         assertEquals(1, project1.getRootFolder().getChildren().size());
@@ -106,8 +106,8 @@ public class Nio2AppFileSystemTest {
 
         ProjectFolder dir5 = project1.getRootFolder().createFolder("dir5");
         ProjectFolder dir6 = dir5.createFolder("dir6");
-        assertEquals(ImmutableList.of("dir5", "dir6"), dir6.getPathList());
-        assertEquals("dir5/dir6", dir6.getPath());
+        assertEquals(ImmutableList.of("dir5", "dir6"), dir6.getPath().toList().subList(1, 3));
+        assertEquals("dir5/dir6", dir6.getPath().toString());
         assertEquals("dir6", project1.getRootFolder().getChild("dir5/dir6").getName());
     }
 

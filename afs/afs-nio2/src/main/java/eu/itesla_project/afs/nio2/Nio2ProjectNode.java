@@ -6,9 +6,7 @@
  */
 package eu.itesla_project.afs.nio2;
 
-import eu.itesla_project.afs.ProjectFile;
-import eu.itesla_project.afs.ProjectFolder;
-import eu.itesla_project.afs.ProjectNode;
+import eu.itesla_project.afs.*;
 import eu.itesla_project.commons.io.FileUtil;
 
 import javax.xml.bind.annotation.*;
@@ -16,7 +14,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -146,29 +143,8 @@ public abstract class Nio2ProjectNode<T extends Nio2ProjectNode.Metadata> implem
         return parent;
     }
 
-    protected void addPath(List<String> path) {
-        if (parent != null) {
-            parent.addPath(path);
-            path.add(getName());
-        }
-    }
-
-    public List<String> getPathList() {
-        List<String> path = new ArrayList<>(1);
-        addPath(path);
-        return path;
-    }
-
-    public String getPath() {
-        StringBuilder builder = new StringBuilder();
-        Iterator<String> it = getPathList().iterator();
-        while (it.hasNext()) {
-            builder.append(it.next());
-            if (it.hasNext()) {
-                builder.append(Nio2AppFileSystem.PATH_SEPARATOR);
-            }
-        }
-        return builder.toString();
+    public NodePath getPath() {
+        return NodePath.getPath(this, Nio2ProjectNodePathToString.INSTANCE);
     }
 
     protected void checkNotDeleted() {

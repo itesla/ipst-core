@@ -82,7 +82,7 @@ public class Nio2GroovyScriptBuilder implements GroovyScriptBuilder {
         Nio2GroovyScript groovyScript = new Nio2GroovyScript(dir, folder);
 
         // put id in the central directory
-        folder.getProject().getCentralDirectory().add(metadata.getId(), groovyScript.getPath());
+        folder.getProject().getCentralDirectory().add(metadata.getId(), groovyScript.getPath().toString());
 
         return groovyScript;
     }

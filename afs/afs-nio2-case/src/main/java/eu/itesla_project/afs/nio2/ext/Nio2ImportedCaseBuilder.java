@@ -103,7 +103,7 @@ public class Nio2ImportedCaseBuilder implements ImportedCaseBuilder {
         Nio2ImportedCase importedCase = new Nio2ImportedCase(importedCaseDir, folder);
 
         // put id in the central directory
-        folder.getProject().getCentralDirectory().add(metadata.getId(), importedCase.getPath());
+        folder.getProject().getCentralDirectory().add(metadata.getId(), importedCase.getPath().toString());
 
         return importedCase;
     }

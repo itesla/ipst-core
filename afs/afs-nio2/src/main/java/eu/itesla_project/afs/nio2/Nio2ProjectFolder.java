@@ -82,7 +82,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadat
         Nio2ProjectFolder folder = new Nio2ProjectFolder(childDir, this, name, project);
 
         // put id in the central directory
-        project.getCentralDirectory().add(metadata.getId(), folder.getPath());
+        project.getCentralDirectory().add(metadata.getId(), folder.getPath().toString());
 
         return folder;
     }

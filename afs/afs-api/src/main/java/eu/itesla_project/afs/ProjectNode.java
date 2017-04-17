@@ -11,9 +11,7 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface ProjectNode extends NodeBase {
-
-    ProjectFolder getParent();
+public interface ProjectNode extends NodeBase<ProjectFolder> {
 
     Project getProject();
 

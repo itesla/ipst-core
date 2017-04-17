@@ -6,15 +6,16 @@
  */
 package eu.itesla_project.afs.nio2;
 
+import eu.itesla_project.afs.Node;
+import eu.itesla_project.afs.NodePath;
+
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public abstract class Nio2Node {
+public abstract class Nio2Node implements Node {
 
     protected final Path path;
 
@@ -34,28 +35,8 @@ public abstract class Nio2Node {
         return parent;
     }
 
-    protected void addPath(List<String> path) {
-        if (parent != null) {
-            parent.addPath(path);
-        }
-        path.add(getName());
-    }
-
-    public List<String> getPathList() {
-        List<String> path = new ArrayList<>(1);
-        addPath(path);
-        return path;
-    }
-
-    public String getPath() {
-        List<String> pathList = getPathList();
-        StringBuilder builder = new StringBuilder();
-        builder.append(pathList.get(0))
-                .append(Nio2AppFileSystem.FS_SEPARATOR);
-        for (int i = 1; i < pathList.size(); i++) {
-            builder.append(Nio2AppFileSystem.PATH_SEPARATOR).append(pathList.get(i));
-        }
-        return builder.toString();
+    public NodePath getPath() {
+        return NodePath.getPath(this, Nio2NodePathToString.INSTANCE);
     }
 
     public Nio2AppFileSystem getFileSystem() {
