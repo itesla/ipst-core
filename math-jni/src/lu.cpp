@@ -205,7 +205,7 @@ JNIEXPORT void JNICALL Java_eu_itesla_1project_math_matrix_SparseLUDecomposition
 
 /*
  * Class:     eu_itesla_project_math_matrix_SparseLUDecomposition
- * Method:    solve
+ * Method:    solve2
  * Signature: (Ljava/lang/String;II[D)V
  */
 JNIEXPORT void JNICALL Java_eu_itesla_1project_math_matrix_SparseLUDecomposition_solve2(JNIEnv * env, jobject, jstring j_id, jint m, jint n, jdoubleArray j_b) {

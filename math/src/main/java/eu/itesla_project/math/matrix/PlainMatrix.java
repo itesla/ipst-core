@@ -29,6 +29,12 @@ public class PlainMatrix extends AbstractMatrix {
     }
 
     public PlainMatrix(int m, int n, double[] values) {
+        if (m < 0) {
+            throw new IllegalArgumentException("row count has to be positive");
+        }
+        if (n < 0) {
+            throw new IllegalArgumentException("column count has to be positive");
+        }
         if (values.length != m * n) {
             throw new IllegalArgumentException("values size (" + values.length +
                     ") is incorrect (should be " + m * n + ")");
@@ -42,12 +48,23 @@ public class PlainMatrix extends AbstractMatrix {
         this(matrix.getRowDimension(), matrix.getColumnDimension(), matrix.getColumnPackedCopy());
     }
 
+    private void checkBounds(int i, int j) {
+        if (j < 0 || j >= n) {
+            throw new IllegalArgumentException("Bad column index: " + j);
+        }
+        if (i < 0 || i >= m) {
+            throw new IllegalArgumentException("Bad row index: " + i);
+        }
+    }
+
     public double getValue(int i, int j) {
+        checkBounds(i, j);
         return values[j * m + i];
     }
 
     @Override
     public void setValue(int i, int j, double value) {
+        checkBounds(i, j);
         values[j * m + i] = value;
     }
 
