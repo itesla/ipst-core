@@ -42,10 +42,6 @@ public class SecurityAnalysisResultJsonTest extends ConverterBaseTest {
 
     @Test
     public void roundTripTest() throws IOException {
-        SecurityAnalysisResultSerializer.write(create(), Paths.get("/tmp/toto.json"));
-        SecurityAnalysisResultDeserializer.read(Paths.get("/tmp/toto.json"));
-
-
-        // roundTripTest(create(), SecurityAnalysisResultSerializer::write, SecurityAnalysisResultDeserializer::read, "/SecurityAnalysisResult.json");
+        roundTripTest(create(), SecurityAnalysisResultSerializer::write, SecurityAnalysisResultDeserializer::read, "/SecurityAnalysisResult.json");
     }
 }
