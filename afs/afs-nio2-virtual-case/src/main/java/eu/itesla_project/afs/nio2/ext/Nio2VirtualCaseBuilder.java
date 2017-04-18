@@ -10,6 +10,7 @@ import eu.itesla_project.afs.ext.GroovyScript;
 import eu.itesla_project.afs.ext.ProjectCase;
 import eu.itesla_project.afs.ext.VirtualCase;
 import eu.itesla_project.afs.ext.VirtualCaseBuilder;
+import eu.itesla_project.afs.nio2.Metadata;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
 
@@ -90,7 +91,7 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
         }
 
         // create metadata
-        Nio2VirtualCase.Metadata metadata = Nio2VirtualCase.Metadata.create();
+        Metadata metadata = Metadata.create(Nio2VirtualCase.class.getName().toString());
         metadata.addDependency(caseId, "case");
         metadata.addDependency(scriptId, "script");
         metadata.save(dir);

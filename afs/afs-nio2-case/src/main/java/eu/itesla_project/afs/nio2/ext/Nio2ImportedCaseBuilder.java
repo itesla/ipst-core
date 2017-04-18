@@ -9,6 +9,7 @@ package eu.itesla_project.afs.nio2.ext;
 import eu.itesla_project.afs.ext.Case;
 import eu.itesla_project.afs.ext.ImportedCase;
 import eu.itesla_project.afs.ext.ImportedCaseBuilder;
+import eu.itesla_project.afs.nio2.Metadata;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.iidm.datasource.FileDataSource;
 import eu.itesla_project.iidm.parameters.Parameter;
@@ -76,7 +77,7 @@ public class Nio2ImportedCaseBuilder implements ImportedCaseBuilder {
         }
 
         // create metadata
-        Nio2ImportedCase.Metadata metadata = Nio2ImportedCase.Metadata.create();
+        Metadata metadata = Metadata.create(Nio2ImportedCase.class.getName().toString());
         metadata.save(importedCaseDir);
 
         // create import configuration file

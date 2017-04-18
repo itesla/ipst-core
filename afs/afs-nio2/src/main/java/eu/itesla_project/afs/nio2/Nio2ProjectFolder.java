@@ -7,45 +7,21 @@
 package eu.itesla_project.afs.nio2;
 
 import eu.itesla_project.afs.*;
-import eu.itesla_project.commons.jaxb.JaxbUtil;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadata> implements ProjectFolder {
-
-    @XmlRootElement(name = "projectFolderMetadata")
-    public static class Metadata extends Nio2ProjectNode.Metadata {
-
-        private static final String XML_FILE_NAME = "projectFolderMetadata.xml";
-
-        public static Metadata create() {
-            return new Metadata(UUID.randomUUID().toString());
-        }
-
-        public static Metadata read(Path dir) {
-            return JaxbUtil.unmarchallFile(Metadata.class, dir.resolve(XML_FILE_NAME));
-        }
-
-        public Metadata() {
-        }
-
-        public Metadata(String id) {
-            super(id);
-        }
-
-        public void save(Path dir) {
-            JaxbUtil.marshallElement(Metadata.class, this, dir.resolve(XML_FILE_NAME));
-        }
-    }
+public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder {
 
     private final String name;
 
@@ -55,11 +31,6 @@ public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadat
         super(dir, parent);
         this.name = Objects.requireNonNull(name);
         this.project = Objects.requireNonNull(project);
-    }
-
-    @Override
-    protected Metadata readMetadata() {
-        return Metadata.read(dir);
     }
 
     @Override
@@ -75,7 +46,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadat
         }
 
         // create metadata
-        Metadata metadata = Metadata.create();
+        Metadata metadata = Metadata.create(Nio2ProjectFolder.class.getName().toString());
         metadata.save(childDir);
 
         // create project node
@@ -93,30 +64,29 @@ public class Nio2ProjectFolder extends Nio2ProjectNode<Nio2ProjectFolder.Metadat
         return true;
     }
 
-    private static ProjectNode scanFolder(Path path, Nio2ProjectFolder parent) {
-        if (Files.isDirectory(path)) {
-            Path metadataFile = path.resolve(Metadata.XML_FILE_NAME);
-            if (Files.exists(metadataFile)) {
-                String name = path.getFileName().toString();
-                Metadata metadata = JaxbUtil.unmarchallFile(Metadata.class, metadataFile);
-                return new Nio2ProjectFolder(path, parent, name, parent.getProject());
-            }
-        }
-        return null;
-    }
-
     @Override
     public List<ProjectNode> getChildren() {
         checkNotDeleted();
         try (Stream<Path> stream = Files.list(dir)) {
             List<ProjectNode> children = new ArrayList<>();
             stream.forEach(path -> {
-                ProjectNode node = scanFolder(path, this);
-                if (node == null) {
-                    for (Nio2ProjectFileScanner scanner : project.getFileSystem().getProjectFileScanners()) {
-                        node = scanner.scan(Nio2ProjectFolder.this, path);
-                        if (node != null) {
-                            break;
+                ProjectNode node = null;
+                if (Files.isDirectory(path)) {
+                    Path metadataFile = path.resolve(Metadata.XML_FILE_NAME);
+                    if (Files.exists(metadataFile)) {
+                        Metadata metadata = Metadata.read(path);
+                        if (metadata.getNodeClass().equals(Nio2ProjectFolder.class.getName().toString())) {
+                            String name = path.getFileName().toString();
+                            node = new Nio2ProjectFolder(path, this, name, getProject());
+                        } else {
+                            for (Nio2ProjectFileScanner scanner : project.getFileSystem().getProjectFileScanners()) {
+                                if (metadata.getNodeClass().equals(scanner.getType().getName().toString())) {
+                                    node = scanner.load(Nio2ProjectFolder.this, path);
+                                    if (node != null) {
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                 }

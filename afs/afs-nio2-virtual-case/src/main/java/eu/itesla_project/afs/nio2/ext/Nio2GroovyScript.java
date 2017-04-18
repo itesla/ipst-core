@@ -11,9 +11,7 @@ import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ext.GroovyScript;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
-import eu.itesla_project.commons.jaxb.JaxbUtil;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -22,37 +20,11 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2GroovyScript extends Nio2ProjectNode<Nio2GroovyScript.Metadata> implements GroovyScript {
-
-    @XmlRootElement(name = "scriptMetadata")
-    public static class Metadata extends Nio2ProjectNode.Metadata {
-
-        public static final String XML_FILE_NAME = "scriptMetadata.xml";
-
-        public static Metadata create() {
-            return new Metadata(UUID.randomUUID().toString());
-        }
-
-        public static Metadata read(Path dir) {
-            return JaxbUtil.unmarchallFile(Metadata.class, dir.resolve(XML_FILE_NAME));
-        }
-
-        public Metadata() {
-        }
-
-        public Metadata(String id) {
-            super(id);
-        }
-
-        public void save(Path dir) {
-            JaxbUtil.marshallElement(Metadata.class, this, dir.resolve(XML_FILE_NAME));
-        }
-    }
+public class Nio2GroovyScript extends Nio2ProjectNode implements GroovyScript {
 
     static final String SCRIPT_FILE_NAME = "script.groovy";
 
@@ -60,11 +32,6 @@ public class Nio2GroovyScript extends Nio2ProjectNode<Nio2GroovyScript.Metadata>
 
     Nio2GroovyScript(Path dir, Nio2ProjectFolder folder) {
         super(dir, Objects.requireNonNull(folder));
-    }
-
-    @Override
-    protected Metadata readMetadata() {
-        return Metadata.read(dir);
     }
 
     @Override

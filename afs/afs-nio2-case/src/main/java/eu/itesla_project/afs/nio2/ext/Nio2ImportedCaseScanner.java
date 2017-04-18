@@ -12,7 +12,6 @@ import eu.itesla_project.afs.ProjectNode;
 import eu.itesla_project.afs.nio2.Nio2ProjectFileScanner;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -27,13 +26,7 @@ public class Nio2ImportedCaseScanner implements Nio2ProjectFileScanner {
     }
 
     @Override
-    public ProjectNode scan(Nio2ProjectFolder parent, Path path) {
-        if (Files.isDirectory(path)) {
-            Path metadataFile = path.resolve(Nio2ImportedCase.Metadata.XML_FILE_NAME);
-            if (Files.exists(metadataFile)) {
-                return new Nio2ImportedCase(path, parent);
-            }
-        }
-        return null;
+    public ProjectNode load(Nio2ProjectFolder parent, Path path) {
+        return new Nio2ImportedCase(path, parent);
     }
 }

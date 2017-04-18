@@ -9,6 +9,7 @@ package eu.itesla_project.afs.nio2.ext;
 import eu.itesla_project.afs.FileIcon;
 import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ext.ImportedCase;
+import eu.itesla_project.afs.nio2.Metadata;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
 import eu.itesla_project.commons.jaxb.JaxbUtil;
@@ -25,32 +26,7 @@ import java.util.*;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2ImportedCase extends Nio2ProjectNode<Nio2ImportedCase.Metadata> implements ImportedCase {
-
-    @XmlRootElement(name = "importedCaseMetadata")
-    public static class Metadata extends Nio2ProjectNode.Metadata {
-
-        public static final String XML_FILE_NAME = "importedCaseMetadata.xml";
-
-        public static Metadata create() {
-            return new Metadata(UUID.randomUUID().toString());
-        }
-
-        public static Metadata read(Path dir) {
-            return JaxbUtil.unmarchallFile(Metadata.class, dir.resolve(XML_FILE_NAME));
-        }
-
-        public Metadata() {
-        }
-
-        public Metadata(String id) {
-            super(id);
-        }
-
-        public void save(Path dir) {
-            JaxbUtil.marshallElement(Metadata.class, this, dir.resolve(XML_FILE_NAME));
-        }
-    }
+public class Nio2ImportedCase extends Nio2ProjectNode implements ImportedCase {
 
     @XmlRootElement(name = "importConfiguration")
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -118,11 +94,6 @@ public class Nio2ImportedCase extends Nio2ProjectNode<Nio2ImportedCase.Metadata>
 
     Nio2ImportedCase(Path dir, Nio2ProjectFolder parent) {
         super(dir, Objects.requireNonNull(parent));
-    }
-
-    @Override
-    protected Metadata readMetadata() {
-        return Metadata.read(dir);
     }
 
     @Override

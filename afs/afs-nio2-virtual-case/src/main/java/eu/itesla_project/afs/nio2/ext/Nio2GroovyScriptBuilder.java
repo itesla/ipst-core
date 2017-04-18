@@ -8,6 +8,7 @@ package eu.itesla_project.afs.nio2.ext;
 
 import eu.itesla_project.afs.ext.GroovyScript;
 import eu.itesla_project.afs.ext.GroovyScriptBuilder;
+import eu.itesla_project.afs.nio2.Metadata;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 
 import java.io.IOException;
@@ -68,7 +69,7 @@ public class Nio2GroovyScriptBuilder implements GroovyScriptBuilder {
         }
 
         // create metadata
-        Nio2GroovyScript.Metadata metadata = Nio2GroovyScript.Metadata.create();
+        Metadata metadata = Metadata.create(Nio2GroovyScript.class.getName().toString());
         metadata.save(dir);
 
         // create the script file

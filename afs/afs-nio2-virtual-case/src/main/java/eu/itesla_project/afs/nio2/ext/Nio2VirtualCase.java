@@ -13,14 +13,12 @@ import eu.itesla_project.afs.ProjectNode;
 import eu.itesla_project.afs.ext.GroovyScript;
 import eu.itesla_project.afs.ext.ProjectCase;
 import eu.itesla_project.afs.ext.VirtualCase;
+import eu.itesla_project.afs.nio2.Metadata;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
-import eu.itesla_project.commons.jaxb.JaxbUtil;
 import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.xml.NetworkXml;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
@@ -30,50 +28,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2VirtualCase extends Nio2ProjectNode<Nio2VirtualCase.Metadata> implements VirtualCase {
+public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
 
     private static final FileIcon VIRTUAL_CASE_ICON = new FileIcon("virtualCase", Nio2VirtualCase.class.getResourceAsStream("/icons/virtualCase16x16.png"));
 
     private static final String CACHE_XIIDM = "cache.xiidm";
     private static final String OUT_FILE_NAME = "script.out";
 
-    @XmlRootElement(name = "virtualCaseMetadata")
-    public static class Metadata extends Nio2ProjectNode.Metadata {
-
-        public static final String XML_FILE_NAME = "virtualCaseMetadata.xml";
-
-        public static Metadata create() {
-            return new Metadata(UUID.randomUUID().toString());
-        }
-
-        public static Metadata read(Path dir) {
-            return JaxbUtil.unmarchallFile(Metadata.class, dir.resolve(XML_FILE_NAME));
-        }
-
-        public Metadata() {
-        }
-
-        public Metadata(String id) {
-            super(id);
-        }
-
-        public void save(Path dir) {
-            JaxbUtil.marshallElement(Metadata.class, this, dir.resolve(XML_FILE_NAME));
-        }
-    }
-
     Nio2VirtualCase(Path dir, Nio2ProjectFolder folder) {
         super(dir, Objects.requireNonNull(folder));
-    }
-
-    @Override
-    protected Metadata readMetadata() {
-        return Metadata.read(dir);
     }
 
     @Override

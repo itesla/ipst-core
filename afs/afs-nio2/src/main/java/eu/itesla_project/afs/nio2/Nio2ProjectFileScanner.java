@@ -18,5 +18,5 @@ public interface Nio2ProjectFileScanner {
 
     Class<? extends ProjectFile> getType();
 
-    ProjectNode scan(Nio2ProjectFolder parent, Path path);
+    ProjectNode load(Nio2ProjectFolder parent, Path path);
 }
