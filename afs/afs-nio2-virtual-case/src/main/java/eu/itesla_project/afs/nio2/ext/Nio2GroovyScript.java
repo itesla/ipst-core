@@ -9,6 +9,7 @@ package eu.itesla_project.afs.nio2.ext;
 import eu.itesla_project.afs.FileIcon;
 import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ext.GroovyScript;
+import eu.itesla_project.afs.nio2.Nio2Project;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
 
@@ -30,8 +31,22 @@ public class Nio2GroovyScript extends Nio2ProjectNode implements GroovyScript {
 
     private static final FileIcon SCRIPT_ICON = new FileIcon("script", Nio2GroovyScript.class.getResourceAsStream("/icons/script16x16.png"));
 
-    Nio2GroovyScript(Path dir, Nio2ProjectFolder folder) {
-        super(dir, Objects.requireNonNull(folder));
+    private final Nio2ProjectFolder parent;
+
+    Nio2GroovyScript(Path dir, Nio2ProjectFolder parent) {
+        super(dir, parent.getProject().getCentralDirectory());
+        this.parent = Objects.requireNonNull(parent);
+    }
+
+    @Override
+    public Nio2ProjectFolder getParent() {
+        checkNotDeleted();
+        return parent;
+    }
+
+    @Override
+    public Nio2Project getProject() {
+        return parent.getProject();
     }
 
     @Override
@@ -71,11 +86,5 @@ public class Nio2GroovyScript extends Nio2ProjectNode implements GroovyScript {
     public List<ProjectFile> getDependencies() {
         checkNotDeleted();
         return Collections.emptyList();
-    }
-
-    @Override
-    public String getName() {
-        checkNotDeleted();
-        return dir.getFileName().toString();
     }
 }

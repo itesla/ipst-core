@@ -8,7 +8,6 @@ package eu.itesla_project.afs.nio2;
 
 import eu.itesla_project.afs.NodePath;
 import eu.itesla_project.afs.ProjectFile;
-import eu.itesla_project.afs.ProjectFolder;
 import eu.itesla_project.afs.ProjectNode;
 import eu.itesla_project.commons.io.FileUtil;
 
@@ -26,13 +25,13 @@ public abstract class Nio2ProjectNode implements ProjectNode {
 
     protected final Path dir;
 
-    protected final Nio2ProjectFolder parent;
+    protected final CentralDirectory centralDirectory;
 
     protected boolean deleted = false;
 
-    public Nio2ProjectNode(Path dir, Nio2ProjectFolder parent) {
+    public Nio2ProjectNode(Path dir, CentralDirectory centralDirectory) {
         this.dir = Objects.requireNonNull(dir);
-        this.parent = parent;
+        this.centralDirectory = Objects.requireNonNull(centralDirectory);
     }
 
     protected Metadata readMetadata() {
@@ -50,11 +49,6 @@ public abstract class Nio2ProjectNode implements ProjectNode {
     public Path getDir() {
         checkNotDeleted();
         return dir;
-    }
-
-    public ProjectFolder getParent() {
-        checkNotDeleted();
-        return parent;
     }
 
     public NodePath getPath() {
@@ -76,7 +70,7 @@ public abstract class Nio2ProjectNode implements ProjectNode {
         getDependencies().forEach(projectFile -> ((Nio2ProjectNode) projectFile).removeBackwardDependency(this));
 
         // remove from central directory
-        getProject().getCentralDirectory().remove(readMetadata().getId());
+        centralDirectory.remove(readMetadata().getId());
 
         try {
             FileUtil.removeDir(dir);
@@ -98,7 +92,7 @@ public abstract class Nio2ProjectNode implements ProjectNode {
     }
 
     private ProjectFile resolveBackwardDependency(String id) {
-        String path = getProject().getCentralDirectory().getPath(id);
+        String path = centralDirectory.getPath(id);
         if (path == null) {
             throw new RuntimeException("Backward dependency '" + id + "' not found");
         }
@@ -113,12 +107,11 @@ public abstract class Nio2ProjectNode implements ProjectNode {
         return readMetadata().getBackwardDependencies().stream().map(this::resolveBackwardDependency).collect(Collectors.toList());
     }
 
-    public Nio2Project getProject() {
+    @Override
+    public String getName() {
         checkNotDeleted();
-        return parent.getProject();
+        return dir.getFileName().toString();
     }
-
-    public abstract String getName();
 
     protected void invalidateCache() {
         getBackwardDependencies().forEach(projectFile -> ((Nio2ProjectNode) projectFile).invalidateCache());

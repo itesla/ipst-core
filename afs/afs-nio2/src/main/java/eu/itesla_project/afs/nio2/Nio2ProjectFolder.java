@@ -23,13 +23,14 @@ import java.util.stream.Stream;
  */
 public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder {
 
-    private final String name;
+    private final Nio2ProjectFolder parent;
 
     private final Nio2Project project;
 
-    Nio2ProjectFolder(Path dir, Nio2ProjectFolder parent, String name, Nio2Project project) {
-        super(dir, parent);
-        this.name = Objects.requireNonNull(name);
+    Nio2ProjectFolder(Path dir, Nio2ProjectFolder parent, Nio2Project project,
+                      CentralDirectory centralDirectory) {
+        super(dir, centralDirectory);
+        this.parent = parent;
         this.project = Objects.requireNonNull(project);
     }
 
@@ -50,7 +51,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
         metadata.save(childDir);
 
         // create project node
-        Nio2ProjectFolder folder = new Nio2ProjectFolder(childDir, this, name, project);
+        Nio2ProjectFolder folder = new Nio2ProjectFolder(childDir, this, project, project.getCentralDirectory());
 
         // put id in the central directory
         project.getCentralDirectory().add(metadata.getId(), folder.getPath().toString());
@@ -77,7 +78,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
                         Metadata metadata = Metadata.read(path);
                         if (metadata.getNodeClass().equals(Nio2ProjectFolder.class.getName().toString())) {
                             String name = path.getFileName().toString();
-                            node = new Nio2ProjectFolder(path, this, name, getProject());
+                            node = new Nio2ProjectFolder(path, this, getProject(), project.getCentralDirectory());
                         } else {
                             for (Nio2ProjectFileScanner scanner : project.getFileSystem().getProjectFileScanners()) {
                                 if (metadata.getNodeClass().equals(scanner.getType().getName().toString())) {
@@ -124,9 +125,8 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
     }
 
     @Override
-    public String getName() {
-        checkNotDeleted();
-        return name;
+    public Nio2ProjectFolder getParent() {
+        return parent;
     }
 
     @Override

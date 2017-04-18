@@ -10,6 +10,7 @@ import eu.itesla_project.afs.FileIcon;
 import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ext.ImportedCase;
 import eu.itesla_project.afs.nio2.Metadata;
+import eu.itesla_project.afs.nio2.Nio2Project;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
 import eu.itesla_project.commons.jaxb.JaxbUtil;
@@ -92,8 +93,22 @@ public class Nio2ImportedCase extends Nio2ProjectNode implements ImportedCase {
         }
     }
 
+    private final Nio2ProjectFolder parent;
+
     Nio2ImportedCase(Path dir, Nio2ProjectFolder parent) {
-        super(dir, Objects.requireNonNull(parent));
+        super(dir, parent.getProject().getCentralDirectory());
+        this.parent = Objects.requireNonNull(parent);
+    }
+
+    @Override
+    public Nio2ProjectFolder getParent() {
+        checkNotDeleted();
+        return parent;
+    }
+
+    @Override
+    public Nio2Project getProject() {
+        return parent.getProject();
     }
 
     @Override
@@ -141,11 +156,5 @@ public class Nio2ImportedCase extends Nio2ProjectNode implements ImportedCase {
     @Override
     public List<ProjectFile> getDependencies() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public String getName() {
-        checkNotDeleted();
-        return dir.getFileName().toString();
     }
 }

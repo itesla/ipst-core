@@ -8,12 +8,14 @@ package eu.itesla_project.afs.nio2.ext;
 
 import com.google.common.collect.ImmutableList;
 import eu.itesla_project.afs.FileIcon;
+import eu.itesla_project.afs.Project;
 import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ProjectNode;
 import eu.itesla_project.afs.ext.GroovyScript;
 import eu.itesla_project.afs.ext.ProjectCase;
 import eu.itesla_project.afs.ext.VirtualCase;
 import eu.itesla_project.afs.nio2.Metadata;
+import eu.itesla_project.afs.nio2.Nio2Project;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
 import eu.itesla_project.iidm.network.Network;
@@ -39,8 +41,23 @@ public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
     private static final String CACHE_XIIDM = "cache.xiidm";
     private static final String OUT_FILE_NAME = "script.out";
 
-    Nio2VirtualCase(Path dir, Nio2ProjectFolder folder) {
-        super(dir, Objects.requireNonNull(folder));
+    private final Nio2ProjectFolder parent;
+
+    Nio2VirtualCase(Path dir, Nio2ProjectFolder parent) {
+        super(dir, parent.getProject().getCentralDirectory());
+        this.parent = Objects.requireNonNull(parent);
+    }
+
+    @Override
+    public Nio2ProjectFolder getParent() {
+        checkNotDeleted();
+        return parent;
+    }
+
+    @Override
+    public Nio2Project getProject() {
+        checkNotDeleted();
+        return parent.getProject();
     }
 
     @Override
@@ -156,11 +173,5 @@ public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
             throw new UncheckedIOException(e);
         }
         super.invalidateCache();
-    }
-
-    @Override
-    public String getName() {
-        checkNotDeleted();
-        return dir.getFileName().toString();
     }
 }
