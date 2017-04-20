@@ -61,7 +61,7 @@ public class Nio2GroovyScriptBuilder implements GroovyScriptBuilder {
         }
 
         // create the directory
-        Path dir = folder.getDir().resolve(name);
+        Path dir = folder.getImpl().getDir().resolve(name);
         try {
             Files.createDirectories(dir);
         } catch (IOException e) {

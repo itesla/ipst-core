@@ -16,4 +16,6 @@ public interface ProjectFile extends ProjectNode {
     FileIcon getIcon();
 
     List<ProjectFile> getDependencies();
+
+    void onCacheInvalidation();
 }

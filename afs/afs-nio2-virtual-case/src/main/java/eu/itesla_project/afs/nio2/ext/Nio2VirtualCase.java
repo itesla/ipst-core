@@ -6,18 +6,14 @@
  */
 package eu.itesla_project.afs.nio2.ext;
 
-import com.google.common.collect.ImmutableList;
 import eu.itesla_project.afs.FileIcon;
-import eu.itesla_project.afs.Project;
+import eu.itesla_project.afs.NodePath;
 import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ProjectNode;
 import eu.itesla_project.afs.ext.GroovyScript;
 import eu.itesla_project.afs.ext.ProjectCase;
 import eu.itesla_project.afs.ext.VirtualCase;
-import eu.itesla_project.afs.nio2.Metadata;
-import eu.itesla_project.afs.nio2.Nio2Project;
-import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
-import eu.itesla_project.afs.nio2.Nio2ProjectNode;
+import eu.itesla_project.afs.nio2.*;
 import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.xml.NetworkXml;
 
@@ -34,7 +30,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
+public class Nio2VirtualCase implements VirtualCase, Nio2ProjectNode {
 
     private static final FileIcon VIRTUAL_CASE_ICON = new FileIcon("virtualCase", Nio2VirtualCase.class.getResourceAsStream("/icons/virtualCase16x16.png"));
 
@@ -43,46 +39,57 @@ public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
 
     private final Nio2ProjectFolder parent;
 
+    private final Nio2Impl impl;
+
     Nio2VirtualCase(Path dir, Nio2ProjectFolder parent) {
-        super(dir, parent.getProject().getCentralDirectory());
+        impl = new Nio2Impl(dir);
         this.parent = Objects.requireNonNull(parent);
     }
 
     @Override
+    public Nio2Impl getImpl() {
+        return impl;
+    }
+
+    @Override
     public Nio2ProjectFolder getParent() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return parent;
     }
 
     @Override
     public Nio2Project getProject() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return parent.getProject();
     }
 
     @Override
     public boolean isFolder() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return false;
     }
 
     @Override
+    public NodePath getPath() {
+        return NodePath.getPath(this, Nio2ProjectNodePathToString.INSTANCE);
+    }
+
+    @Override
     public FileIcon getIcon() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return VIRTUAL_CASE_ICON;
     }
 
     private Path getCacheFile() {
-        return dir.resolve(CACHE_XIIDM);
+        return impl.getDir().resolve(CACHE_XIIDM);
     }
 
     private Path getOutFile() {
-        return dir.resolve(OUT_FILE_NAME);
+        return impl.getDir().resolve(OUT_FILE_NAME);
     }
 
     @Override
     public Reader getOutReader() {
-        checkNotDeleted();
         Path outFile = getOutFile();
         if (Files.exists(outFile)) {
             try {
@@ -105,7 +112,6 @@ public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
 
     @Override
     public Network loadFromCache() {
-        checkNotDeleted();
         // load network from the cache
         Path cacheFile = getCacheFile();
         if (Files.exists(cacheFile)) {
@@ -116,7 +122,6 @@ public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
 
     @Override
     public void saveToCache(Network network) {
-        checkNotDeleted();
         // store network in the cache
         Path cacheFile = getCacheFile();
         NetworkXml.write(network, cacheFile);
@@ -124,12 +129,7 @@ public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
 
     @Override
     public ProjectCase getCase() {
-        checkNotDeleted();
-        return getCase(readMetadata());
-    }
-
-    private ProjectCase getCase(Metadata metadata) {
-        String casePath = getProject().getCentralDirectory().getPath(metadata.findDependencyByType("case").getId());
+        String casePath = impl.getDependencyPath("case", getProject());
         ProjectNode node = getProject().getRootFolder().getChild(casePath);
         if (node == null) {
             throw new RuntimeException("Invalid case path");
@@ -142,12 +142,7 @@ public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
 
     @Override
     public GroovyScript getScript() {
-        checkNotDeleted();
-        return getScript(readMetadata());
-    }
-
-    private GroovyScript getScript(Metadata metadata) {
-        String scriptPath = getProject().getCentralDirectory().getPath(metadata.findDependencyByType("script").getId());
+        String scriptPath = impl.getDependencyPath("script", getProject());
         ProjectNode node = getProject().getRootFolder().getChild(scriptPath);
         if (node == null) {
             throw new RuntimeException("Invalid script path");
@@ -160,18 +155,34 @@ public class Nio2VirtualCase extends Nio2ProjectNode implements VirtualCase {
 
     @Override
     public List<ProjectFile> getDependencies() {
-        checkNotDeleted();
-        return ImmutableList.of(getCase(), getScript());
+        return impl.getDependencies(getProject());
     }
 
     @Override
-    protected void invalidateCache() {
+    public List<ProjectFile> getBackwardDependencies() {
+        return impl.getBackwardDependencies(getProject());
+    }
+
+    @Override
+    public void onCacheInvalidation() {
         try {
             Files.deleteIfExists(getCacheFile());
             Files.deleteIfExists(getOutFile());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        super.invalidateCache();
+
+        // propagate invalidation
+        impl.invalidateBackwardDependenciesCache(getProject());
+    }
+
+    @Override
+    public void delete() {
+        impl.delete(getProject());
+    }
+
+    @Override
+    public String getName() {
+        return impl.getName();
     }
 }

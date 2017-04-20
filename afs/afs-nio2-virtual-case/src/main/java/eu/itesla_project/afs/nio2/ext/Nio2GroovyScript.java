@@ -7,25 +7,23 @@
 package eu.itesla_project.afs.nio2.ext;
 
 import eu.itesla_project.afs.FileIcon;
+import eu.itesla_project.afs.NodePath;
 import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ext.GroovyScript;
-import eu.itesla_project.afs.nio2.Nio2Project;
-import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
-import eu.itesla_project.afs.nio2.Nio2ProjectNode;
+import eu.itesla_project.afs.nio2.*;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2GroovyScript extends Nio2ProjectNode implements GroovyScript {
+public class Nio2GroovyScript implements GroovyScript, Nio2ProjectNode {
 
     static final String SCRIPT_FILE_NAME = "script.groovy";
 
@@ -33,39 +31,52 @@ public class Nio2GroovyScript extends Nio2ProjectNode implements GroovyScript {
 
     private final Nio2ProjectFolder parent;
 
+    private final Nio2Impl impl;
+
     Nio2GroovyScript(Path dir, Nio2ProjectFolder parent) {
-        super(dir, parent.getProject().getCentralDirectory());
+        impl = new Nio2Impl(dir);
         this.parent = Objects.requireNonNull(parent);
     }
 
     @Override
+    public Nio2Impl getImpl() {
+        return impl;
+    }
+
+    @Override
     public Nio2ProjectFolder getParent() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return parent;
     }
 
     @Override
     public Nio2Project getProject() {
+        impl.checkNotDeleted();
         return parent.getProject();
     }
 
     @Override
     public boolean isFolder() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return false;
     }
 
     @Override
+    public NodePath getPath() {
+        impl.checkNotDeleted();
+        return NodePath.getPath(this, Nio2ProjectNodePathToString.INSTANCE);
+    }
+
+    @Override
     public FileIcon getIcon() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return SCRIPT_ICON;
     }
 
     @Override
     public String read() {
-        checkNotDeleted();
         try {
-            return new String(Files.readAllBytes(dir.resolve(SCRIPT_FILE_NAME)), StandardCharsets.UTF_8);
+            return new String(Files.readAllBytes(impl.getDir().resolve(SCRIPT_FILE_NAME)), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -73,18 +84,35 @@ public class Nio2GroovyScript extends Nio2ProjectNode implements GroovyScript {
 
     @Override
     public void write(String content) {
-        checkNotDeleted();
         try {
-            Files.write(dir.resolve(SCRIPT_FILE_NAME), content.getBytes(StandardCharsets.UTF_8));
+            Files.write(impl.getDir().resolve(SCRIPT_FILE_NAME), content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        invalidateCache();
+        impl.invalidateBackwardDependenciesCache(getProject());
     }
 
     @Override
     public List<ProjectFile> getDependencies() {
-        checkNotDeleted();
-        return Collections.emptyList();
+        return impl.getDependencies(getProject());
+    }
+
+    @Override
+    public List<ProjectFile> getBackwardDependencies() {
+        return impl.getBackwardDependencies(getProject());
+    }
+
+    @Override
+    public void onCacheInvalidation() {
+    }
+
+    @Override
+    public void delete() {
+        impl.delete(getProject());
+    }
+
+    @Override
+    public String getName() {
+        return impl.getName();
     }
 }

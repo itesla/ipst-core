@@ -74,7 +74,7 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
         }
 
         // create the directory
-        Path dir = folder.getDir().resolve(name);
+        Path dir = folder.getImpl().getDir().resolve(name);
         try {
             Files.createDirectories(dir);
         } catch (IOException e) {
@@ -100,16 +100,16 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
         Nio2VirtualCase virtualCase = new Nio2VirtualCase(dir, folder);
 
         // create backward dependencies
-        Nio2ProjectNode _case = folder.getProject().getRootFolder().getChild(casePath);
+        Nio2ProjectNode _case = (Nio2ProjectNode) folder.getProject().getRootFolder().getChild(casePath);
         if (!(_case instanceof ProjectCase)) {
             throw new RuntimeException("'" + casePath + "' is not a case");
         }
-        Nio2ProjectNode script = folder.getProject().getRootFolder().getChild(scriptPath);
+        Nio2ProjectNode script = (Nio2ProjectNode) folder.getProject().getRootFolder().getChild(scriptPath);
         if (!(script instanceof GroovyScript)) {
             throw new RuntimeException("'" + scriptPath + "' is not a groovy script");
         }
-        _case.addBackwardDependency(virtualCase);
-        script.addBackwardDependency(virtualCase);
+        _case.getImpl().addBackwardDependency(virtualCase.getImpl().getId());
+        script.getImpl().addBackwardDependency(virtualCase.getImpl().getId());
 
         // put id in the central directory
         folder.getProject().getCentralDirectory().add(metadata.getId(), virtualCase.getPath().toString());

@@ -13,7 +13,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -21,25 +20,29 @@ import java.util.stream.Stream;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder {
+public class Nio2ProjectFolder implements ProjectFolder, Nio2ProjectNode {
 
     private final Nio2ProjectFolder parent;
 
     private final Nio2Project project;
 
-    Nio2ProjectFolder(Path dir, Nio2ProjectFolder parent, Nio2Project project,
-                      CentralDirectory centralDirectory) {
-        super(dir, centralDirectory);
+    protected final Nio2Impl impl;
+
+    Nio2ProjectFolder(Path dir, Nio2ProjectFolder parent, Nio2Project project) {
+        impl = new Nio2Impl(dir);
         this.parent = parent;
         this.project = Objects.requireNonNull(project);
     }
 
     @Override
-    public ProjectFolder createFolder(String name) {
-        checkNotDeleted();
+    public Nio2Impl getImpl() {
+        return impl;
+    }
 
+    @Override
+    public ProjectFolder createFolder(String name) {
         // create the directory
-        Path childDir = dir.resolve(name);
+        Path childDir = impl.getDir().resolve(name);
         try {
             Files.createDirectories(childDir);
         } catch (IOException e) {
@@ -51,7 +54,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
         metadata.save(childDir);
 
         // create project node
-        Nio2ProjectFolder folder = new Nio2ProjectFolder(childDir, this, project, project.getCentralDirectory());
+        Nio2ProjectFolder folder = new Nio2ProjectFolder(childDir, this, project);
 
         // put id in the central directory
         project.getCentralDirectory().add(metadata.getId(), folder.getPath().toString());
@@ -61,14 +64,13 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
 
     @Override
     public boolean isFolder() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return true;
     }
 
     @Override
     public List<ProjectNode> getChildren() {
-        checkNotDeleted();
-        try (Stream<Path> stream = Files.list(dir)) {
+        try (Stream<Path> stream = Files.list(impl.getDir())) {
             List<ProjectNode> children = new ArrayList<>();
             stream.forEach(path -> {
                 ProjectNode node = null;
@@ -78,7 +80,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
                         Metadata metadata = Metadata.read(path);
                         if (metadata.getNodeClass().equals(Nio2ProjectFolder.class.getName().toString())) {
                             String name = path.getFileName().toString();
-                            node = new Nio2ProjectFolder(path, this, getProject(), project.getCentralDirectory());
+                            node = new Nio2ProjectFolder(path, this, getProject());
                         } else {
                             for (Nio2ProjectFileScanner scanner : project.getFileSystem().getProjectFileScanners()) {
                                 if (metadata.getNodeClass().equals(scanner.getType().getName().toString())) {
@@ -110,7 +112,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
         return null;
     }
 
-    public Nio2ProjectNode getChild(String path) {
+    public ProjectNode getChild(String path) {
         Objects.requireNonNull(path);
         ProjectNode node = this;
         if (node.isFolder()) {
@@ -121,7 +123,7 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
                 }
             }
         }
-        return (Nio2ProjectNode) node;
+        return node;
     }
 
     @Override
@@ -135,16 +137,31 @@ public class Nio2ProjectFolder extends Nio2ProjectNode implements ProjectFolder 
     }
 
     @Override
-    protected List<ProjectFile> getDependencies() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public <F extends ProjectFile, B extends ProjectFileBuilder<F>> B fileBuilder(Class<B> clazz) {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         Nio2ProjectFileBuilderFactory factory = project.getFileSystem().getProjectFileBuilderFactory(clazz);
         ProjectFileBuilder<F> builder = (ProjectFileBuilder<F>) factory.create(this);
         return (B) builder;
+    }
+
+    @Override
+    public String getName() {
+        return impl.getName();
+    }
+
+    @Override
+    public NodePath getPath() {
+        return NodePath.getPath(this, Nio2ProjectNodePathToString.INSTANCE);
+    }
+
+    @Override
+    public void delete() {
+        impl.delete(getProject());
+    }
+
+    @Override
+    public List<ProjectFile> getBackwardDependencies() {
+        return impl.getBackwardDependencies(getProject());
     }
 }
 

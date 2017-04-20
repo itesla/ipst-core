@@ -7,12 +7,10 @@
 package eu.itesla_project.afs.nio2.ext;
 
 import eu.itesla_project.afs.FileIcon;
+import eu.itesla_project.afs.NodePath;
 import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ext.ImportedCase;
-import eu.itesla_project.afs.nio2.Metadata;
-import eu.itesla_project.afs.nio2.Nio2Project;
-import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
-import eu.itesla_project.afs.nio2.Nio2ProjectNode;
+import eu.itesla_project.afs.nio2.*;
 import eu.itesla_project.commons.jaxb.JaxbUtil;
 import eu.itesla_project.iidm.datasource.GenericReadOnlyDataSource;
 import eu.itesla_project.iidm.datasource.ReadOnlyDataSource;
@@ -27,7 +25,7 @@ import java.util.*;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2ImportedCase extends Nio2ProjectNode implements ImportedCase {
+public class Nio2ImportedCase implements ImportedCase, Nio2ProjectNode {
 
     @XmlRootElement(name = "importConfiguration")
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -95,66 +93,89 @@ public class Nio2ImportedCase extends Nio2ProjectNode implements ImportedCase {
 
     private final Nio2ProjectFolder parent;
 
+    private final Nio2Impl impl;
+
     Nio2ImportedCase(Path dir, Nio2ProjectFolder parent) {
-        super(dir, parent.getProject().getCentralDirectory());
+        impl = new Nio2Impl(dir);
         this.parent = Objects.requireNonNull(parent);
     }
 
     @Override
+    public Nio2Impl getImpl() {
+        return impl;
+    }
+
+    @Override
     public Nio2ProjectFolder getParent() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return parent;
     }
 
     @Override
     public Nio2Project getProject() {
+        impl.checkNotDeleted();
         return parent.getProject();
     }
 
     @Override
     public boolean isFolder() {
-        checkNotDeleted();
+        impl.checkNotDeleted();
         return false;
+    }
+
+    public NodePath getPath() {
+        impl.checkNotDeleted();
+        return NodePath.getPath(this, Nio2ProjectNodePathToString.INSTANCE);
     }
 
     @Override
     public FileIcon getIcon() {
-        checkNotDeleted();
         return CaseIconCache.INSTANCE.get(getProject().getFileSystem().getImportersLoader(),
                                           getProject().getFileSystem().getComputationManager(),
-                                          ImportConfiguration.read(dir).getFormat());
+                                          ImportConfiguration.read(impl.getDir()).getFormat());
     }
 
     @Override
     public ReadOnlyDataSource getDataSource() {
-        return new GenericReadOnlyDataSource(dir, getName());
-    }
-
-    private Importer getImporter(Metadata metadata) {
-        return Importers.getImporter(getProject().getFileSystem().getImportersLoader(), ImportConfiguration.read(dir).getFormat(),
-                                     getProject().getFileSystem().getComputationManager(), new ImportConfig());
+        return new GenericReadOnlyDataSource(impl.getDir(), getName());
     }
 
     @Override
     public Importer getImporter() {
-        return getImporter(readMetadata());
+        return Importers.getImporter(getProject().getFileSystem().getImportersLoader(), ImportConfiguration.read(impl.getDir()).getFormat(),
+                                     getProject().getFileSystem().getComputationManager(), new ImportConfig());
     }
 
-    private Properties getParameters(Metadata metadata) {
+    @Override
+    public Properties getParameters() {
         Properties parameters = new Properties();
-        for (ImportConfiguration.Parameter parameter : ImportConfiguration.read(dir).getParameter()) {
+        for (ImportConfiguration.Parameter parameter : ImportConfiguration.read(impl.getDir()).getParameter()) {
             parameters.setProperty(parameter.getName(), parameter.getValue());
         }
         return parameters;
     }
 
     @Override
-    public Properties getParameters() {
-        return getParameters(readMetadata());
+    public void delete() {
+        impl.delete(getProject());
     }
 
     @Override
     public List<ProjectFile> getDependencies() {
-        return Collections.emptyList();
+        return impl.getDependencies(getProject());
+    }
+
+    @Override
+    public List<ProjectFile> getBackwardDependencies() {
+        return impl.getBackwardDependencies(getProject());
+    }
+
+    @Override
+    public void onCacheInvalidation() {
+    }
+
+    @Override
+    public String getName() {
+        return impl.getName();
     }
 }

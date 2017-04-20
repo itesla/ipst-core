@@ -62,25 +62,7 @@ public class Nio2ImportedCaseBuilder implements ImportedCaseBuilder {
         return this;
     }
 
-    @Override
-    public Nio2ImportedCase build() {
-        if (aCase == null) {
-            throw new RuntimeException("Case is not set");
-        }
-
-        // create the directory
-        Path importedCaseDir = folder.getDir().resolve(aCase.getDataSource().getBaseName());
-        try {
-            Files.createDirectories(importedCaseDir);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-
-        // create metadata
-        Metadata metadata = Metadata.create(Nio2ImportedCase.class.getName().toString());
-        metadata.save(importedCaseDir);
-
-        // create import configuration file
+    private Nio2ImportedCase.ImportConfiguration createImportConfig() {
         Nio2ImportedCase.ImportConfiguration importConfiguration = new Nio2ImportedCase.ImportConfiguration();
         importConfiguration.setFormat(aCase.getImporter().getFormat());
         Map<String, Parameter> parameters = aCase.getImporter().getParameters().stream()
@@ -95,13 +77,36 @@ public class Nio2ImportedCaseBuilder implements ImportedCaseBuilder {
             p.setValue(value);
             importConfiguration.getParameter().add(p);
         });
-        importConfiguration.save(importedCaseDir);
+        return importConfiguration;
+    }
+
+    @Override
+    public Nio2ImportedCase build() {
+        if (aCase == null) {
+            throw new RuntimeException("Case is not set");
+        }
+
+        // create the directory
+        Path dir = folder.getImpl().getDir().resolve(aCase.getDataSource().getBaseName());
+        try {
+            Files.createDirectories(dir);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        // create metadata
+        Metadata metadata = Metadata.create(Nio2ImportedCase.class.getName().toString());
+        metadata.save(dir);
+
+        // create import configuration file
+        Nio2ImportedCase.ImportConfiguration importConfiguration = createImportConfig();
+        importConfiguration.save(dir);
 
         // copy case data
-        aCase.getImporter().copy(aCase.getDataSource(), new FileDataSource(importedCaseDir, aCase.getDataSource().getBaseName()));
+        aCase.getImporter().copy(aCase.getDataSource(), new FileDataSource(dir, aCase.getDataSource().getBaseName()));
 
         // create project node
-        Nio2ImportedCase importedCase = new Nio2ImportedCase(importedCaseDir, folder);
+        Nio2ImportedCase importedCase = new Nio2ImportedCase(dir, folder);
 
         // put id in the central directory
         folder.getProject().getCentralDirectory().add(metadata.getId(), importedCase.getPath().toString());

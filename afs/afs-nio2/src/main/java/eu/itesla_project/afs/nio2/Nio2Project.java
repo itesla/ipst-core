@@ -63,10 +63,10 @@ public class Nio2Project extends Nio2Node implements Project {
         this.name = Objects.requireNonNull(name);
         this.metadata = Objects.requireNonNull(metadata);
         centralDirectory = new CentralDirectory(dir.resolve("centralDirectory"));
-        rootFolder = new Nio2ProjectFolder(dir, null, this, centralDirectory) {
+        rootFolder = new Nio2ProjectFolder(dir, null, this) {
             @Override
             public String getName() {
-                checkNotDeleted();
+                impl.checkNotDeleted();
                 return PROJECT_LABEL;
             }
         };
