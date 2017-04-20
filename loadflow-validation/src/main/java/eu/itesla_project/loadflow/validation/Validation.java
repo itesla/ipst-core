@@ -268,11 +268,13 @@ public class Validation {
 
         boolean linesOk = network.getLineStream()
                 .sorted(Comparator.comparing(Line::getId))
-                .reduce(true, (ok, l) -> ok & checkFlows(l, config, formatter), Boolean::logicalAnd);
+                .map(l -> checkFlows(l, config, formatter))
+                .reduce(Boolean::logicalAnd).orElse(true);
 
         boolean transformersOk = network.getTwoWindingsTransformerStream()
                 .sorted(Comparator.comparing(TwoWindingsTransformer::getId))
-                .reduce(true, (ok, t) -> ok & checkFlows(t, config, formatter), Boolean::logicalAnd);
+                .map(t -> checkFlows(t, config, formatter))
+                .reduce(Boolean::logicalAnd).orElse(true);
 
         return linesOk && transformersOk;
     }
