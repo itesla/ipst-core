@@ -9,6 +9,7 @@ package eu.itesla_project.loadflow.validation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import eu.itesla_project.commons.tools.ToolRunningContext;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -86,7 +87,7 @@ public class CheckFlowsTool implements Tool {
     }
 
     @Override
-    public void run(CommandLine line) throws Exception {
+    public void run(CommandLine line, ToolRunningContext context) throws Exception {
         Path caseFile = Paths.get(line.getOptionValue("case-file"));
         Path outputFile = Paths.get(line.getOptionValue("output-file"));
         CheckFlowsConfig config = CheckFlowsConfig.load();
@@ -112,7 +113,7 @@ public class CheckFlowsTool implements Tool {
                         .join();
             }
         }
-        System.out.println("Check flows on network " + network.getId() + " result = " + Validation.checkFlows(network, config, outputFile));
+        System.out.println("Check flows on network " + network.getId() + " result: " + (Validation.checkFlows(network, config, outputFile) ? "sucess" : "fail"));
     }
     
 }
