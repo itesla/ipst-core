@@ -6,14 +6,22 @@
  */
 package eu.itesla_project.afs.ext;
 
+import eu.itesla_project.afs.FileIcon;
 import eu.itesla_project.afs.ProjectFile;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface GroovyScript extends ProjectFile {
+public abstract class GroovyScript extends ProjectFile {
 
-    String read();
+    private static final FileIcon SCRIPT_ICON = new FileIcon("script", GroovyScript.class.getResourceAsStream("/icons/script16x16.png"));
 
-    void write(String content);
+    @Override
+    public FileIcon getIcon() {
+        return SCRIPT_ICON;
+    }
+
+    public abstract String read();
+
+    public abstract void write(String content);
 }

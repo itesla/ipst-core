@@ -9,6 +9,7 @@ package eu.itesla_project.afs.nio2.ext;
 import eu.itesla_project.afs.ext.GroovyScript;
 import eu.itesla_project.afs.ext.GroovyScriptBuilder;
 import eu.itesla_project.afs.nio2.Metadata;
+import eu.itesla_project.afs.nio2.Nio2Project;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class Nio2GroovyScriptBuilder implements GroovyScriptBuilder {
         Nio2GroovyScript groovyScript = new Nio2GroovyScript(dir, folder);
 
         // put id in the central directory
-        folder.getProject().getCentralDirectory().add(metadata.getId(), groovyScript.getPath().toString());
+        ((Nio2Project) folder.getProject()).getCentralDirectory().add(metadata.getId(), groovyScript.getPath().toString());
 
         return groovyScript;
     }

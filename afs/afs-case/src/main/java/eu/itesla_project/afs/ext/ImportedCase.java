@@ -6,6 +6,9 @@
  */
 package eu.itesla_project.afs.ext;
 
+import eu.itesla_project.afs.FileIcon;
+import eu.itesla_project.afs.NodePath;
+import eu.itesla_project.afs.ProjectNodePathToString;
 import eu.itesla_project.iidm.datasource.ReadOnlyDataSource;
 import eu.itesla_project.iidm.import_.Importer;
 import eu.itesla_project.iidm.network.Network;
@@ -15,16 +18,24 @@ import java.util.Properties;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface ImportedCase extends ProjectCase {
-
-    ReadOnlyDataSource getDataSource();
-
-    Properties getParameters();
-
-    Importer getImporter();
+public abstract class ImportedCase extends ProjectCase {
 
     @Override
-    default Network loadNetwork() {
+    public FileIcon getIcon() {
+        return CaseIconCache.INSTANCE.get(
+                getProject().getFileSystem().getImportersLoader(),
+                getProject().getFileSystem().getComputationManager(),
+                getImporter().getFormat());
+    }
+
+    public abstract ReadOnlyDataSource getDataSource();
+
+    public abstract Properties getParameters();
+
+    public abstract Importer getImporter();
+
+    @Override
+    public Network loadNetwork() {
         Importer importer = getImporter();
         ReadOnlyDataSource dataSource = getDataSource();
         Properties parameters = getParameters();

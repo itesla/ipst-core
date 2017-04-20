@@ -6,6 +6,7 @@
  */
 package eu.itesla_project.afs.nio2;
 
+import eu.itesla_project.afs.NodePathToString;
 import eu.itesla_project.afs.Node;
 import eu.itesla_project.afs.NodePath;
 
@@ -36,7 +37,7 @@ public abstract class Nio2Node implements Node {
     }
 
     public NodePath getPath() {
-        return NodePath.getPath(this, Nio2NodePathToString.INSTANCE);
+        return NodePath.getPath(this, NodePathToString.INSTANCE);
     }
 
     public Nio2AppFileSystem getFileSystem() {

@@ -6,6 +6,7 @@
  */
 package eu.itesla_project.afs.ext;
 
+import eu.itesla_project.afs.FileIcon;
 import eu.itesla_project.computation.script.GroovyScripts;
 import eu.itesla_project.iidm.network.Network;
 import groovy.lang.Binding;
@@ -15,22 +16,29 @@ import java.io.*;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface VirtualCase extends ProjectCase {
+public abstract class VirtualCase extends ProjectCase {
 
-    ProjectCase getCase();
-
-    GroovyScript getScript();
-
-    Writer getOutWriter();
-
-    Reader getOutReader();
-
-    Network loadFromCache();
-
-    void saveToCache(Network network);
+    private static final FileIcon VIRTUAL_CASE_ICON = new FileIcon("virtualCase", VirtualCase.class.getResourceAsStream("/icons/virtualCase16x16.png"));
 
     @Override
-    default Network loadNetwork() {
+    public FileIcon getIcon() {
+        return VIRTUAL_CASE_ICON;
+    }
+
+    public abstract ProjectCase getCase();
+
+    public abstract GroovyScript getScript();
+
+    public abstract Writer getOutWriter();
+
+    public abstract Reader getOutReader();
+
+    public abstract Network loadFromCache();
+
+    public abstract void saveToCache(Network network);
+
+    @Override
+    public Network loadNetwork() {
         // load network from the cache
         Network network = loadFromCache();
 

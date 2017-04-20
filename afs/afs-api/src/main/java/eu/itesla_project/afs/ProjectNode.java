@@ -11,11 +11,17 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface ProjectNode extends NodeBase<ProjectFolder> {
+public abstract class ProjectNode implements NodeBase<ProjectFolder> {
 
-    Project getProject();
+    public NodePath getPath() {
+        return NodePath.getPath(this, ProjectNodePathToString.INSTANCE);
+    }
 
-    void delete();
+    public Project getProject() {
+        return getParent().getProject();
+    }
 
-    List<ProjectFile> getBackwardDependencies();
+    public abstract void delete();
+
+    public abstract List<ProjectFile> getBackwardDependencies();
 }

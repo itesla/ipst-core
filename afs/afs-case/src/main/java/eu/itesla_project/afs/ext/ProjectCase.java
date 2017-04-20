@@ -12,7 +12,7 @@ import eu.itesla_project.iidm.network.Network;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface ProjectCase extends ProjectFile {
+public abstract class ProjectCase extends ProjectFile {
 
-    Network loadNetwork();
+    public abstract Network loadNetwork();
 }

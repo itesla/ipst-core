@@ -11,6 +11,7 @@ import eu.itesla_project.afs.ext.ProjectCase;
 import eu.itesla_project.afs.ext.VirtualCase;
 import eu.itesla_project.afs.ext.VirtualCaseBuilder;
 import eu.itesla_project.afs.nio2.Metadata;
+import eu.itesla_project.afs.nio2.Nio2Project;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.afs.nio2.Nio2ProjectNode;
 
@@ -81,11 +82,11 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
             throw new UncheckedIOException(e);
         }
 
-        String caseId = folder.getProject().getCentralDirectory().getId(casePath);
+        String caseId = ((Nio2Project) folder.getProject()).getCentralDirectory().getId(casePath);
         if (caseId == null) {
             throw new RuntimeException("Case '" + casePath + "' not found");
         }
-        String scriptId = folder.getProject().getCentralDirectory().getId(scriptPath);
+        String scriptId = ((Nio2Project) folder.getProject()).getCentralDirectory().getId(scriptPath);
         if (scriptId == null) {
             throw new RuntimeException("Script '" + scriptPath + "' not found");
         }
@@ -112,7 +113,7 @@ public class Nio2VirtualCaseBuilder implements VirtualCaseBuilder {
         script.getImpl().addBackwardDependency(virtualCase.getImpl().getId());
 
         // put id in the central directory
-        folder.getProject().getCentralDirectory().add(metadata.getId(), virtualCase.getPath().toString());
+        ((Nio2Project) folder.getProject()).getCentralDirectory().add(metadata.getId(), virtualCase.getPath().toString());
 
         return virtualCase;
     }

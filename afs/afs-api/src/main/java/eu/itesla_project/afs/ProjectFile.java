@@ -11,11 +11,16 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface ProjectFile extends ProjectNode {
+public abstract class ProjectFile extends ProjectNode {
 
-    FileIcon getIcon();
+    @Override
+    public boolean isFolder() {
+        return false;
+    }
 
-    List<ProjectFile> getDependencies();
+    public abstract FileIcon getIcon();
 
-    void onCacheInvalidation();
+    public abstract List<ProjectFile> getDependencies();
+
+    public abstract void onCacheInvalidation();
 }

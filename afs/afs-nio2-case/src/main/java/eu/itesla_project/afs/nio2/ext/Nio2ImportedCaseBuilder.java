@@ -10,6 +10,7 @@ import eu.itesla_project.afs.ext.Case;
 import eu.itesla_project.afs.ext.ImportedCase;
 import eu.itesla_project.afs.ext.ImportedCaseBuilder;
 import eu.itesla_project.afs.nio2.Metadata;
+import eu.itesla_project.afs.nio2.Nio2Project;
 import eu.itesla_project.afs.nio2.Nio2ProjectFolder;
 import eu.itesla_project.iidm.datasource.FileDataSource;
 import eu.itesla_project.iidm.parameters.Parameter;
@@ -109,7 +110,7 @@ public class Nio2ImportedCaseBuilder implements ImportedCaseBuilder {
         Nio2ImportedCase importedCase = new Nio2ImportedCase(dir, folder);
 
         // put id in the central directory
-        folder.getProject().getCentralDirectory().add(metadata.getId(), importedCase.getPath().toString());
+        ((Nio2Project) folder.getProject()).getCentralDirectory().add(metadata.getId(), importedCase.getPath().toString());
 
         return importedCase;
     }

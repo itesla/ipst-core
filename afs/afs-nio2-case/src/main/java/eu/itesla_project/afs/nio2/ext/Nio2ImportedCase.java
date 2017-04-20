@@ -6,7 +6,7 @@
  */
 package eu.itesla_project.afs.nio2.ext;
 
-import eu.itesla_project.afs.FileIcon;
+import eu.itesla_project.afs.ProjectNodePathToString;
 import eu.itesla_project.afs.NodePath;
 import eu.itesla_project.afs.ProjectFile;
 import eu.itesla_project.afs.ext.ImportedCase;
@@ -20,12 +20,15 @@ import eu.itesla_project.iidm.import_.Importers;
 
 import javax.xml.bind.annotation.*;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Nio2ImportedCase implements ImportedCase, Nio2ProjectNode {
+public class Nio2ImportedCase extends ImportedCase implements Nio2ProjectNode {
 
     @XmlRootElement(name = "importConfiguration")
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -112,30 +115,6 @@ public class Nio2ImportedCase implements ImportedCase, Nio2ProjectNode {
     }
 
     @Override
-    public Nio2Project getProject() {
-        impl.checkNotDeleted();
-        return parent.getProject();
-    }
-
-    @Override
-    public boolean isFolder() {
-        impl.checkNotDeleted();
-        return false;
-    }
-
-    public NodePath getPath() {
-        impl.checkNotDeleted();
-        return NodePath.getPath(this, Nio2ProjectNodePathToString.INSTANCE);
-    }
-
-    @Override
-    public FileIcon getIcon() {
-        return CaseIconCache.INSTANCE.get(getProject().getFileSystem().getImportersLoader(),
-                                          getProject().getFileSystem().getComputationManager(),
-                                          ImportConfiguration.read(impl.getDir()).getFormat());
-    }
-
-    @Override
     public ReadOnlyDataSource getDataSource() {
         return new GenericReadOnlyDataSource(impl.getDir(), getName());
     }
@@ -157,17 +136,17 @@ public class Nio2ImportedCase implements ImportedCase, Nio2ProjectNode {
 
     @Override
     public void delete() {
-        impl.delete(getProject());
+        impl.delete((Nio2Project) getProject());
     }
 
     @Override
     public List<ProjectFile> getDependencies() {
-        return impl.getDependencies(getProject());
+        return impl.getDependencies((Nio2Project) getProject());
     }
 
     @Override
     public List<ProjectFile> getBackwardDependencies() {
-        return impl.getBackwardDependencies(getProject());
+        return impl.getBackwardDependencies((Nio2Project) getProject());
     }
 
     @Override

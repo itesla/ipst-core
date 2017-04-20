@@ -8,6 +8,7 @@ package eu.itesla_project.afs.nio2.ext;
 
 import eu.itesla_project.afs.FileIcon;
 import eu.itesla_project.afs.ext.Case;
+import eu.itesla_project.afs.ext.CaseIconCache;
 import eu.itesla_project.afs.nio2.Nio2AppFileSystem;
 import eu.itesla_project.afs.nio2.Nio2Folder;
 import eu.itesla_project.afs.nio2.Nio2Node;

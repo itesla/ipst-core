@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package eu.itesla_project.afs.nio2.ext;
+package eu.itesla_project.afs.ext;
 
 import eu.itesla_project.afs.FileIcon;
 import eu.itesla_project.computation.ComputationManager;

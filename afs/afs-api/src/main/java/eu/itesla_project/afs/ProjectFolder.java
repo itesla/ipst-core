@@ -11,13 +11,18 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface ProjectFolder extends ProjectNode {
+public abstract class ProjectFolder extends ProjectNode {
 
-    ProjectFolder createFolder(String name);
+    @Override
+    public boolean isFolder() {
+        return true;
+    }
 
-    List<ProjectNode> getChildren();
+    public abstract ProjectFolder createFolder(String name);
 
-    ProjectNode getChild(String path);
+    public abstract List<ProjectNode> getChildren();
 
-    <F extends ProjectFile, B extends ProjectFileBuilder<F>> B fileBuilder(Class<B> clazz);
+    public abstract ProjectNode getChild(String path);
+
+    public abstract <F extends ProjectFile, B extends ProjectFileBuilder<F>> B fileBuilder(Class<B> clazz);
 }
