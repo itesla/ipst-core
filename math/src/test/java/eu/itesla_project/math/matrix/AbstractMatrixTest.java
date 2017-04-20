@@ -161,5 +161,7 @@ public abstract class AbstractMatrixTest {
         Matrix a2 = a.to(getOtherMatrixFactory());
         Matrix a3 = a2.to(getMatrixFactory());
         assertEquals(a, a3);
+        assertTrue(a.to(getMatrixFactory()) == a);
+        assertTrue(a2.to(getOtherMatrixFactory()) == a2);
     }
 }
