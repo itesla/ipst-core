@@ -268,10 +268,11 @@ public class Validation {
 
         boolean linesOk = network.getLineStream()
                 .sorted(Comparator.comparing(Line::getId))
-                .allMatch(l -> checkFlows(l, config, formatter));
+                .reduce(true, (ok, l) -> ok & checkFlows(l, config, formatter), Boolean::logicalAnd);
+
         boolean transformersOk = network.getTwoWindingsTransformerStream()
                 .sorted(Comparator.comparing(TwoWindingsTransformer::getId))
-                .allMatch(t -> checkFlows(t, config, formatter));
+                .reduce(true, (ok, t) -> ok & checkFlows(t, config, formatter), Boolean::logicalAnd);
 
         return linesOk && transformersOk;
     }
