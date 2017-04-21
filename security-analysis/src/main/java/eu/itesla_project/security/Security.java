@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class Security {
+    
+    private final static String PERMANENT_LIMIT_NAME = "Permanent limit";
 
     public Security() {
     }
@@ -52,7 +54,7 @@ public class Security {
                         violations.add(new LimitViolation(branch.getId(),
                                                           LimitViolationType.CURRENT,
                                                           branch.getCurrentLimits1().getPermanentLimit(),
-                                                          null,
+                                                          PERMANENT_LIMIT_NAME,
                                                           limitReduction,
                                                           branch.getTerminal1().getI(),
                                                           getCountry(branch, branch.getTerminal1()),
@@ -62,7 +64,7 @@ public class Security {
                         violations.add(new LimitViolation(branch.getId(),
                                                           LimitViolationType.CURRENT,
                                                           branch.getCurrentLimits2().getPermanentLimit(),
-                                                          null,
+                                                          PERMANENT_LIMIT_NAME,
                                                           limitReduction,
                                                           branch.getTerminal2().getI(),
                                                           getCountry(branch, branch.getTerminal2()),
@@ -321,9 +323,9 @@ public class Security {
                                         .filter(violation -> preContingencyViolations.isEmpty() || !preContingencyViolations.contains(toKey(violation)))
                                         .collect(Collectors.toList());
 
-                                if (filteredLimitViolations2.size() > 0 || !postContingencyResult.isComputationOk()) {
+                                if (filteredLimitViolations2.size() > 0 || !postContingencyResult.getLimitViolationsResult().isComputationOk()) {
                                     formatter.writeCell(postContingencyResult.getContingency().getId())
-                                            .writeCell(postContingencyResult.isComputationOk() ? "converge" : "diverge")
+                                            .writeCell(postContingencyResult.getLimitViolationsResult().isComputationOk() ? "converge" : "diverge")
                                             .writeEmptyCell()
                                             .writeEmptyCell()
                                             .writeEmptyCell()
@@ -332,7 +334,7 @@ public class Security {
                                             .writeEmptyCell()
                                             .writeEmptyCell();
 
-                                    for (String action : postContingencyResult.getActionsTaken()) {
+                                    for (String action : postContingencyResult.getLimitViolationsResult().getActionsTaken()) {
                                         formatter.writeEmptyCell()
                                                 .writeEmptyCell()
                                                 .writeCell(action)
