@@ -6,7 +6,7 @@
 /computation-mpi-util/target/
 /computation/target/
 /contingency-api/target/
-/distribution/target
+/distribution-core/target
 /math/target/
 /iidm-converter-api/target/
 /iidm-api/target/
