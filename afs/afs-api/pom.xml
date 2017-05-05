@@ -22,10 +22,18 @@
     <name>AFS API</name>
 
     <dependencies>
+        <!-- Compilation dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>iidm-converter-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

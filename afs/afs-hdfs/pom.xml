@@ -27,10 +27,11 @@
     </properties>
 
     <dependencies>
+        <!-- Compilation dependencies -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>afs-nio2</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.github.jsr203hadoop</groupId>
+            <artifactId>jsr203hadoop</artifactId>
+            <version>${jsr203hadoop.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -53,13 +54,20 @@
             <version>${hadoop.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.jsr203hadoop</groupId>
-            <artifactId>jsr203hadoop</artifactId>
-            <version>${jsr203hadoop.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>afs-nio2</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

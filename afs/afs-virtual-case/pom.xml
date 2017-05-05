@@ -13,6 +13,7 @@
     <name>AFS virtual case API</name>
 
     <dependencies>
+        <!-- Compilation dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>afs-api</artifactId>
@@ -22,6 +23,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>afs-case</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
