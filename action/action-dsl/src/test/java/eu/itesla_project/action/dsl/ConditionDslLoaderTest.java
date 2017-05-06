@@ -73,6 +73,9 @@ public class ConditionDslLoaderTest {
     public void testCondition() throws IOException {
         loadAndAssert("line('NHV1_NHV2_1')", "line('NHV1_NHV2_1')");
         loadAndAssert("line('NHV1_NHV2_1').terminal1.p", "line('NHV1_NHV2_1').terminal1.p");
+        loadAndAssert("transformer('NGEN_NHV1')", "transformer('NGEN_NHV1')");
+        loadAndAssert("load('LOAD')", "load('LOAD')");
+
         loadAndAssert("1", "1"); // integer
         loadAndAssert("1.0", "1f"); // float
         loadAndAssert("1.0", "1d"); // double
