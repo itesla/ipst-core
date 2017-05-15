@@ -27,10 +27,11 @@ public class WindowsLocalExecutor implements LocalExecutor {
 
     @Override
     public int execute(String program, List<String> args, Path outFile, Path errFile, Path workingDir, Map<String, String> env) throws IOException, InterruptedException {
-        // set TMPDIR to working dir to avoid issue with /tmp
+        // set TMP and TEMP to working dir to avoid issues
         Map<String, String> env2 = ImmutableMap.<String, String>builder()
                 .putAll(env)
-                .put("TMPDIR", workingDir.toAbsolutePath().toString())
+                .put("TEMP", workingDir.toAbsolutePath().toString())
+                .put("TMP", workingDir.toAbsolutePath().toString())
                 .build();
 
         StringBuilder internalCmd = new StringBuilder();

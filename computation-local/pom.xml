@@ -19,12 +19,12 @@
     <name>Local computation</name>
     <dependencies>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
             <groupId>net.java.truevfs</groupId>
             <artifactId>truevfs-driver-zip</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

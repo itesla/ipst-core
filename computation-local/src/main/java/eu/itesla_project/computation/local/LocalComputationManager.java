@@ -15,6 +15,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.OperationNotSupportedException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -83,8 +84,7 @@ public class LocalComputationManager implements ComputationManager {
     private static LocalExecutor getLocalExecutor() {
         if (SystemUtils.IS_OS_WINDOWS) return new WindowsLocalExecutor();
         if (SystemUtils.IS_OS_UNIX) return new UnixLocalExecutor();
-        throw new RuntimeException("OS not supported for local execution");
-
+        throw new UnsupportedOperationException("OS not supported for local execution");
     }
 
     public LocalComputationManager() throws IOException {
