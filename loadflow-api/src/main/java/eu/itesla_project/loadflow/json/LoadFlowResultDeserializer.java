@@ -82,18 +82,22 @@ public class LoadFlowResultDeserializer extends StdDeserializer<LoadFlowResult> 
 
     }
 
+    public static LoadFlowResult read(InputStream is) throws IOException {
+        Objects.requireNonNull(is);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(LoadFlowResult.class, new LoadFlowResultDeserializer());
+        objectMapper.registerModule(module);
+
+        return objectMapper.readValue(is, LoadFlowResult.class);
+    }
+
     public static LoadFlowResult read(Path jsonFile) {
         Objects.requireNonNull(jsonFile);
-
         try (InputStream is = Files.newInputStream(jsonFile)) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-
-            SimpleModule module = new SimpleModule();
-            module.addDeserializer(LoadFlowResult.class, new LoadFlowResultDeserializer());
-            objectMapper.registerModule(module);
-
-            return objectMapper.readValue(is, LoadFlowResult.class);
+            return read(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -10,6 +10,7 @@ import eu.itesla_project.commons.ConverterBaseTest;
 import eu.itesla_project.loadflow.api.LoadFlowResult;
 import eu.itesla_project.loadflow.json.LoadFlowResultDeserializer;
 import eu.itesla_project.loadflow.json.LoadFlowResultSerializer;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -51,4 +52,15 @@ public class LoadFlowResultJsonTest extends ConverterBaseTest {
     public void roundTripTest() throws IOException {
         roundTripTest(create(), LoadFlowResultSerializer::write, LoadFlowResultDeserializer::read, "/LoadFlowResult.json");
     }
+
+    @Test
+    public void handleErrorTest() throws IOException {
+        try {
+            LoadFlowResultDeserializer.read(getClass().getResourceAsStream("/LoadFlowResultError.json"));
+            Assert.fail();
+        } catch (AssertionError error) {
+
+        }
+    }
+
 }
