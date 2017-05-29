@@ -6,18 +6,20 @@
  */
 package eu.itesla_project.loadflow.validation;
 
+import java.util.Objects;
+
 /**
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.it>
  */
 public enum FlowOutputWriter {
     CSV(FlowsFormatterCsvWriterFactory.class),
-    CSV_PROPERTIES(FlowsFormatterCsvPropertiesWriterFactory.class);
+    CSV_MULTILINE(FlowsFormatterCsvMultilineWriterFactory.class);
 
     private final Class<? extends FlowsWriterFactory> flowsWriterFactory;
 
     FlowOutputWriter(Class<? extends FlowsWriterFactory> flowsWriterFactory) {
-        this.flowsWriterFactory = flowsWriterFactory;
+        this.flowsWriterFactory = Objects.requireNonNull(flowsWriterFactory);
     }
 
     public Class<? extends FlowsWriterFactory> getFlowsWriterFactory() {

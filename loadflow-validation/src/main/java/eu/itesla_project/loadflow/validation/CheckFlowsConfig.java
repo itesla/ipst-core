@@ -26,7 +26,7 @@ public class CheckFlowsConfig {
     public static final Class<? extends TableFormatterFactory> TABLE_FORMATTER_FACTORY_DEFAULT = CsvTableFormatterFactory.class;
     public static final float EPSILON_X_DEFAULT = 0.01f;
     public static final boolean APPLY_REACTANCE_CORRECTION_DEFAULT = false;
-    public static final FlowOutputWriter FLOWS_OUPUT_WRITER_DEFAULT = FlowOutputWriter.CSV_PROPERTIES;
+    public static final FlowOutputWriter FLOWS_OUPUT_WRITER_DEFAULT = FlowOutputWriter.CSV_MULTILINE;
 
     private float threshold;
     private boolean verbose;
@@ -134,7 +134,7 @@ public class CheckFlowsConfig {
     }
 
     public void setFlowOutputWriter(FlowOutputWriter flowOutputWriter) {
-        this.flowOutputWriter = flowOutputWriter;
+        this.flowOutputWriter = Objects.requireNonNull(flowOutputWriter);
     }
 
     @Override

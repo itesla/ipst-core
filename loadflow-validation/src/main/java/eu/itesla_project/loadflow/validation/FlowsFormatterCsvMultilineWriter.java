@@ -18,12 +18,12 @@ import eu.itesla_project.commons.io.table.TableFormatterFactory;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.it>
  */
-public class FlowsFormatterCsvPropertiesWriter extends FlowsFormatterWriter {
+public class FlowsFormatterCsvMultilineWriter extends FlowsFormatterWriter {
 
     private static TableFormatterConfig TABLE_FORMATTER_CONFIG = TableFormatterConfig.load();
     private final boolean verbose;
 
-    public FlowsFormatterCsvPropertiesWriter(String id, Class<? extends TableFormatterFactory> formatterFactoryClass, 
+    public FlowsFormatterCsvMultilineWriter(String id, Class<? extends TableFormatterFactory> formatterFactoryClass, 
                                              TableFormatterConfig formatterConfig, Writer writer, boolean verbose) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(formatterFactoryClass);
@@ -32,7 +32,7 @@ public class FlowsFormatterCsvPropertiesWriter extends FlowsFormatterWriter {
         formatter = createTableFormatter(id, formatterFactoryClass, formatterConfig, writer);
     }
 
-    public FlowsFormatterCsvPropertiesWriter(String id, Class<? extends TableFormatterFactory> formatterFactoryClass, 
+    public FlowsFormatterCsvMultilineWriter(String id, Class<? extends TableFormatterFactory> formatterFactoryClass, 
                                              Writer writer, boolean verbose) {
         this(id, formatterFactoryClass, TABLE_FORMATTER_CONFIG, writer, verbose);
     }

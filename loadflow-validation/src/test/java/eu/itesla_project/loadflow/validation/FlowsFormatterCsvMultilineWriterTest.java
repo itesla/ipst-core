@@ -21,7 +21,7 @@ import eu.itesla_project.commons.io.table.TableFormatterConfig;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.it>
  */
-public class FlowsFormatterCsvPropertiesWriterTest {
+public class FlowsFormatterCsvMultilineWriterTest {
 
     private final String branchId = "branchId";
     private final float p1 = 39.5056f;
@@ -65,7 +65,7 @@ public class FlowsFormatterCsvPropertiesWriterTest {
                                           String.join(";", branchId, "expected_q2", String.format(Locale.getDefault(), "%g", q2_calc)));
         Writer writer = new StringWriter();
         TableFormatterConfig config = new TableFormatterConfig(Locale.getDefault(), ';', "inv", true, true);
-        try (FlowsWriter flowsWriter = new FlowsFormatterCsvPropertiesWriter("test", CsvTableFormatterFactory.class, config, writer, false)) {
+        try (FlowsWriter flowsWriter = new FlowsFormatterCsvMultilineWriter("test", CsvTableFormatterFactory.class, config, writer, false)) {
             flowsWriter.write(branchId, p1, p1_calc, q1, q1_calc, p2, p2_calc, q2, q2_calc, r, x, g1, g2, b1, b2, rho1, rho2, 
                               alpha1, alpha2, u1, u2, theta1, theta2, z, y, ksi);
             assertEquals(flowsContent, writer.toString().trim());
@@ -104,7 +104,7 @@ public class FlowsFormatterCsvPropertiesWriterTest {
                                           String.join(";", branchId, "ksi", String.format(Locale.getDefault(), "%g", ksi)));
         Writer writer = new StringWriter();
         TableFormatterConfig config = new TableFormatterConfig(Locale.getDefault(), ';', "inv", true, true);
-        try (FlowsWriter flowsWriter = new FlowsFormatterCsvPropertiesWriter("test", CsvTableFormatterFactory.class, config, writer, true)) {
+        try (FlowsWriter flowsWriter = new FlowsFormatterCsvMultilineWriter("test", CsvTableFormatterFactory.class, config, writer, true)) {
             flowsWriter.write(branchId, p1, p1_calc, q1, q1_calc, p2, p2_calc, q2, q2_calc, r, x, g1, g2, b1, b2, rho1, rho2, 
                               alpha1, alpha2, u1, u2, theta1, theta2, z, y, ksi);
             assertEquals(flowsContent, writer.toString().trim());

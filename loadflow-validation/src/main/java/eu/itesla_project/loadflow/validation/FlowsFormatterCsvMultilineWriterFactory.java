@@ -14,11 +14,11 @@ import eu.itesla_project.commons.io.table.TableFormatterFactory;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.it>
  */
-public class FlowsFormatterCsvPropertiesWriterFactory implements FlowsWriterFactory {
+public class FlowsFormatterCsvMultilineWriterFactory implements FlowsWriterFactory {
 
     @Override
     public FlowsWriter create(String id, Class<? extends TableFormatterFactory> formatterFactoryClass, Writer writer, boolean verbose) {
-        return new FlowsFormatterCsvPropertiesWriter(id, formatterFactoryClass, writer, verbose);
+        return new FlowsFormatterCsvMultilineWriter(id, formatterFactoryClass, writer, verbose);
     }
 
 }

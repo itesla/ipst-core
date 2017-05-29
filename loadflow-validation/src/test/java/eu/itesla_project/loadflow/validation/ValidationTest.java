@@ -123,10 +123,10 @@ public class ValidationTest {
 
         looseConfig = new CheckFlowsConfig(0.1f, true, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
                                            CheckFlowsConfig.EPSILON_X_DEFAULT, CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
-                                           FlowOutputWriter.CSV_PROPERTIES);
+                                           FlowOutputWriter.CSV_MULTILINE);
         strictConfig = new CheckFlowsConfig(0.01f, false, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
                                             CheckFlowsConfig.EPSILON_X_DEFAULT, CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
-                                            FlowOutputWriter.CSV_PROPERTIES);
+                                            FlowOutputWriter.CSV_MULTILINE);
     }
 
     @Test

@@ -71,8 +71,8 @@ public class CheckFlowsTool implements Tool {
             options.addOption(Option.builder().longOpt("verbose")
                     .desc("verbose output")
                     .build());
-            options.addOption(Option.builder().longOpt("output-writer")
-                    .desc("output writer")
+            options.addOption(Option.builder().longOpt("output-format")
+                    .desc("output format")
                     .hasArg()
                     .argName("FLOWS_WRITER")
                     .build());
@@ -99,8 +99,8 @@ public class CheckFlowsTool implements Tool {
         if (line.hasOption("verbose")) {
             config.setVerbose(true);
         }
-        if (line.hasOption("output-writer")) {
-            config.setFlowOutputWriter(FlowOutputWriter.valueOf(line.getOptionValue("output-writer")));
+        if (line.hasOption("output-format")) {
+            config.setFlowOutputWriter(FlowOutputWriter.valueOf(line.getOptionValue("output-format")));
         }
         System.out.println("Loading case " + caseFile);
         Network network = Importers.loadNetwork(caseFile);

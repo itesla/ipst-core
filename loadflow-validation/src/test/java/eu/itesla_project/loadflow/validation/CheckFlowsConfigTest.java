@@ -126,25 +126,25 @@ public class CheckFlowsConfigTest {
     public void testWrongConfig() {
         try {
             new CheckFlowsConfig(-1, false, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT, 1, 
-                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, FlowOutputWriter.CSV_PROPERTIES);
+                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, FlowOutputWriter.CSV_MULTILINE);
             fail();
         } catch(Exception ignored) {
         }
         try {
             new CheckFlowsConfig(1, false, null, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT, 1, 
-                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, FlowOutputWriter.CSV_PROPERTIES);
+                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, FlowOutputWriter.CSV_MULTILINE);
             fail();
         } catch(Exception ignored) {
         }
         try {
             new CheckFlowsConfig(1, false, loadFlowFactory, null, CheckFlowsConfig.EPSILON_X_DEFAULT, 
-                                CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, FlowOutputWriter.CSV_PROPERTIES);
+                                CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, FlowOutputWriter.CSV_MULTILINE);
             fail();
         } catch(Exception ignored) {
         }
         try {
             new CheckFlowsConfig(1, false, loadFlowFactory, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT, -1, 
-                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, FlowOutputWriter.CSV_PROPERTIES);
+                                 CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, FlowOutputWriter.CSV_MULTILINE);
             fail();
         } catch(Exception ignored) {
         }
