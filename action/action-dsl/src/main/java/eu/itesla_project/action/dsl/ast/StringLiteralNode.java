@@ -19,7 +19,7 @@ public class StringLiteralNode extends LiteralNode {
 
     @Override
     public LiteralType getType() {
-        return LiteralType.FLOAT;
+        return LiteralType.STRING;
     }
 
     @Override
