@@ -123,7 +123,7 @@ class ActionDslLoader extends DslLoader {
                 for (String equipment : spec.equipments) {
                     Identifiable identifiable = network.getIdentifiable(equipment)
                     if (identifiable == null) {
-                        throw new ActionDslException("Equipment '" + equipment + "' of contingency '" + equipment + "' not found")
+                        throw new ActionDslException("Equipment '" + equipment + "' of contingency '" + id + "' not found")
                     }
                     if (identifiable instanceof Line || identifiable instanceof TwoWindingsTransformer) {
                         elements.add(new BranchContingency(equipment))
