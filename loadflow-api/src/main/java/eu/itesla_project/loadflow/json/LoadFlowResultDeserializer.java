@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import eu.itesla_project.loadflow.api.LoadFlowResult;
+import eu.itesla_project.loadflow.api.LoadFlowResultImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,27 +60,7 @@ public class LoadFlowResultDeserializer extends StdDeserializer<LoadFlowResult> 
             }
         }
 
-        Boolean finalIsOK = isOK;
-        Map<String, String> finalMetrics = metrics;
-        String finalLog = log;
-        return new LoadFlowResult() {
-
-            @Override
-            public boolean isOk() {
-                return finalIsOK;
-            }
-
-            @Override
-            public Map<String, String> getMetrics() {
-                return finalMetrics;
-            }
-
-            @Override
-            public String getLogs() {
-                return finalLog;
-            }
-        };
-
+        return new LoadFlowResultImpl(isOK, metrics, log);
     }
 
     public static LoadFlowResult read(InputStream is) throws IOException {

@@ -7,6 +7,7 @@
 package eu.itesla_project.loadflow.tools;
 
 import com.google.auto.service.AutoService;
+import eu.itesla_project.commons.ITeslaException;
 import eu.itesla_project.commons.config.ComponentDefaultConfig;
 import eu.itesla_project.commons.io.table.*;
 import eu.itesla_project.commons.tools.Command;
@@ -14,6 +15,9 @@ import eu.itesla_project.commons.tools.Tool;
 import eu.itesla_project.commons.tools.ToolRunningContext;
 import eu.itesla_project.computation.ComputationManager;
 import eu.itesla_project.computation.local.LocalComputationManager;
+import eu.itesla_project.iidm.datasource.FileDataSource;
+import eu.itesla_project.iidm.export.Exporter;
+import eu.itesla_project.iidm.export.Exporters;
 import eu.itesla_project.iidm.import_.ImportConfig;
 import eu.itesla_project.iidm.import_.Importers;
 import eu.itesla_project.iidm.network.Network;
@@ -33,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * @author Christian Biasuzzi <christian.biasuzzi@techrain.it>
@@ -50,7 +55,7 @@ public class RunLoadFlowTool implements Tool {
         return new Command() {
             @Override
             public String getName() {
-                return "run-loadflow";
+                return "loadflow";
             }
 
             @Override
@@ -73,17 +78,32 @@ public class RunLoadFlowTool implements Tool {
                         .required()
                         .build());
                 options.addOption(Option.builder().longOpt("output-file")
-                        .desc("the output path")
+                        .desc("loadflow results output path")
                         .hasArg()
                         .argName("FILE")
                         .build());
                 options.addOption(Option.builder().longOpt("output-format")
-                        .desc("the output format " + Arrays.toString(Format.values()))
+                        .desc("loadflow results output format " + Arrays.toString(Format.values()))
                         .hasArg()
                         .argName("FORMAT")
                         .build());
                 options.addOption(Option.builder().longOpt("skip-postproc")
                         .desc("skip network importer post processors (when configured)")
+                        .build());
+                options.addOption(Option.builder().longOpt("output-case-format")
+                        .desc("modified network output format " + Exporters.getFormats())
+                        .hasArg()
+                        .argName("CASEFORMAT")
+                        .build());
+                options.addOption(Option.builder().longOpt("output-case-dir")
+                        .desc("modified network output directory")
+                        .hasArg()
+                        .argName("DIR")
+                        .build());
+                options.addOption(Option.builder().longOpt("output-case-basename")
+                        .desc("modified network base name")
+                        .hasArg()
+                        .argName("NAME")
                         .build());
                 return options;
             }
@@ -115,6 +135,21 @@ public class RunLoadFlowTool implements Tool {
                     format = Format.valueOf(line.getOptionValue("output-format"));
                 }
 
+                Exporter modifiedNetworkExporter = null;
+                if (line.hasOption("output-case-format") || line.hasOption("output-case-dir") || (line.hasOption("output-case-basename"))) {
+                    Arrays.asList("output-case-format", "output-case-dir", "output-case-basename")
+                            .forEach(paramName -> {
+                                if (!line.hasOption(paramName)) {
+                                    throw new RuntimeException("Missing required option:" + paramName);
+                                }
+                            });
+                    String outputCaseFormat = line.getOptionValue("output-case-format");
+                    modifiedNetworkExporter = Exporters.getExporter(outputCaseFormat);
+                    if (modifiedNetworkExporter == null) {
+                        throw new ITeslaException("Target format " + outputCaseFormat + " not supported");
+                    }
+                }
+
                 context.getOutputStream().println("Loading network '" + caseFile + "'");
                 Network network = Importers.loadNetwork(caseFile, computationManager, importConfig, null);
                 if (network == null) {
@@ -127,6 +162,14 @@ public class RunLoadFlowTool implements Tool {
                     exportResult(result, context, outputFile, format);
                 } else {
                     printResult(result, context);
+                }
+
+                // exports the modified network to the filesystem, if requested
+                if (modifiedNetworkExporter != null) {
+                    modifiedNetworkExporter.export(network,
+                            new Properties(),
+                            new FileDataSource(context.getFileSystem().getPath(line.getOptionValue("output-case-dir")),
+                                    line.getOptionValue("output-case-basename")));
                 }
 
             } else if (Files.isDirectory(caseFile)) {
