@@ -20,37 +20,13 @@ public abstract class Scalable {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(Scalable.class);
 
-    private static Map<String, String> createNameMap(Network n) {
-        Map<String, String> name2id = new HashMap<>();
-        for (Generator g : n.getGenerators()) {
-            name2id.put(g.getName(), g.getId());
-        }
-        return name2id;
-    }
+    public abstract float initialValue(Network n);
 
-    protected abstract float initialValue(Network n, Map<String, String> name2id);
+    public abstract void reset(Network n);
 
-    public float initialValue(Network n) {
-        return initialValue(n, createNameMap(n));
-    }
+    public abstract float maximumValue(Network n);
 
-    protected abstract void reset(Network n, Map<String, String> name2id);
-
-    public void reset(Network n) {
-        reset(n, createNameMap(n));
-    }
-
-    protected abstract float maximumValue(Network n, Map<String, String> name2id);
-
-    public float maximumValue(Network n) {
-        return maximumValue(n, createNameMap(n));
-    }
-
-    protected abstract void listGenerators(Network n, Map<String, String> name2id, List<Generator> generators, List<String> notFoundGenerators);
-
-    public void listGenerators(Network n, List<Generator> generators, List<String> notFoundGenerators) {
-        listGenerators(n, createNameMap(n), generators, notFoundGenerators);
-    }
+    public abstract void listGenerators(Network n, List<Generator> generators, List<String> notFoundGenerators);
 
     public List<Generator> listGenerators(Network n, List<String> notFoundGenerators) {
         List<Generator> generators = new ArrayList<>();
@@ -62,22 +38,18 @@ public abstract class Scalable {
         return listGenerators(n, null);
     }
 
-    protected abstract float scale(Network n, Map<String, String> name2id, float asked);
-
-    public float scale(Network n, float asked) {
-        return scale(n, createNameMap(n), asked);
-    }
+    public abstract float scale(Network n, float asked);
 
     public static GeneratorScalable gen(String id) {
         return new GeneratorScalable(id);
     }
 
-    public static ProportionalScalable proportional(List<Float> percentage, List<Scalable> scalables) {
-        return new ProportionalScalable(percentage, scalables);
+    public static ProportionalScalable proportional(List<Float> percentages, List<Scalable> scalables) {
+        return new ProportionalScalable(percentages, scalables);
     }
 
-    public static ProportionalScalable proportional(float percentage1, Scalable scalable1) {
-        return new ProportionalScalable(Arrays.asList(percentage1), Arrays.asList(scalable1));
+    public static ProportionalScalable proportional(float percentage, Scalable scalable) {
+        return new ProportionalScalable(Collections.singletonList(percentage), Collections.singletonList(scalable));
     }
 
     public static ProportionalScalable proportional(float percentage1, Scalable scalable1, float percentage2, Scalable scalable2) {
