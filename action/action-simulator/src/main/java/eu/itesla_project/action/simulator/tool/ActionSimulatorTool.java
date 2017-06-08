@@ -20,6 +20,7 @@ import eu.itesla_project.commons.tools.Command;
 import eu.itesla_project.commons.tools.Tool;
 import eu.itesla_project.commons.tools.ToolRunningContext;
 import eu.itesla_project.computation.local.LocalComputationManager;
+import eu.itesla_project.contingency.Contingency;
 import eu.itesla_project.iidm.import_.Importers;
 import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.security.LimitViolationFilter;
@@ -194,6 +195,10 @@ public class ActionSimulatorTool implements Tool {
                         }
                     });
 
+            if (contingencies.isEmpty()) {
+                contingencies = actionDb.getContingencies().stream().map(Contingency::getId).collect(Collectors.toList());
+            }
+
             // action simulator
             ActionSimulator actionSimulator = createActionSimulator(network, context, verbose, csvFile);
             context.getOutputStream().println("Using '" + actionSimulator.getName() + "' rules engine");
@@ -202,7 +207,7 @@ public class ActionSimulatorTool implements Tool {
             actionSimulator.start(actionDb, contingencies);
 
         } catch (Exception e) {
-            LOGGER.trace(e.toString(), e); // to avoid user screen polution...
+            LOGGER.trace(e.toString(), e); // to avoid user screen pollution...
             Throwable rootCause = StackTraceUtils.sanitizeRootCause(e);
             rootCause.printStackTrace(context.getErrorStream());
         }
