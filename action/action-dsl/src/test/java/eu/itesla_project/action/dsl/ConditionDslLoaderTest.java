@@ -6,10 +6,7 @@
  */
 package eu.itesla_project.action.dsl;
 
-import eu.itesla_project.action.dsl.ast.EvaluationContext;
-import eu.itesla_project.action.dsl.ast.ExpressionEvaluator;
-import eu.itesla_project.action.dsl.ast.ExpressionNode;
-import eu.itesla_project.action.dsl.ast.ExpressionPrinter;
+import eu.itesla_project.action.dsl.ast.*;
 import eu.itesla_project.contingency.Contingency;
 import eu.itesla_project.iidm.network.Line;
 import eu.itesla_project.iidm.network.Network;
@@ -19,9 +16,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
@@ -59,12 +56,12 @@ public class ConditionDslLoaderTest {
 
             @Override
             public Contingency getContingency() {
-                throw new AssertionError();
+                return null;
             }
 
             @Override
             public boolean isActionTaken(String actionId) {
-                throw new AssertionError();
+                return actionId.equals("action");
             }
         }));
     }
@@ -108,8 +105,37 @@ public class ConditionDslLoaderTest {
         loadAndAssert("!(line('NHV1_NHV2_1').overloaded)", "!line('NHV1_NHV2_1').overloaded");
 
         loadAndAssert("actionTaken('action1')", "actionTaken('action1')");
+        evalAndAssert(true, "actionTaken('action')");
         loadAndAssert("contingencyOccurred('contingency1')", "contingencyOccurred('contingency1')");
         loadAndAssert("contingencyOccurred()", "contingencyOccurred()");
+        evalAndAssert(false, "contingencyOccurred()");
+    }
+
+    @Test
+    public void testExpressionEvaluator() throws IOException {
+        // visitComparisonOperator
+        evalAndAssert(true, "load('LOAD').p0 == 600.0");
+        evalAndAssert(true, "load('LOAD').p0 != 300.0");
+        evalAndAssert(true, "load('LOAD').p0 > 100.0");
+        evalAndAssert(true, "load('LOAD').p0 < 1000.0");
+        evalAndAssert(true, "load('LOAD').p0 >= 100.0");
+        evalAndAssert(true, "load('LOAD').p0 <= 1000.0");
+        evalAndAssert(599.0, "load('LOAD').p0 - 1");
+        evalAndAssert(1200.0, "load('LOAD').p0 * 2");
+        evalAndAssert(300.0, "load('LOAD').p0 / 2");
+
+        // visitNotOperator
+        evalAndAssert(false, "! load('LOAD').terminal.connected");
+
+        // visitLogicalOperator
+        evalAndAssert(true, "load('LOAD').terminal.connected || false");
+        evalAndAssert(false, "load('LOAD').terminal.connected && false");
+
+        // visitArithmeticOperator
+        evalAndAssert(601.0, "load('LOAD').p0 + 1");
+        evalAndAssert(599.0, "load('LOAD').p0 - 1");
+        evalAndAssert(1200.0, "load('LOAD').p0 * 2");
+        evalAndAssert(300.0, "load('LOAD').p0 / 2");
     }
 
     @Test
@@ -300,5 +326,25 @@ public class ConditionDslLoaderTest {
         // combine with loadingRank
         evalAndAssert(1, "loadingRank(mostLoaded(['NHV1_NHV2_1', 'NHV1_NHV2_2']), ['NHV1_NHV2_1', 'NHV1_NHV2_2'])");
         evalAndAssert(1, "loadingRank('NHV1_NHV2_1', [mostLoaded(['NHV1_NHV2_1', 'NHV1_NHV2_2']), 'NHV1_NHV2_2'])");
+    }
+
+    @Test
+    public void testExpressionVariableLister() {
+        String script = "line('NHV1_NHV2_1').terminal1.p > 0 || line('NHV1_NHV2_1').getTerminal2().getP() > 0 && actionTaken('action1')";
+        ExpressionNode node = (ExpressionNode) new ConditionDslLoader(script).load(network);
+        assertNotNull(node);
+        List<NetworkNode> nodes = ExpressionVariableLister.list(node);
+        assertEquals(2, nodes.size());
+    }
+
+    @Test
+    public void testActionTakenLister() {
+        String script = "actionTaken('action1') && line('NHV1_NHV2_1').terminal1.p > 0 && actionTaken('action2')";
+        ExpressionNode node = (ExpressionNode) new ConditionDslLoader(script).load(network);
+        assertNotNull(node);
+        List<String> actions = ExpressionActionTakenLister.list(node);
+        assertEquals(2, actions.size());
+        assertTrue(actions.contains("action1"));
+        assertTrue(actions.contains("action2"));
     }
 }

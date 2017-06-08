@@ -10,7 +10,7 @@ import eu.itesla_project.iidm.network.Network;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
@@ -26,12 +26,14 @@ class StackScalable extends AbstractScalable {
     }
 
     @Override
-    public float scale(Network n, Map<String, String> name2id, float asked) {
+    public float scale(Network n, float asked) {
+        Objects.requireNonNull(n);
+
         float done = 0;
         float remaining = asked;
         for (Scalable scalable : scalables) {
             if (remaining > 0) {
-                float v = scalable.scale(n, name2id, remaining);
+                float v = scalable.scale(n, remaining);
                 done += v;
                 remaining -= v;
             }

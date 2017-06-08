@@ -18,7 +18,13 @@ import java.util.Objects;
 public class LoadFlowActionSimulatorConfig {
 
     public static LoadFlowActionSimulatorConfig load() {
-        ModuleConfig config = PlatformConfig.defaultConfig().getModuleConfig("load-flow-action-simulator");
+        return load(PlatformConfig.defaultConfig());
+    }
+
+    public static LoadFlowActionSimulatorConfig load(PlatformConfig platformConfig) {
+        Objects.requireNonNull(platformConfig);
+
+        ModuleConfig config = platformConfig.getModuleConfig("load-flow-action-simulator");
         Class<? extends LoadFlowFactory> loadFlowFactoryClass = config.getClassProperty("load-flow-factory", LoadFlowFactory.class);
         int maxIterations = config.getIntProperty("max-iterations");
         boolean ignorePreContingencyViolations = config.getBooleanProperty("ignore-pre-contingency-violations", false);

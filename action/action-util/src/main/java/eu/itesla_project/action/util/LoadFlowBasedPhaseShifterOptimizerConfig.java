@@ -18,9 +18,15 @@ import java.util.Objects;
 public class LoadFlowBasedPhaseShifterOptimizerConfig {
 
     public static LoadFlowBasedPhaseShifterOptimizerConfig load() {
-        ModuleConfig config = PlatformConfig.defaultConfig().getModuleConfig("load-flow-based-phase-shifter-optimizer");
+        return load(PlatformConfig.defaultConfig());
+    }
+
+    public static LoadFlowBasedPhaseShifterOptimizerConfig load(PlatformConfig platformConfig) {
+        Objects.requireNonNull(platformConfig);
+        ModuleConfig config = platformConfig.getModuleConfig("load-flow-based-phase-shifter-optimizer");
         Class<? extends LoadFlowFactory> loadFlowFactoryClass = config.getClassProperty("load-flow-factory", LoadFlowFactory.class);
         return new LoadFlowBasedPhaseShifterOptimizerConfig(loadFlowFactoryClass);
+
     }
 
     private Class<? extends LoadFlowFactory> loadFlowFactoryClass;

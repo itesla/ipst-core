@@ -9,10 +9,7 @@ package eu.itesla_project.action.simulator.tool;
 import eu.itesla_project.action.simulator.loadflow.AbstractLoadFlowActionSimulatorObserver;
 import eu.itesla_project.contingency.Contingency;
 import eu.itesla_project.iidm.network.Network;
-import eu.itesla_project.security.LimitViolation;
-import eu.itesla_project.security.PostContingencyResult;
-import eu.itesla_project.security.PreContingencyResult;
-import eu.itesla_project.security.SecurityAnalysisResult;
+import eu.itesla_project.security.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public abstract class SecurityAnalysisResultBuilder extends AbstractLoadFlowActionSimulatorObserver {
 
-    private PreContingencyResult preContingencyResult;
+    private LimitViolationsResult preContingencyResult;
 
     private final Map<String, PostContingencyResult> postContingencyResults = new HashMap<>();
 
@@ -47,17 +44,19 @@ public abstract class SecurityAnalysisResultBuilder extends AbstractLoadFlowActi
     @Override
     public void loadFlowDiverged(Contingency contingency) {
         if (precontingency) {
-            preContingencyResult = new PreContingencyResult(false, Collections.emptyList(), Collections.emptyList());
+            preContingencyResult = new LimitViolationsResult(false, Collections.emptyList(), preContingencyActions);
         } else {
-            postContingencyResults.put(contingency.getId(), new PostContingencyResult(contingency, false, Collections.emptyList(), Collections.emptyList()));
+            Objects.requireNonNull(contingency);
+            postContingencyResults.put(contingency.getId(), new PostContingencyResult(contingency, false, Collections.emptyList(), getPostContingencyActions(contingency)));
         }
     }
 
     @Override
     public void loadFlowConverged(Contingency contingency, List<LimitViolation> violations) {
         if (precontingency) {
-            preContingencyResult = new PreContingencyResult(true, violations, preContingencyActions);
+            preContingencyResult = new LimitViolationsResult(true, violations, preContingencyActions);
         } else {
+            Objects.requireNonNull(contingency);
             postContingencyResults.put(contingency.getId(), new PostContingencyResult(contingency,
                                                                                       true,
                                                                                       violations,
@@ -66,19 +65,16 @@ public abstract class SecurityAnalysisResultBuilder extends AbstractLoadFlowActi
     }
 
     private List<String> getPostContingencyActions(Contingency contingency) {
-        List<String> actions = postContingencyActions.get(contingency.getId());
-        if (actions == null) {
-            actions = new ArrayList<>();
-            postContingencyActions.put(contingency.getId(), actions);
-        }
-        return actions;
+        return postContingencyActions.computeIfAbsent(contingency.getId(), k -> new ArrayList<>());
     }
 
     @Override
     public void afterAction(Contingency contingency, String actionId) {
+        Objects.requireNonNull(actionId);
         if (precontingency) {
             preContingencyActions.add(actionId);
         } else {
+            Objects.requireNonNull(contingency);
             getPostContingencyActions(contingency).add(actionId);
         }
     }
@@ -86,7 +82,7 @@ public abstract class SecurityAnalysisResultBuilder extends AbstractLoadFlowActi
     @Override
     public void afterPostContingencyAnalysis() {
         onFinalStateResult(new SecurityAnalysisResult(preContingencyResult,
-                                                      postContingencyResults.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList())));
+                                                      postContingencyResults.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList())));
     }
 
     public abstract void onFinalStateResult(SecurityAnalysisResult result);
