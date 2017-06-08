@@ -9,14 +9,18 @@ package eu.itesla_project.contingency.tasks;
 import eu.itesla_project.commons.ITeslaException;
 import eu.itesla_project.computation.ComputationManager;
 import eu.itesla_project.iidm.network.Network;
+import eu.itesla_project.iidm.network.Switch;
+import eu.itesla_project.iidm.network.Terminal;
 import eu.itesla_project.iidm.network.TwoTerminalsConnectable;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Mathieu Bague <mathieu.bague at rte-france.com>
  */
-public class BranchTripping implements ModificationTask {
+public class BranchTripping extends TrippingTask {
 
     private final String branchId;
     private final String substationId;
@@ -31,7 +35,9 @@ public class BranchTripping implements ModificationTask {
     }
 
     @Override
-    public void modify(Network network, ComputationManager computationManager) {
+    public void traverse(Network network, ComputationManager computationManager, Set<Switch> switchesToOpen, Set<Terminal> terminalsToDisconnect) {
+        Objects.requireNonNull(network);
+
         TwoTerminalsConnectable branch = network.getLine(branchId);
         if (branch == null) {
             branch = network.getTwoWindingsTransformer(branchId);
@@ -41,15 +47,15 @@ public class BranchTripping implements ModificationTask {
         }
         if (substationId != null) {
             if (substationId.equalsIgnoreCase(branch.getTerminal1().getVoltageLevel().getSubstation().getId())) {
-                branch.getTerminal1().disconnect();
+                ContingencyTopologyTraverser.traverse(branch.getTerminal1(), switchesToOpen, terminalsToDisconnect);
             } else if (substationId.equalsIgnoreCase(branch.getTerminal2().getVoltageLevel().getSubstation().getId())) {
-                branch.getTerminal2().disconnect();
+                ContingencyTopologyTraverser.traverse(branch.getTerminal2(), switchesToOpen, terminalsToDisconnect);
             } else {
                 throw new ITeslaException("Substation '" + substationId + "' not connected to branch '" + branchId + "'");
             }
         } else {
-            branch.getTerminal1().disconnect();
-            branch.getTerminal2().disconnect();
+            ContingencyTopologyTraverser.traverse(branch.getTerminal1(), switchesToOpen, terminalsToDisconnect);
+            ContingencyTopologyTraverser.traverse(branch.getTerminal2(), switchesToOpen, terminalsToDisconnect);
         }
     }
 

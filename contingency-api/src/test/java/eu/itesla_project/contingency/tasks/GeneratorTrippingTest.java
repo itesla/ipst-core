@@ -11,6 +11,7 @@ import eu.itesla_project.contingency.ContingencyImpl;
 import eu.itesla_project.contingency.GeneratorContingency;
 import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.network.test.EurostagTutorialExample1Factory;
+import eu.itesla_project.iidm.network.test.FictitiousSwitchFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -41,5 +42,16 @@ public class GeneratorTrippingTest {
 
         GeneratorTripping tripping = new GeneratorTripping("generator");
         tripping.modify(network, null);
+    }
+
+    @Test
+    public void fictitiousSwitchTest() {
+        Network network = FictitiousSwitchFactory.create();
+        network.getSwitch("BT").setFictitious(true);
+
+        GeneratorTripping tripping = new GeneratorTripping("CD");
+        tripping.modify(network, null);
+
+        assertTrue(network.getSwitch("BJ").isOpen());
     }
 }

@@ -13,6 +13,7 @@ import eu.itesla_project.iidm.network.Line;
 import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.network.TwoWindingsTransformer;
 import eu.itesla_project.iidm.network.test.EurostagTutorialExample1Factory;
+import eu.itesla_project.iidm.network.test.FictitiousSwitchFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -83,5 +84,16 @@ public class BranchTrippingTest {
 
         BranchTripping tripping = new BranchTripping("NHV2_NLOAD", "UNKNOWN");
         tripping.modify(network, null);
+    }
+
+    @Test
+    public void fictitiousSwitchTest() {
+        Network network = FictitiousSwitchFactory.create();
+
+        BranchTripping tripping = new BranchTripping("CJ", "A");
+        tripping.modify(network, null);
+
+        assertTrue(network.getSwitch("BD").isOpen());
+        assertTrue(network.getSwitch("BL").isOpen());
     }
 }

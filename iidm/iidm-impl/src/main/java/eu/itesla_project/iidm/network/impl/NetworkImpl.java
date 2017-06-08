@@ -411,6 +411,11 @@ class NetworkImpl extends IdentifiableImpl<Network> implements Network, MultiSta
     }
 
     @Override
+    public BusbarSection getBusbarSection(String id) {
+        return objectStore.get(id, BusbarSectionImpl.class);
+    }
+
+    @Override
     public HvdcConverterStationImpl<?> getHvdcConverterStation(String id) {
         HvdcConverterStationImpl<?> converterStation = getLccConverterStation(id);
         if (converterStation == null) {
