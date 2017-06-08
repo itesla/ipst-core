@@ -125,66 +125,50 @@ public class RunLoadFlowTool implements Tool {
 
         try (ComputationManager computationManager = new LocalComputationManager()) {
             ImportConfig importConfig = (!skipPostProc) ? ImportConfig.load() : new ImportConfig();
-            if (Files.isRegularFile(caseFile)) {
-                // process a single network: output-file/output-format options available
-                if (line.hasOption("output-file")) {
-                    outputFile = context.getFileSystem().getPath(line.getOptionValue("output-file"));
-                    if (!line.hasOption("output-format")) {
-                        throw new ParseException("Missing required option: output-format");
-                    }
-                    format = Format.valueOf(line.getOptionValue("output-format"));
+            // process a single network: output-file/output-format options available
+            if (line.hasOption("output-file")) {
+                outputFile = context.getFileSystem().getPath(line.getOptionValue("output-file"));
+                if (!line.hasOption("output-format")) {
+                    throw new ParseException("Missing required option: output-format");
                 }
+                format = Format.valueOf(line.getOptionValue("output-format"));
+            }
 
-                Exporter modifiedNetworkExporter = null;
-                if (line.hasOption("output-case-format") || line.hasOption("output-case-dir") || (line.hasOption("output-case-basename"))) {
-                    Arrays.asList("output-case-format", "output-case-dir", "output-case-basename")
-                            .forEach(paramName -> {
-                                if (!line.hasOption(paramName)) {
-                                    throw new RuntimeException("Missing required option:" + paramName);
-                                }
-                            });
-                    String outputCaseFormat = line.getOptionValue("output-case-format");
-                    modifiedNetworkExporter = Exporters.getExporter(outputCaseFormat);
-                    if (modifiedNetworkExporter == null) {
-                        throw new ITeslaException("Target format " + outputCaseFormat + " not supported");
-                    }
+            Exporter modifiedNetworkExporter = null;
+            if (line.hasOption("output-case-format") || line.hasOption("output-case-dir") || (line.hasOption("output-case-basename"))) {
+                Arrays.asList("output-case-format", "output-case-dir", "output-case-basename")
+                        .forEach(paramName -> {
+                            if (!line.hasOption(paramName)) {
+                                throw new RuntimeException("Missing required option:" + paramName);
+                            }
+                        });
+                String outputCaseFormat = line.getOptionValue("output-case-format");
+                modifiedNetworkExporter = Exporters.getExporter(outputCaseFormat);
+                if (modifiedNetworkExporter == null) {
+                    throw new ITeslaException("Target format " + outputCaseFormat + " not supported");
                 }
+            }
 
-                context.getOutputStream().println("Loading network '" + caseFile + "'");
-                Network network = Importers.loadNetwork(caseFile, computationManager, importConfig, null);
-                if (network == null) {
-                    throw new RuntimeException("Case '" + caseFile + "' not found");
-                }
-                LoadFlow loadFlow = defaultConfig.newFactoryImpl(LoadFlowFactory.class).create(network, computationManager, 0);
-                LoadFlowResult result = loadFlow.run();
+            context.getOutputStream().println("Loading network '" + caseFile + "'");
+            Network network = Importers.loadNetwork(caseFile, computationManager, importConfig, null);
+            if (network == null) {
+                throw new RuntimeException("Case '" + caseFile + "' not found");
+            }
+            LoadFlow loadFlow = defaultConfig.newFactoryImpl(LoadFlowFactory.class).create(network, computationManager, 0);
+            LoadFlowResult result = loadFlow.run();
 
-                if (outputFile != null) {
-                    exportResult(result, context, outputFile, format);
-                } else {
-                    printResult(result, context);
-                }
+            if (outputFile != null) {
+                exportResult(result, context, outputFile, format);
+            } else {
+                printResult(result, context);
+            }
 
-                // exports the modified network to the filesystem, if requested
-                if (modifiedNetworkExporter != null) {
-                    modifiedNetworkExporter.export(network,
-                            new Properties(),
-                            new FileDataSource(context.getFileSystem().getPath(line.getOptionValue("output-case-dir")),
-                                    line.getOptionValue("output-case-basename")));
-                }
-
-            } else if (Files.isDirectory(caseFile)) {
-                //process multiple networks: concise output (results table, to the standard output)
-                try (TableFormatter formatter = getAsciiFormatter(TableFormatterConfig.load(), context)) {
-                    Importers.loadNetworks(caseFile, false, computationManager, importConfig, network -> {
-                        try {
-                            LoadFlow loadFlow = defaultConfig.newFactoryImpl(LoadFlowFactory.class).create(network, computationManager, 0);
-                            LoadFlowResult result = loadFlow.run();
-                            printTableEntry(formatter, network, result);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }, dataSource -> context.getOutputStream().println("Loading case '" + dataSource.getBaseName() + "'"));
-                }
+            // exports the modified network to the filesystem, if requested
+            if (modifiedNetworkExporter != null) {
+                modifiedNetworkExporter.export(network,
+                        new Properties(),
+                        new FileDataSource(context.getFileSystem().getPath(line.getOptionValue("output-case-dir")),
+                                line.getOptionValue("output-case-basename")));
             }
         }
     }
