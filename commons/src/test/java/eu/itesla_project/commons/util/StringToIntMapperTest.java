@@ -79,7 +79,7 @@ public class StringToIntMapperTest {
         assertEquals(value, mapper.getId(TestSubset.TYPE, 2));
         assertEquals(2, mapper.getInt(TestSubset.TYPE, value));
         
-        String content = String.join("\n", "TYPE;value1;1", "TYPE;value2;2");
+        String content = String.join(System.lineSeparator(), "TYPE;value1;1", "TYPE;value2;2");
         try (Writer writer = new StringWriter()) {
             mapper.dump(writer);
             assertEquals(content, writer.toString().trim());
