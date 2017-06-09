@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class ExpressionHelper {
 

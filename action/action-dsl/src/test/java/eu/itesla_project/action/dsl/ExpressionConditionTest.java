@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 /**
- * @author Mathieu Bague <mathieu.bague@rte-france.com>
+ * @author Mathieu Bague <mathieu.bague at rte-france.com>
  */
 public class ExpressionConditionTest {
 

@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * @author Mathieu Bague <mathieu.bague@rte-france.com>
+ * @author Mathieu Bague <mathieu.bague at rte-france.com>
  */
 public class RuleTest {
 

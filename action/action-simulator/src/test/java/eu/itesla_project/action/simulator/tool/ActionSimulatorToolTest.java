@@ -13,7 +13,7 @@ import eu.itesla_project.commons.tools.Tool;
 import java.util.Collections;
 
 /**
- * @author Mathieu Bague <mathieu.bague@rte-france.com>
+ * @author Mathieu Bague <mathieu.bague at rte-france.com>
  */
 public class ActionSimulatorToolTest extends AbstractToolTest {
 

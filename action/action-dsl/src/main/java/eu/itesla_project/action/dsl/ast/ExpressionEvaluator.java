@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class ExpressionEvaluator extends AbstractExpressionVisitor<Object, Void> {
 

@@ -11,7 +11,7 @@ import eu.itesla_project.action.dsl.spi.DslTaskExtension
 import eu.itesla_project.contingency.tasks.ModificationTask
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 @AutoService(DslTaskExtension.class)
 class OpenSwitchTaskExtension implements DslTaskExtension {

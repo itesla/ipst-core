@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class AbstractLoadFlowActionSimulatorObserver implements LoadFlowActionSimulatorObserver {
     @Override

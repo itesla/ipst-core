@@ -14,7 +14,7 @@ import eu.itesla_project.iidm.network.Switch;
 import java.util.Objects;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class OpenSwitchTask implements ModificationTask {
 

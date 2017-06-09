@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public abstract class AbstractLoadFlowRulesEngineTest {
 

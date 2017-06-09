@@ -20,7 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class ContingencyOccurredTest extends AbstractLoadFlowRulesEngineTest {
 

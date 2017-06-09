@@ -10,7 +10,7 @@ import eu.itesla_project.iidm.network.Network;
 import org.junit.Test;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class PreDefinedConditionTest extends AbstractLoadFlowRulesEngineTest {
     @Override

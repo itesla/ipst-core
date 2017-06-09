@@ -11,7 +11,7 @@ import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.network.test.EurostagTutorialExample1Factory;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public interface EurostagTutorialExample1WithTemporaryLimitFactory {
 

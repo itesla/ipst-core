@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 @AutoService(Tool.class)
 public class ActionSimulatorTool implements Tool {

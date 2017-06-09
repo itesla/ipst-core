@@ -9,7 +9,7 @@ package eu.itesla_project.action.util;
 import eu.itesla_project.iidm.network.Network;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public interface PhaseShifterOptimizer {
 

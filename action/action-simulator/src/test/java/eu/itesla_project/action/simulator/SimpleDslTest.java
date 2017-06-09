@@ -12,7 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class SimpleDslTest extends AbstractLoadFlowRulesEngineTest {
 

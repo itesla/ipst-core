@@ -21,7 +21,7 @@ import org.codehaus.groovy.control.CompilationFailedException
 import org.slf4j.LoggerFactory
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian@rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 class ActionDslLoader extends DslLoader {
 
