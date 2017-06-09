@@ -35,7 +35,7 @@ public class LoadFlowResultSerializer extends StdSerializer<LoadFlowResult> {
     public void serialize(LoadFlowResult result, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeStringField("version", VERSION);
-        jsonGenerator.writeObjectField("isOK", result.isOk());
+        jsonGenerator.writeBooleanField("isOK", result.isOk());
         jsonGenerator.writeObjectField("metrics", result.getMetrics());
         jsonGenerator.writeEndObject();
     }
