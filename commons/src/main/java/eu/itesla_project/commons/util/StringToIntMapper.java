@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2016, All partners of the iTesla project (http://www.itesla-project.eu/consortium)
+ * Copyright (c) 2017, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -8,6 +9,7 @@ package eu.itesla_project.commons.util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -98,7 +100,7 @@ public class StringToIntMapper<SUBSET extends Enum<SUBSET> & IntCounter> {
             for (Map.Entry<String, Integer> entry1 : entry.getValue().entrySet()) {
                 String id = entry1.getKey();
                 Integer num = entry1.getValue();
-                writer.write(subset + ";" + id + ";" + num + "\n");
+                writer.write(subset + ";" + id + ";" + num + System.lineSeparator());
             }
         }
     }
@@ -131,6 +133,14 @@ public class StringToIntMapper<SUBSET extends Enum<SUBSET> & IntCounter> {
         try (BufferedReader reader = Files.newBufferedReader(file, Charset.forName("UTF-8"))) {
             load(reader);
         }
+    }
+
+    public synchronized void reset(SUBSET subset) {
+        if (subset == null) {
+            throw new IllegalArgumentException("subset is null");
+        }
+        id2num.put(subset, HashBiMap.<String, Integer>create());
+        counter.put(subset, subset.getInitialValue());
     }
 
 }
