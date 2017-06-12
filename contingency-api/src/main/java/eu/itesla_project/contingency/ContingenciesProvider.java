@@ -8,7 +8,6 @@ package eu.itesla_project.contingency;
 
 import eu.itesla_project.iidm.network.Network;
 
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -17,8 +16,5 @@ import java.util.List;
 public interface ContingenciesProvider {
 
     List<Contingency> getContingencies(Network network);
-
-    default void load(Path contingenciesFile) {
-    }
 
 }
