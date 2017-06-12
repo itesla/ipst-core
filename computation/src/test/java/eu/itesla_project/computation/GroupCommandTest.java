@@ -35,7 +35,7 @@ public class GroupCommandTest {
         assertEquals("cmd1", cmd1.getId());
         assertEquals(1, cmd1.getInputFiles().size());
         assertEquals(1, cmd1.getOutputFiles().size());
-        assertEquals(cmd1.getSubCommands().size(), 1);
+        assertEquals(1, cmd1.getSubCommands().size());
         GroupCommand.SubCommand prg1 = cmd1.getSubCommands().get(0);
         assertEquals("prg1", prg1.getProgram());
         assertEquals(ImmutableList.of("arg1", "file1"), prg1.getArgs(1));
