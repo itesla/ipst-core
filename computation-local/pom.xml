@@ -32,6 +32,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>eu.itesla_project</groupId>
+            <artifactId>tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>computation</artifactId>
             <version>${project.version}</version>
@@ -40,7 +45,7 @@
         <!-- test dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>commons</artifactId>
+            <artifactId>tools</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
