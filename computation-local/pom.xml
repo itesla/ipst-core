@@ -32,13 +32,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.itesla_project</groupId>
-            <artifactId>tools</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>computation</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>computation</artifactId>
+            <artifactId>tools</artifactId>
             <version>${project.version}</version>
         </dependency>
 
