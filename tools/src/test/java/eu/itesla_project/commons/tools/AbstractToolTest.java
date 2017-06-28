@@ -8,18 +8,24 @@ package eu.itesla_project.commons.tools;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+import eu.itesla_project.computation.ComputationManager;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
@@ -38,6 +44,15 @@ public abstract class AbstractToolTest {
     public void setUp() throws Exception {
         fileSystem = Jimfs.newFileSystem(Configuration.unix());
         tools = new CommandLineTools(getTools());
+    }
+
+    protected void createFile(String filename, String content) throws IOException {
+        Objects.requireNonNull(filename);
+        Objects.requireNonNull(content);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(fileSystem.getPath(filename))) {
+            writer.write(content);
+        }
     }
 
     @After
@@ -59,7 +74,33 @@ public abstract class AbstractToolTest {
         int status;
         try (PrintStream out = new PrintStream(bout);
              PrintStream err = new PrintStream(berr)) {
-            status = tools.run(args, new ToolRunningContext(out, err, fileSystem));
+            ComputationManager computationManager = Mockito.mock(ComputationManager.class);
+            status = tools.run(args, new ToolInitializationContext() {
+                @Override
+                public PrintStream getOutputStream() {
+                    return out;
+                }
+
+                @Override
+                public PrintStream getErrorStream() {
+                    return err;
+                }
+
+                @Override
+                public Options getAdditionalOptions() {
+                    return new Options();
+                }
+
+                @Override
+                public FileSystem getFileSystem() {
+                    return fileSystem;
+                }
+
+                @Override
+                public ComputationManager createComputationManager(CommandLine commandLine) {
+                    return computationManager;
+                }
+            });
         }
         assertEquals(expectedStatus, status);
         if (expectedOut != null) {

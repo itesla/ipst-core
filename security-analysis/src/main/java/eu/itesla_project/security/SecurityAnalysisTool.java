@@ -13,7 +13,6 @@ import eu.itesla_project.commons.io.table.CsvTableFormatterFactory;
 import eu.itesla_project.commons.tools.Command;
 import eu.itesla_project.commons.tools.Tool;
 import eu.itesla_project.commons.tools.ToolRunningContext;
-import eu.itesla_project.computation.local.LocalComputationManager;
 import eu.itesla_project.contingency.ContingenciesProvider;
 import eu.itesla_project.contingency.ContingenciesProviderFactory;
 import eu.itesla_project.iidm.import_.Importers;
@@ -122,7 +121,7 @@ public class SecurityAnalysisTool implements Tool {
 
         context.getOutputStream().println("Loading network '" + caseFile + "'");
         
-        SecurityAnalysisResult result = new SecurityAnalyzer(LocalComputationManager.getDefault(),0).analyze(caseFile, line.hasOption("contingencies-file") ? context.getFileSystem().getPath(line.getOptionValue("contingencies-file")) : null);
+        SecurityAnalysisResult result = new SecurityAnalyzer(context.getComputationManager(),0).analyze(caseFile, line.hasOption("contingencies-file") ? context.getFileSystem().getPath(line.getOptionValue("contingencies-file")) : null);
 
         if (!result.getPreContingencyResult().isComputationOk()) {
             context.getErrorStream().println("Pre-contingency state divergence");
