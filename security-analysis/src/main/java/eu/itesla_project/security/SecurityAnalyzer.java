@@ -34,6 +34,14 @@ public class SecurityAnalyzer {
         securityAnalysisFactory = defaultConfig.newFactoryImpl(SecurityAnalysisFactory.class);
         contingenciesProviderFactory = defaultConfig.newFactoryImpl(ContingenciesProviderFactory.class);
     }
+    
+    public SecurityAnalyzer(ComputationManager computationManager, int priority, SecurityAnalysisFactory securityAnalysisFactory, ContingenciesProviderFactory contingenciesProviderFactory){
+        this.computationManager = Objects.requireNonNull(computationManager);
+        this.priority = priority;
+        this.securityAnalysisFactory = Objects.requireNonNull(securityAnalysisFactory);
+        this.contingenciesProviderFactory = Objects.requireNonNull(contingenciesProviderFactory);
+    }
+
 
     public SecurityAnalysisResult analyze(Path caseFile, Path contingenciesFile) {
         Objects.requireNonNull(caseFile);
