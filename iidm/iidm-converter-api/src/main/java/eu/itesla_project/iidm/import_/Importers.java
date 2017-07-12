@@ -389,7 +389,6 @@ public class Importers {
         return loadNetwork(Paths.get(file));
     }
 
-
     public static void loadNetworks(Path dir, boolean parallel, ComputationManager computationManager, ImportConfig config, Consumer<Network> consumer, Consumer<ReadOnlyDataSource> listener) throws IOException, InterruptedException, ExecutionException {
         if (!Files.isDirectory(dir)) {
             throw new RuntimeException("Directory " + dir + " does not exist or is not a regular directory");
@@ -414,6 +413,44 @@ public class Importers {
 
     public static void loadNetworks(Path dir, Consumer<Network> consumer) throws IOException, InterruptedException, ExecutionException {
         loadNetworks(dir, false, LocalComputationManager.getDefault(), CONFIG.get(), consumer);
+    }
+    
+    public static Network loadNetwork(byte[] data, String extension, String format, ComputationManager computationManager, ImportConfig config, Properties parameters) {
+        return loadNetwork(data, extension, format, computationManager, config, parameters, LOADER);
+    }
+
+    public static Network loadNetwork(byte[] data, String extension, String format, ComputationManager computationManager, ImportConfig config, Properties parameters, ImportersLoader loader) {
+        ReadOnlyMemDataSource dataSource = DataSourceUtil.createMemDataSource(data, extension, format);
+        //dataSource.putData(null, extension, data);
+        for (Importer importer : Importers.list(loader, computationManager, config)) {
+            if (importer.exists(dataSource)) {
+                return importer.import_(dataSource, parameters);
+            }
+        }
+        return null;
+    }
+
+    public static Network loadNetwork(byte[] data, String extension, String format) {
+        return loadNetwork(data, extension, format, LocalComputationManager.getDefault(), CONFIG.get(), null);
+    }
+
+    public static Network loadNetwork(byte[] data, String filename, ComputationManager computationManager, ImportConfig config, Properties parameters) {
+        return loadNetwork(data, filename, computationManager, config, parameters, LOADER);
+    }
+
+    public static Network loadNetwork(byte[] data, String filename, ComputationManager computationManager, ImportConfig config, Properties parameters, ImportersLoader loader) {
+        ReadOnlyMemDataSource dataSource = DataSourceUtil.createMemDataSource(data, filename);
+        //dataSource.putData(null, extension, data);
+        for (Importer importer : Importers.list(loader, computationManager, config)) {
+            if (importer.exists(dataSource)) {
+                return importer.import_(dataSource, parameters);
+            }
+        }
+        return null;
+    }
+
+    public static Network loadNetwork(byte[] data, String filename) {
+        return loadNetwork(data, filename, LocalComputationManager.getDefault(), CONFIG.get(), null);
     }
 
 }

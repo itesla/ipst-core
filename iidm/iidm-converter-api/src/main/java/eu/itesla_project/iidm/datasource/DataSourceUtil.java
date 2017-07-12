@@ -50,4 +50,42 @@ public interface DataSourceUtil {
             return new FileDataSource(directory, getBaseName(fileNameOrBaseName), observer);
         }
     }
+    
+    static ReadOnlyMemDataSource createMemDataSource(byte[] data, String extension, String format) {
+        Objects.requireNonNull(data);
+        Objects.requireNonNull(extension);
+        ReadOnlyMemDataSource mem = null;
+        if (extension.equalsIgnoreCase("zip")) {
+            mem = new ZipMemDataSource();
+        } else 
+        if (extension.equalsIgnoreCase("gz")) {
+            mem = new GzMemDataSource();
+        } else if (extension.equalsIgnoreCase("bz2")) {
+           mem = new Bzip2MemDataSource();
+        } else {
+            mem = new MemDataSource();
+        }
+        mem.putData(null, format, data);
+        return mem;
+    }
+    
+    static ReadOnlyMemDataSource createMemDataSource(byte[] data, String filename) {
+        Objects.requireNonNull(data);
+        Objects.requireNonNull(filename);
+        ReadOnlyMemDataSource mem = null;
+        if (filename.endsWith(".zip")) {
+            mem = new ZipMemDataSource(data);
+        } else 
+        if (filename.endsWith(".gz")) {
+            mem = new GzMemDataSource(data, filename);
+        } else if (filename.endsWith(".bz2")) {
+           mem = new Bzip2MemDataSource(data, filename);
+        } else {
+            mem = new ReadOnlyMemDataSource();
+            String format = filename.substring(filename.lastIndexOf(".")+1);
+            mem.putData(null, format, data);
+        }
+        return mem;
+    }
+    
 }
