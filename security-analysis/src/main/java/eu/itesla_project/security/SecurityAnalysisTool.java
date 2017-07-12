@@ -6,23 +6,6 @@
  */
 package eu.itesla_project.security;
 
-import com.google.auto.service.AutoService;
-import eu.itesla_project.commons.config.ComponentDefaultConfig;
-import eu.itesla_project.commons.io.table.AsciiTableFormatterFactory;
-import eu.itesla_project.commons.io.table.CsvTableFormatterFactory;
-import eu.itesla_project.commons.tools.Command;
-import eu.itesla_project.commons.tools.Tool;
-import eu.itesla_project.commons.tools.ToolRunningContext;
-import eu.itesla_project.contingency.ContingenciesProvider;
-import eu.itesla_project.contingency.ContingenciesProviderFactory;
-import eu.itesla_project.iidm.import_.Importers;
-import eu.itesla_project.iidm.network.Network;
-import eu.itesla_project.security.json.SecurityAnalysisResultSerializer;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -35,16 +18,25 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
+import com.google.auto.service.AutoService;
+
+import eu.itesla_project.commons.io.table.AsciiTableFormatterFactory;
+import eu.itesla_project.commons.io.table.CsvTableFormatterFactory;
+import eu.itesla_project.commons.tools.Command;
+import eu.itesla_project.commons.tools.Tool;
+import eu.itesla_project.commons.tools.ToolRunningContext;
+import eu.itesla_project.security.json.SecurityAnalysisResultSerializer;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 @AutoService(Tool.class)
 public class SecurityAnalysisTool implements Tool {
-
-    private enum Format {
-        CSV,
-        JSON
-    }
 
     @Override
     public Command getCommand() {
@@ -84,7 +76,7 @@ public class SecurityAnalysisTool implements Tool {
                         .argName("FILE")
                         .build());
                 options.addOption(Option.builder().longOpt("output-format")
-                        .desc("the output format " + Arrays.toString(Format.values()))
+                        .desc("the output format " + Arrays.toString(SecurityAnalyzer.Format.values()))
                         .hasArg()
                         .argName("FORMAT")
                         .build());
@@ -110,13 +102,13 @@ public class SecurityAnalysisTool implements Tool {
                 ? Arrays.stream(line.getOptionValue("limit-types").split(",")).map(LimitViolationType::valueOf).collect(Collectors.toSet())
                 : EnumSet.allOf(LimitViolationType.class);
         Path outputFile = null;
-        Format format = null;
+        SecurityAnalyzer.Format format = null;
         if (line.hasOption("output-file")) {
             outputFile = context.getFileSystem().getPath(line.getOptionValue("output-file"));
             if (! line.hasOption("output-format")) {
                 throw new ParseException("Missing required option: output-format");
             }
-            format = Format.valueOf(line.getOptionValue("output-format"));
+            format = SecurityAnalyzer.Format.valueOf(line.getOptionValue("output-format"));
         }
 
         context.getOutputStream().println("Loading network '" + caseFile + "'");
@@ -146,7 +138,7 @@ public class SecurityAnalysisTool implements Tool {
         Security.printPostContingencyViolations(result, writer, asciiTableFormatterFactory, limitViolationFilter);
     }
 
-    private void exportResult(SecurityAnalysisResult result, LimitViolationFilter limitViolationFilter, ToolRunningContext context, Path outputFile, Format format) throws IOException {
+    private void exportResult(SecurityAnalysisResult result, LimitViolationFilter limitViolationFilter, ToolRunningContext context, Path outputFile, SecurityAnalyzer.Format format) throws IOException {
         context.getOutputStream().println("Writing results to '" + outputFile + "'");
         switch (format) {
             case CSV:
