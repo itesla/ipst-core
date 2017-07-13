@@ -11,5 +11,10 @@ public class ReadOnlyMemDataSourceTest {
         ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "data.xiidm");
         assertTrue(mem.exists(null, "xiidm"));
     }
-
+    
+    @Test
+    public void testFormat() {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "xiidm","xiidm");
+            assertTrue(mem.exists(null, "xiidm"));
+    }
 }

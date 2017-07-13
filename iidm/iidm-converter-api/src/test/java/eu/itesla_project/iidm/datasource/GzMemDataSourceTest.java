@@ -11,5 +11,11 @@ public class GzMemDataSourceTest {
         ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "data.xiidm.gz");
         assertTrue(mem.exists(null, "xiidm"));
     }
+    
+    @Test
+    public void testFormat() {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "gz","xiidm");
+            assertTrue(mem.exists(null, "xiidm"));
+    }
 
 }

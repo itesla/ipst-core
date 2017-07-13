@@ -7,24 +7,34 @@ import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class ZipMemDataSourceTest {
 
-    @Test
-    public void test() {
+    private byte[] data;
+    
+    @Before
+    public void setUp() throws Exception {
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(bao));){
             ZipEntry entry = new ZipEntry("data.xiidm");
             zip.putNextEntry(entry);
             zip.closeEntry();
             zip.close();
-
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(bao.toByteArray(), "data.zip");
-            assertTrue(mem.exists(null, "xiidm"));
-        } catch (Exception ex) {
-            fail();
+            data = bao.toByteArray();
         }
     }
+    
+    @Test
+    public void testFilename() {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(data, "data.zip");
+            assertTrue(mem.exists(null, "xiidm"));
+    }
 
+    @Test
+    public void testFormat() {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(data, "zip","xiidm");
+            assertTrue(mem.exists(null, "xiidm"));
+    }
 }

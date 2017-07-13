@@ -11,5 +11,11 @@ public class Bzip2MemDataSourceTest {
         ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "data.xiidm.bz2");
         assertTrue(mem.exists(null, "xiidm"));
     }
+    
+    @Test
+    public void testFormat() {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "bz2","xiidm");
+            assertTrue(mem.exists(null, "xiidm"));
+    }
 
 }
