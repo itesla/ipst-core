@@ -9,22 +9,19 @@ package eu.itesla_project.afs.mapdb;
 import eu.itesla_project.afs.core.AppFileSystem;
 import eu.itesla_project.afs.mapdb.storage.MapDbAppFileSystemStorage;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.function.BiFunction;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class MapDbAppFileSystem extends AppFileSystem {
 
-    public MapDbAppFileSystem(MapDbAppFileSystemConfig config) {
-        this(config.getDriveName(), config.getDbFile().toFile());
-    }
-
-    public MapDbAppFileSystem(String name, File dbFile) {
-        this(name, MapDbAppFileSystemStorage.createMmapFile(name, dbFile));
-    }
-
-    public MapDbAppFileSystem(String name, MapDbAppFileSystemStorage storage) {
-        super(name, storage);
+    public MapDbAppFileSystem(MapDbAppFileSystemConfig config,
+                              BiFunction<String, Path, MapDbAppFileSystemStorage> storageProvider) {
+        super(Objects.requireNonNull(config).getDriveName(),
+              Objects.requireNonNull(storageProvider).apply(config.getDriveName(),
+                                                            config.getDbFile()));
     }
 }

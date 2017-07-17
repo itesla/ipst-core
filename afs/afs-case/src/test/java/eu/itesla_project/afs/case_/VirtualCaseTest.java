@@ -77,6 +77,53 @@ public class VirtualCaseTest extends AbstractProjectFileTest {
                 .build();
 
         // create virtual by applying groovy script on imported case
+        try {
+            VirtualCase virtualCase = folder.fileBuilder(VirtualCaseBuilder.class)
+                    .withCase("folder/network")
+                    .withScript("folder/script")
+                    .build();
+            fail();
+        } catch (AfsException ignored) {
+        }
+
+        try {
+            VirtualCase virtualCase = folder.fileBuilder(VirtualCaseBuilder.class)
+                    .withName("network2")
+                    .withScript("folder/script")
+                    .build();
+            fail();
+        } catch (AfsException ignored) {
+        }
+
+        try {
+            VirtualCase virtualCase = folder.fileBuilder(VirtualCaseBuilder.class)
+                    .withName("network2")
+                    .withCase("folder/network")
+                    .build();
+            fail();
+        } catch (AfsException ignored) {
+        }
+
+        try {
+            VirtualCase virtualCase = folder.fileBuilder(VirtualCaseBuilder.class)
+                    .withName("network2")
+                    .withCase("folder/???")
+                    .withScript("folder/script")
+                    .build();
+            fail();
+        } catch (AfsException ignored) {
+        }
+
+        try {
+            VirtualCase virtualCase = folder.fileBuilder(VirtualCaseBuilder.class)
+                    .withName("network2")
+                    .withCase("folder/network")
+                    .withScript("folder/???")
+                    .build();
+            fail();
+        } catch (AfsException ignored) {
+        }
+
         VirtualCase virtualCase = folder.fileBuilder(VirtualCaseBuilder.class)
                 .withName("network2")
                 .withCase("folder/network")
@@ -86,6 +133,7 @@ public class VirtualCaseTest extends AbstractProjectFileTest {
         assertEquals("network2", virtualCase.getName());
         assertNotNull(virtualCase.getCase());
         assertNotNull(virtualCase.getScript());
+        assertNotNull(virtualCase.getIcon());
         assertEquals(2, virtualCase.getDependencies().size());
         assertEquals(1, importedCase.getBackwardDependencies().size());
         assertEquals(1, script.getBackwardDependencies().size());

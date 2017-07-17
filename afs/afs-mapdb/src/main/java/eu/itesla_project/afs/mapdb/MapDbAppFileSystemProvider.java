@@ -9,10 +9,13 @@ package eu.itesla_project.afs.mapdb;
 import com.google.auto.service.AutoService;
 import eu.itesla_project.afs.core.AppFileSystem;
 import eu.itesla_project.afs.core.AppFileSystemProvider;
+import eu.itesla_project.afs.mapdb.storage.MapDbAppFileSystemStorage;
 import eu.itesla_project.computation.ComputationManager;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -23,18 +26,23 @@ public class MapDbAppFileSystemProvider implements AppFileSystemProvider {
 
     private final List<MapDbAppFileSystemConfig> configs;
 
+    private final BiFunction<String, Path, MapDbAppFileSystemStorage> storageProvider;
+
     public MapDbAppFileSystemProvider() {
-        this(MapDbAppFileSystemConfig.load());
+        this(MapDbAppFileSystemConfig.load(),
+             (name, path) -> MapDbAppFileSystemStorage.createMmapFile(name, path.toFile()));
     }
 
-    public MapDbAppFileSystemProvider(List<MapDbAppFileSystemConfig> configs) {
+    public MapDbAppFileSystemProvider(List<MapDbAppFileSystemConfig> configs,
+                                      BiFunction<String, Path, MapDbAppFileSystemStorage> storageProvider) {
         this.configs = Objects.requireNonNull(configs);
+        this.storageProvider = Objects.requireNonNull(storageProvider);
     }
 
     @Override
     public List<AppFileSystem> getFileSystems(ComputationManager computationManager) {
         return configs.stream()
-                .map(config -> new MapDbAppFileSystem(config))
+                .map(config -> new MapDbAppFileSystem(config, storageProvider))
                 .collect(Collectors.toList());
     }
 }
