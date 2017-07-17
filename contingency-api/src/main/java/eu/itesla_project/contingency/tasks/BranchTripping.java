@@ -23,15 +23,15 @@ import java.util.Set;
 public class BranchTripping extends TrippingTask {
 
     private final String branchId;
-    private final String substationId;
+    private final String voltageLevelId;
 
     public BranchTripping(String branchId) {
         this(branchId, null);
     }
 
-    public BranchTripping(String branchId, String substationId) {
+    public BranchTripping(String branchId, String voltageId) {
         this.branchId = Objects.requireNonNull(branchId);
-        this.substationId = substationId;
+        this.voltageLevelId = voltageId;
     }
 
     @Override
@@ -45,13 +45,13 @@ public class BranchTripping extends TrippingTask {
                 throw new ITeslaException("Branch '" + branchId + "' not found");
             }
         }
-        if (substationId != null) {
-            if (substationId.equalsIgnoreCase(branch.getTerminal1().getVoltageLevel().getSubstation().getId())) {
+        if (voltageLevelId != null) {
+            if (voltageLevelId.equalsIgnoreCase(branch.getTerminal1().getVoltageLevel().getId())) {
                 ContingencyTopologyTraverser.traverse(branch.getTerminal1(), switchesToOpen, terminalsToDisconnect);
-            } else if (substationId.equalsIgnoreCase(branch.getTerminal2().getVoltageLevel().getSubstation().getId())) {
+            } else if (voltageLevelId.equalsIgnoreCase(branch.getTerminal2().getVoltageLevel().getId())) {
                 ContingencyTopologyTraverser.traverse(branch.getTerminal2(), switchesToOpen, terminalsToDisconnect);
             } else {
-                throw new ITeslaException("Substation '" + substationId + "' not connected to branch '" + branchId + "'");
+                throw new ITeslaException("VoltageLevel '" + voltageLevelId + "' not connected to branch '" + branchId + "'");
             }
         } else {
             ContingencyTopologyTraverser.traverse(branch.getTerminal1(), switchesToOpen, terminalsToDisconnect);

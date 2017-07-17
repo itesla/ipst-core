@@ -46,7 +46,7 @@ public class BranchTrippingTest {
         assertTrue(line.getTerminal1().isConnected());
         assertTrue(line.getTerminal2().isConnected());
 
-        tripping = new BranchContingency("NHV1_NHV2_1", "P2");
+        tripping = new BranchContingency("NHV1_NHV2_1", "VLHV2");
         contingency = new ContingencyImpl("contingency", tripping);
         contingency.toTask().modify(network, null);
 
@@ -62,7 +62,7 @@ public class BranchTrippingTest {
         assertTrue(transformer.getTerminal1().isConnected());
         assertTrue(transformer.getTerminal2().isConnected());
 
-        BranchContingency tripping = new BranchContingency("NHV2_NLOAD", "P2");
+        BranchContingency tripping = new BranchContingency("NHV2_NLOAD", "VLHV2");
         ContingencyImpl contingency = new ContingencyImpl("contingency", tripping);
         contingency.toTask().modify(network, null);
 
@@ -90,7 +90,7 @@ public class BranchTrippingTest {
     public void fictitiousSwitchTest() {
         Network network = FictitiousSwitchFactory.create();
 
-        BranchTripping tripping = new BranchTripping("CJ", "A");
+        BranchTripping tripping = new BranchTripping("CJ", "C");
         tripping.modify(network, null);
 
         assertTrue(network.getSwitch("BD").isOpen());

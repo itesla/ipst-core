@@ -29,7 +29,7 @@ public class ContingencyElementDeserializer extends StdDeserializer<ContingencyE
     @Override
     public ContingencyElement deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
         String id = null;
-        String substationId = null;
+        String voltageLevelId = null;
         ContingencyElementType type = null;
 
         while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -38,8 +38,8 @@ public class ContingencyElementDeserializer extends StdDeserializer<ContingencyE
                     id = parser.nextTextValue();
                     break;
 
-                case "substationId":
-                    substationId = parser.nextTextValue();
+                case "voltageLevelId":
+                    voltageLevelId = parser.nextTextValue();
                     break;
 
                 case "type":
@@ -56,7 +56,7 @@ public class ContingencyElementDeserializer extends StdDeserializer<ContingencyE
             switch (type) {
                 case LINE:
                 case BRANCH:
-                    return new BranchContingency(id, substationId);
+                    return new BranchContingency(id, voltageLevelId);
 
                 case GENERATOR:
                     return new GeneratorContingency(id);

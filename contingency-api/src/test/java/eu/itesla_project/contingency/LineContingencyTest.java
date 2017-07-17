@@ -19,10 +19,10 @@ public class LineContingencyTest {
     public void test() {
         LineContingency contingency = new LineContingency("id");
         assertEquals("id", contingency.getId());
-        assertNull(contingency.getSubstationId());
+        assertNull(contingency.getVoltageLevelId());
         assertEquals(ContingencyElementType.LINE, contingency.getType());
 
-        contingency = new LineContingency("id", "substationId");
-        assertEquals("substationId", contingency.getSubstationId());
+        contingency = new LineContingency("id", "voltageLevelId");
+        assertEquals("voltageLevelId", contingency.getVoltageLevelId());
     }
 }
