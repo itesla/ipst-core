@@ -25,24 +25,19 @@
         <!-- Compilation dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>afs-storage</artifactId>
+            <artifactId>afs-case</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>afs-case</artifactId>
+            <artifactId>afs-storage</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava-testlib</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -51,14 +46,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava-testlib</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>afs-core</artifactId>

@@ -13,7 +13,9 @@ import eu.itesla_project.iidm.import_.Importer;
 import eu.itesla_project.iidm.import_.Importers;
 import eu.itesla_project.iidm.import_.ImportersLoader;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +33,15 @@ public enum CaseIconCache {
             for (Importer importer : Importers.list(loader, computationManager, new ImportConfig())) {
                 InputStream is = importer.get16x16Icon();
                 if (is != null) {
-                    cache.put(importer.getFormat(), new FileIcon(importer.getFormat(), is));
+                    try {
+                        cache.put(importer.getFormat(), new FileIcon(importer.getFormat(), is));
+                    } finally {
+                        try {
+                            is.close();
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    }
                 }
             }
         }

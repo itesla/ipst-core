@@ -31,7 +31,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         return new MapDbAppFileSystemStorage(fileSystemName, maker, () -> maker.make());
     }
 
-    public static MapDbAppFileSystemStorage createMmapFile(String fileSystemName, java.io.File dbFile) {
+    public static MapDbAppFileSystemStorage createMmapFile(String fileSystemName, File dbFile) {
         DBMaker.Maker maker = DBMaker.fileDB(dbFile);
         return new MapDbAppFileSystemStorage(fileSystemName, maker, () -> maker
                 .fileMmapEnable()
@@ -209,13 +209,13 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         }
     }
 
-    private static List<NodeId> minus(List<NodeId> nodeIds, NodeId nodeId) {
+    private static List<NodeId> remove(List<NodeId> nodeIds, NodeId nodeId) {
         List<NodeId> newNodeIds = new ArrayList<>(nodeIds);
         newNodeIds.remove(nodeId);
         return newNodeIds;
     }
 
-    private static Set<String> minus(Set<String> strings, String string) {
+    private static Set<String> remove(Set<String> strings, String string) {
         Set<String> newStrings = new HashSet<>(strings);
         newStrings.remove(string);
         return newStrings;
@@ -339,7 +339,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         childNodesMap.remove(nodeId);
         NodeId parentNodeId = parentNodeMap.remove(nodeId);
         if (parentNodeId != null) {
-            childNodesMap.put(parentNodeId, minus(childNodesMap.get(parentNodeId), nodeId));
+            childNodesMap.put(parentNodeId, remove(childNodesMap.get(parentNodeId), nodeId));
             childNodeMap.remove(new NamedLink(parentNodeId, name));
         }
         if (nodePseudoClass.equals(PseudoClass.PROJECT_PSEUDO_CLASS)) {
@@ -349,7 +349,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         for (NodeId toNodeId : getDependencies(nodeId)) {
             String dependencyName = dependencyNameMap.remove(new UnorderedNodeIdPair(nodeId, toNodeId));
             dependencyNodeMap.remove(new NamedLink(nodeId, dependencyName));
-            backwardDependencyNodesMap.put(toNodeId, minus(backwardDependencyNodesMap.get(toNodeId), nodeId));
+            backwardDependencyNodesMap.put(toNodeId, remove(backwardDependencyNodesMap.get(toNodeId), nodeId));
         }
         dependencyNodesMap.remove(nodeId);
     }
@@ -374,7 +374,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         NamedLink namedLink = new NamedLink(nodeId, name);
         if (value == null) {
             stringAttributeMap.remove(namedLink);
-            stringAttributesMap.put(nodeId, minus(stringAttributesMap.get(nodeId), name));
+            stringAttributesMap.put(nodeId, remove(stringAttributesMap.get(nodeId), name));
         } else {
             stringAttributeMap.put(namedLink, value);
             stringAttributesMap.put(nodeId, add(stringAttributesMap.get(nodeId), name));

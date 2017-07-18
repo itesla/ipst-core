@@ -85,11 +85,11 @@ public abstract class ProjectNode extends NodeBase<ProjectFolder> {
                 .collect(Collectors.toList());
     }
 
-    protected void notifyDependencyUpdate() {
+    protected void notifyDependencyChanged() {
         getBackwardDependencies().forEach(projectFile -> {
-            projectFile.onDependencyUpdate();
+            projectFile.onDependencyChanged();
             // propagate
-            projectFile.notifyDependencyUpdate();
+            projectFile.notifyDependencyChanged();
         });
     }
 }

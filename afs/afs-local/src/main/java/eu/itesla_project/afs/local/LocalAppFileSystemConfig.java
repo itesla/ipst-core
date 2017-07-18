@@ -6,6 +6,7 @@
  */
 package eu.itesla_project.afs.local;
 
+import eu.itesla_project.afs.core.AfsException;
 import eu.itesla_project.commons.config.ModuleConfig;
 import eu.itesla_project.commons.config.PlatformConfig;
 
@@ -51,7 +52,7 @@ public class LocalAppFileSystemConfig {
     private static Path checkRootDir(Path rootDir) {
         Objects.requireNonNull(rootDir);
         if (!Files.isDirectory(rootDir)) {
-            throw new RuntimeException("Root path " + rootDir + " is not a directory");
+            throw new AfsException("Root path " + rootDir + " is not a directory");
         }
         return rootDir;
     }

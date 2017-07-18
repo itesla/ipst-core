@@ -74,11 +74,11 @@ public class VirtualCaseBuilder implements ProjectFileBuilder<VirtualCase> {
         Project project = new Project(projectId, storage, fileSystem);
         ProjectCase aCase = (ProjectCase) project.getRootFolder().getChild(casePath);
         if (aCase == null) {
-            throw new AfsException("Invalid case path "+ casePath);
+            throw new AfsException("Invalid case path " + casePath);
         }
         GroovyScript script = (GroovyScript) project.getRootFolder().getChild(scriptPath);
         if (script == null) {
-            throw new AfsException("Invalid groovy script path "+ scriptPath);
+            throw new AfsException("Invalid groovy script path " + scriptPath);
         }
 
         try {

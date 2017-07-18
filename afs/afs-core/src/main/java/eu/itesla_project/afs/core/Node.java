@@ -20,7 +20,7 @@ public abstract class Node extends NodeBase<Folder> {
 
     protected Node(NodeId id, AppFileSystemStorage storage, AppFileSystem fileSystem) {
         super(id, storage);
-        this.fileSystem = fileSystem;
+        this.fileSystem = Objects.requireNonNull(fileSystem);
     }
 
     @Override

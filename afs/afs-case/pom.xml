@@ -45,7 +45,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.itesla_project</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>iidm-xml-converter</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -57,13 +57,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>afs-core</artifactId>

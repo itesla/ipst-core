@@ -6,6 +6,7 @@
  */
 package eu.itesla_project.afs.mapdb;
 
+import eu.itesla_project.afs.core.AfsException;
 import eu.itesla_project.commons.config.ModuleConfig;
 import eu.itesla_project.commons.config.PlatformConfig;
 
@@ -51,7 +52,7 @@ public class MapDbAppFileSystemConfig {
     private static Path checkDbFile(Path dbFile) {
         Objects.requireNonNull(dbFile);
         if (Files.isDirectory(dbFile)) {
-            throw new RuntimeException("DB file " + dbFile + " is a directory");
+            throw new AfsException("DB file " + dbFile + " is a directory");
         }
         return dbFile;
     }

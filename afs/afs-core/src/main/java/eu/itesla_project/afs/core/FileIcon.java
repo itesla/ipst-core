@@ -22,7 +22,7 @@ public class FileIcon {
 
     private final byte[] data;
 
-    static byte[] toByteArray(InputStream is) {
+    private static byte[] toByteArray(InputStream is) {
         try {
             return ByteStreams.toByteArray(is);
         } catch (IOException e) {

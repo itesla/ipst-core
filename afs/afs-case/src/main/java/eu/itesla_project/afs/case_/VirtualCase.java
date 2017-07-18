@@ -113,7 +113,7 @@ public class VirtualCase extends ProjectCase {
     }
 
     @Override
-    public void onDependencyUpdate() {
+    public void onDependencyChanged() {
         storage.setStringAttribute(id, OUT_ATTRIBUTE, null);
         storage.invalidateCache(id, NETWORK_CACHE_KEY);
         storage.commit();

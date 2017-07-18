@@ -57,7 +57,7 @@ public class VirtualCaseTest extends AbstractProjectFileTest {
     @Test
     public void test() throws Exception {
         // get case
-        Case _case = (Case) afs.getRootFolder().getChildren().get(0);
+        Case aCase = (Case) afs.getRootFolder().getChildren().get(0);
 
         // create project
         Project project = afs.getRootFolder().createProject("project", "");
@@ -67,7 +67,7 @@ public class VirtualCaseTest extends AbstractProjectFileTest {
 
         // import case into project
         ImportedCase importedCase = folder.fileBuilder(ImportedCaseBuilder.class)
-                .withCase(_case)
+                .withCase(aCase)
                 .build();
 
         // create groovy script

@@ -42,7 +42,7 @@ public class Case extends File {
                 .stream()
                 .filter(importer -> importer.getFormat().equals(format))
                 .findFirst()
-                .orElseThrow(() -> new AfsException("Import not found for format " + format));
+                .orElseThrow(() -> new AfsException("Importer not found for format " + format));
     }
 
 }

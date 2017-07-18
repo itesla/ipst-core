@@ -25,12 +25,23 @@
             <groupId>org.mapdb</groupId>
             <artifactId>mapdb</artifactId>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>afs-storage</artifactId>
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava-testlib</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.jimfs</groupId>
+            <artifactId>jimfs</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -46,16 +57,7 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google.jimfs</groupId>
-            <artifactId>jimfs</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava-testlib</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>afs-storage</artifactId>

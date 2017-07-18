@@ -63,11 +63,11 @@ public class ImportedCaseTest extends AbstractProjectFileTest {
         // check case exist
         assertEquals(1, root.getChildren().size());
         assertTrue(root.getChildren().get(0) instanceof Case);
-        Case _case = (Case) root.getChildren().get(0);
-        assertEquals("network", _case.getName());
-        assertEquals("Test format", _case.getDescription());
-        assertFalse(_case.isFolder());
-        assertNotNull(_case.getIcon());
+        Case aCase = (Case) root.getChildren().get(0);
+        assertEquals("network", aCase.getName());
+        assertEquals("Test format", aCase.getDescription());
+        assertFalse(aCase.isFolder());
+        assertNotNull(aCase.getIcon());
 
         // create project
         Project project = root.createProject("project", "");
@@ -85,7 +85,7 @@ public class ImportedCaseTest extends AbstractProjectFileTest {
         } catch (AfsException ignored) {
         }
         ImportedCase importedCase = folder.fileBuilder(ImportedCaseBuilder.class)
-                .withCase(_case)
+                .withCase(aCase)
                 .withParameter("param1", "true")
                 .withParameters(ImmutableMap.of("param2", "1"))
                 .build();
@@ -102,7 +102,7 @@ public class ImportedCaseTest extends AbstractProjectFileTest {
         assertNotNull(projectNode);
         assertTrue(projectNode instanceof ImportedCase);
         ImportedCase importedCase2 = (ImportedCase) projectNode;
-        Assert.assertEquals(TestImporter.FORMAT, importedCase2.getImporter().getFormat());
+        assertEquals(TestImporter.FORMAT, importedCase2.getImporter().getFormat());
         assertEquals(2, importedCase2.getParameters().size());
         assertEquals("true", importedCase2.getParameters().getProperty("param1"));
 

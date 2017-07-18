@@ -37,6 +37,6 @@ public class GroovyScript extends ProjectFile {
     public void write(String content) {
         storage.setStringAttribute(id, "script", content);
         storage.commit();
-        notifyDependencyUpdate();
+        notifyDependencyChanged();
     }
 }

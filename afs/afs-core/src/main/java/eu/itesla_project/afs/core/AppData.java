@@ -6,8 +6,6 @@
  */
 package eu.itesla_project.afs.core;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import eu.itesla_project.commons.util.ServiceLoaderCache;
 import eu.itesla_project.computation.ComputationManager;
 import eu.itesla_project.computation.local.LocalComputationManager;
@@ -52,6 +50,9 @@ public class AppData implements AutoCloseable {
                    List<FileExtension> fileExtensions, List<ProjectFileExtension> projectFileExtensions) {
         this.computationManager = Objects.requireNonNull(computationManager);
         this.importersLoader = Objects.requireNonNull(importersLoader);
+        Objects.requireNonNull(fileSystemProviders);
+        Objects.requireNonNull(fileExtensions);
+        Objects.requireNonNull(projectFileExtensions);
         for (AppFileSystemProvider provider : fileSystemProviders) {
             for (AppFileSystem fileSystem : provider.getFileSystems(computationManager)) {
                 if (fileSystems.containsKey(fileSystem.getName())) {
@@ -105,6 +106,7 @@ public class AppData implements AutoCloseable {
     }
 
     public FileExtension getFileExtension(Class<? extends File> fileClass) {
+        Objects.requireNonNull(fileClass);
         FileExtension extension = fileExtensions.get(fileClass);
         if (extension == null) {
             throw new AfsException("No extension found for file " + fileClass.getName());
@@ -151,6 +153,6 @@ public class AppData implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        getFileSystems().forEach(afs -> afs.close());
+        getFileSystems().forEach(AppFileSystem::close);
     }
 }

@@ -35,6 +35,6 @@ public abstract class ProjectFile extends ProjectNode {
                 .collect(Collectors.toList());
     }
 
-    public void onDependencyUpdate() {
+    public void onDependencyChanged() {
     }
 }
