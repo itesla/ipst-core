@@ -10,12 +10,18 @@ import eu.itesla_project.commons.ITeslaException;
 import eu.itesla_project.contingency.ContingencyImpl;
 import eu.itesla_project.contingency.GeneratorContingency;
 import eu.itesla_project.iidm.network.Network;
+import eu.itesla_project.iidm.network.Switch;
+import eu.itesla_project.iidm.network.Terminal;
 import eu.itesla_project.iidm.network.test.EurostagTutorialExample1Factory;
 import eu.itesla_project.iidm.network.test.FictitiousSwitchFactory;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Mathieu Bague <mathieu.bague at rte-france.com>
@@ -50,6 +56,13 @@ public class GeneratorTrippingTest {
         network.getSwitch("BT").setFictitious(true);
 
         GeneratorTripping tripping = new GeneratorTripping("CD");
+
+        Set<Switch> switchesToOpen = new HashSet<>();
+        Set<Terminal> terminalsToDisconnect = new HashSet<>();
+        tripping.traverse(network, null, switchesToOpen, terminalsToDisconnect);
+        assertEquals(Collections.singleton("BJ"), switchesToOpen.stream().map(Switch::getId).collect(Collectors.toSet()));
+        assertEquals(Collections.emptySet(), terminalsToDisconnect);
+
         tripping.modify(network, null);
 
         assertTrue(network.getSwitch("BJ").isOpen());

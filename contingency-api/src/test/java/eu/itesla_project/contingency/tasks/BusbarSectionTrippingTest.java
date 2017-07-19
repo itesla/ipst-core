@@ -6,17 +6,21 @@
  */
 package eu.itesla_project.contingency.tasks;
 
+import com.google.common.collect.Sets;
 import eu.itesla_project.commons.ITeslaException;
-import eu.itesla_project.contingency.BusbarSectionContingency;
-import eu.itesla_project.contingency.ContingencyImpl;
 import eu.itesla_project.iidm.network.Network;
+import eu.itesla_project.iidm.network.Switch;
+import eu.itesla_project.iidm.network.Terminal;
 import eu.itesla_project.iidm.network.test.FictitiousSwitchFactory;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -26,20 +30,23 @@ public class BusbarSectionTrippingTest {
 
     @Test
     public void busbarSectionTrippingTest() throws IOException {
-        busbarSectionTrippingTest("D", Arrays.asList("BD", "BL"));
-        busbarSectionTrippingTest("O", Arrays.asList("BJ", "BT"));
-        busbarSectionTrippingTest("P", Arrays.asList("BJ", "BL", "BV", "BX", "BZ"));
+        busbarSectionTrippingTest("D", Sets.newHashSet("BD", "BL"));
+        busbarSectionTrippingTest("O", Sets.newHashSet("BJ", "BT"));
+        busbarSectionTrippingTest("P", Sets.newHashSet("BJ", "BL", "BV", "BX", "BZ"));
     }
 
-    public void busbarSectionTrippingTest(String bbsId, List<String> switchIds) {
+    public void busbarSectionTrippingTest(String bbsId, Set<String> switchIds) {
         Network network = FictitiousSwitchFactory.create();
 
-        BusbarSectionContingency tripping = new BusbarSectionContingency(bbsId);
-        ContingencyImpl contingency = new ContingencyImpl("contingency", tripping);
+        BusbarSectionTripping tripping = new BusbarSectionTripping(bbsId);
 
-        ModificationTask task = contingency.toTask();
-        task.modify(network, null);
+        Set<Switch> switchesToOpen = new HashSet<>();
+        Set<Terminal> terminalsToDisconnect = new HashSet<>();
+        tripping.traverse(network, null, switchesToOpen, terminalsToDisconnect);
+        assertEquals(switchIds, switchesToOpen.stream().map(Switch::getId).collect(Collectors.toSet()));
+        assertEquals(Collections.emptySet(), terminalsToDisconnect);
 
+        tripping.modify(network, null);
         for (String id : switchIds) {
             assertTrue(network.getSwitch(id).isOpen());
         }

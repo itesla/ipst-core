@@ -6,18 +6,21 @@
  */
 package eu.itesla_project.contingency.tasks;
 
+import com.google.common.collect.Sets;
 import eu.itesla_project.commons.ITeslaException;
 import eu.itesla_project.contingency.BranchContingency;
 import eu.itesla_project.contingency.ContingencyImpl;
-import eu.itesla_project.iidm.network.Line;
-import eu.itesla_project.iidm.network.Network;
-import eu.itesla_project.iidm.network.TwoWindingsTransformer;
+import eu.itesla_project.iidm.network.*;
 import eu.itesla_project.iidm.network.test.EurostagTutorialExample1Factory;
 import eu.itesla_project.iidm.network.test.FictitiousSwitchFactory;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Mathieu Bague <mathieu.bague at rte-france.com>
@@ -91,8 +94,14 @@ public class BranchTrippingTest {
         Network network = FictitiousSwitchFactory.create();
 
         BranchTripping tripping = new BranchTripping("CJ", "C");
-        tripping.modify(network, null);
 
+        Set<Switch> switchesToOpen = new HashSet<>();
+        Set<Terminal> terminalsToDisconnect = new HashSet<>();
+        tripping.traverse(network, null, switchesToOpen, terminalsToDisconnect);
+        assertEquals(Sets.newHashSet("BD", "BL"), switchesToOpen.stream().map(Switch::getId).collect(Collectors.toSet()));
+        assertEquals(Collections.emptySet(), terminalsToDisconnect);
+
+        tripping.modify(network, null);
         assertTrue(network.getSwitch("BD").isOpen());
         assertTrue(network.getSwitch("BL").isOpen());
     }
