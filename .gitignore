@@ -1,14 +1,14 @@
 # Maven projects
+/action/action-dsl/target/
+/action/action-dsl-spi/target/
+/action/action-simulator/target/
+/action/action-util/target/
 /afs/afs-core/target/
 /afs/afs-ext-base/target/
 /afs/afs-local/target/
 /afs/afs-mapdb/target/
 /afs/afs-mapdb-storage/target/
 /afs/afs-storage/target/
-/action/action-dsl/target/
-/action/action-dsl-spi/target/
-/action/action-simulator/target/
-/action/action-util/target/
 /case-repository/target/
 /commons/target/
 /computation-local/target/
