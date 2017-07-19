@@ -27,13 +27,13 @@ import java.nio.file.Paths;
  * @author Massimo Ferraro <massimo.ferraro@techrain.it>
  */
 @AutoService(Tool.class)
-public class CheckFlowsTool implements Tool {
+public class ValidationTool implements Tool {
     
     private static Command COMMAND = new Command() {
 
         @Override
         public String getName() {
-            return "check-flows";
+            return "loadflow-validation";
         }
 
         @Override
@@ -43,7 +43,7 @@ public class CheckFlowsTool implements Tool {
 
         @Override
         public String getDescription() {
-            return "Check flows of a network";
+            return "Validate load-flow data of a network";
         }
 
         @Override
@@ -68,9 +68,15 @@ public class CheckFlowsTool implements Tool {
                     .desc("verbose output")
                     .build());
             options.addOption(Option.builder().longOpt("output-format")
-                    .desc("output format")
+                    .desc("output format (CSV/CSV_MULTILINE)")
                     .hasArg()
-                    .argName("FLOWS_WRITER")
+                    .argName("VALIDATION_WRITER")
+                    .build());
+            options.addOption(Option.builder().longOpt("type")
+                    .desc("validation type (FLOWS/GENERATORS/...)")
+                    .hasArg()
+                    .argName("VALIDATION_TYPE")
+                    .required()
                     .build());
             return options;
         }
@@ -91,12 +97,13 @@ public class CheckFlowsTool implements Tool {
     public void run(CommandLine line, ToolRunningContext context) throws Exception {
         Path caseFile = Paths.get(line.getOptionValue("case-file"));
         Path outputFile = Paths.get(line.getOptionValue("output-file"));
-        CheckFlowsConfig config = CheckFlowsConfig.load();
+        ValidationType validationType = ValidationType.valueOf(line.getOptionValue("type"));
+        ValidationConfig config = ValidationConfig.load();
         if (line.hasOption("verbose")) {
             config.setVerbose(true);
         }
         if (line.hasOption("output-format")) {
-            config.setFlowOutputWriter(FlowOutputWriter.valueOf(line.getOptionValue("output-format")));
+            config.setValidationOutputWriter(ValidationOutputWriter.valueOf(line.getOptionValue("output-format")));
         }
         context.getOutputStream().println("Loading case " + caseFile);
         Network network = Importers.loadNetwork(caseFile);
@@ -115,7 +122,7 @@ public class CheckFlowsTool implements Tool {
                     })
                     .join();
         }
-        context.getOutputStream().println("Check flows on network " + network.getId() + " result: " + (Validation.checkFlows(network, config, outputFile) ? "success" : "fail"));
+        context.getOutputStream().println("Validate load-flow data of network " + network.getId() + " - validation type: " + validationType + " - result: " + (Validation.check(validationType, network, config, outputFile) ? "success" : "fail"));
     }
     
 }

@@ -17,10 +17,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import eu.itesla_project.iidm.network.Bus;
+import eu.itesla_project.iidm.network.Generator;
 import eu.itesla_project.iidm.network.Line;
 import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.network.RatioTapChanger;
 import eu.itesla_project.iidm.network.RatioTapChangerStep;
+import eu.itesla_project.iidm.network.ReactiveLimits;
 import eu.itesla_project.iidm.network.Terminal;
 import eu.itesla_project.iidm.network.Terminal.BusView;
 import eu.itesla_project.iidm.network.TwoWindingsTransformer;
@@ -54,8 +56,22 @@ public class ValidationTest {
     private RatioTapChanger ratioTapChanger;
     private TwoWindingsTransformer transformer1;
 
-    private CheckFlowsConfig looseConfig;
-    private CheckFlowsConfig strictConfig;
+    private ValidationConfig looseConfig;
+    private ValidationConfig strictConfig;
+    
+    private float p = -39.5056f;
+    private float q = 3.72344f;
+    private float v = 380f;
+    private final float targetP = 39.5056f;
+    private final float targetQ = -3.72344f;
+    private final float targetV = 380f;
+    private boolean voltageRegulatorOn = true;
+    private final float minQ = -10f;
+    private final float maxQ = 0f;
+
+    private BusView genBusView;
+    private Terminal genTerminal;
+    private Generator generator; 
 
     @Before
     public void setUp() {
@@ -121,12 +137,35 @@ public class ValidationTest {
         Mockito.when(transformer1.getRatedU1()).thenReturn((float) ratedU1);
         Mockito.when(transformer1.getRatedU2()).thenReturn((float) ratedU2);
 
-        looseConfig = new CheckFlowsConfig(0.1f, true, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
-                                           CheckFlowsConfig.EPSILON_X_DEFAULT, CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
-                                           FlowOutputWriter.CSV_MULTILINE);
-        strictConfig = new CheckFlowsConfig(0.01f, false, LoadFlowFactoryMock.class, CheckFlowsConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
-                                            CheckFlowsConfig.EPSILON_X_DEFAULT, CheckFlowsConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
-                                            FlowOutputWriter.CSV_MULTILINE);
+        looseConfig = new ValidationConfig(0.1f, true, LoadFlowFactoryMock.class, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
+                                           ValidationConfig.EPSILON_X_DEFAULT, ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
+                                           ValidationOutputWriter.CSV_MULTILINE);
+        strictConfig = new ValidationConfig(0.01f, false, LoadFlowFactoryMock.class, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
+                                            ValidationConfig.EPSILON_X_DEFAULT, ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
+                                            ValidationOutputWriter.CSV_MULTILINE);
+
+        Bus genBus = Mockito.mock(Bus.class);
+        Mockito.when(genBus.getV()).thenReturn(v);
+
+        genBusView = Mockito.mock(BusView.class);
+        Mockito.when(genBusView.getBus()).thenReturn(genBus);
+
+        genTerminal = Mockito.mock(Terminal.class);
+        Mockito.when(genTerminal.getP()).thenReturn(p);
+        Mockito.when(genTerminal.getQ()).thenReturn(q);
+        Mockito.when(genTerminal.getBusView()).thenReturn(genBusView);
+
+        ReactiveLimits genReactiveLimits = Mockito.mock(ReactiveLimits.class);
+        Mockito.when(genReactiveLimits.getMinQ(Mockito.anyFloat())).thenReturn(minQ);
+        Mockito.when(genReactiveLimits.getMaxQ(Mockito.anyFloat())).thenReturn(maxQ);
+
+        generator =  Mockito.mock(Generator.class);
+        Mockito.when(generator.getId()).thenReturn("gen");
+        Mockito.when(generator.getTerminal()).thenReturn(genTerminal);
+        Mockito.when(generator.getTargetP()).thenReturn(targetP);
+        Mockito.when(generator.getTargetQ()).thenReturn(targetQ);
+        Mockito.when(generator.getTargetV()).thenReturn(targetV);
+        Mockito.when(generator.getReactiveLimits()).thenReturn(genReactiveLimits);
     }
 
     @Test
@@ -197,4 +236,84 @@ public class ValidationTest {
         assertFalse(Validation.checkFlows(network, strictConfig, NullWriter.NULL_WRITER));
     }
 
+    @Test
+    public void checkGeneratorsValues() {
+        // active power should be equal to set point
+        assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        p = -39.8f;
+        assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        p = -39.5056f;
+        assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+
+        //  if voltageRegulatorOn="false" then reactive power should be equal to set point
+        voltageRegulatorOn = false;
+        assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        q = 3.7f;
+        assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, looseConfig, NullWriter.NULL_WRITER));
+
+        // if voltageRegulatorOn="true" then either V at the connected bus is equal to g.getTargetV()
+        voltageRegulatorOn = true;
+        assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        v = 400f;
+        assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+
+        // if voltageRegulatorOn="true" then either q is equal to g.getReactiveLimits().getMinQ(p)
+        q = 10f;
+        assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        q = 5f;
+        assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+
+        // if voltageRegulatorOn="true" then either q is equal to g.getReactiveLimits().getMaxQ(p)
+        q = 0f;
+        assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        q = 5f;
+        assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+    }
+
+    @Test
+    public void checkGenerators() {
+        // active power should be equal to set point
+        assertTrue(Validation.checkGenerators(generator, strictConfig, NullWriter.NULL_WRITER));
+        Mockito.when(genTerminal.getP()).thenReturn(-39.8f);
+        assertFalse(Validation.checkGenerators(generator, strictConfig, NullWriter.NULL_WRITER));
+
+        // the unit is disconnected
+        Mockito.when(genBusView.getBus()).thenReturn(null);
+        assertTrue(Validation.checkGenerators(generator, strictConfig, NullWriter.NULL_WRITER));
+    }
+
+    @Test
+    public void checkNetworkGenerators() {
+        Bus genBus1 = Mockito.mock(Bus.class);
+        Mockito.when(genBus1.getV()).thenReturn(v);
+
+        BusView genBusView1 = Mockito.mock(BusView.class);
+        Mockito.when(genBusView1.getBus()).thenReturn(genBus1);
+
+        Terminal genTerminal1 = Mockito.mock(Terminal.class);
+        Mockito.when(genTerminal1.getP()).thenReturn(p);
+        Mockito.when(genTerminal1.getQ()).thenReturn(q);
+        Mockito.when(genTerminal1.getBusView()).thenReturn(genBusView1);
+
+        ReactiveLimits genReactiveLimits1 = Mockito.mock(ReactiveLimits.class);
+        Mockito.when(genReactiveLimits1.getMinQ(Mockito.anyFloat())).thenReturn(minQ);
+        Mockito.when(genReactiveLimits1.getMaxQ(Mockito.anyFloat())).thenReturn(maxQ);
+
+        Generator generator1 =  Mockito.mock(Generator.class);
+        Mockito.when(generator1.getId()).thenReturn("gen");
+        Mockito.when(generator1.getTerminal()).thenReturn(genTerminal1);
+        Mockito.when(generator1.getTargetP()).thenReturn(targetP);
+        Mockito.when(generator1.getTargetQ()).thenReturn(targetQ);
+        Mockito.when(generator1.getTargetV()).thenReturn(targetV);
+        Mockito.when(generator1.getReactiveLimits()).thenReturn(genReactiveLimits1);
+
+        assertTrue(Validation.checkGenerators(generator1, strictConfig, NullWriter.NULL_WRITER));
+        
+        Network network = Mockito.mock(Network.class);
+        Mockito.when(network.getId()).thenReturn("network");
+        Mockito.when(network.getGeneratorStream()).thenAnswer(dummy -> Stream.of(generator, generator1));
+
+        assertTrue(Validation.checkGenerators(network, looseConfig, NullWriter.NULL_WRITER));
+    }
 }
