@@ -177,7 +177,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>afs-case</artifactId>
+            <artifactId>afs-ext-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -1,6 +1,6 @@
 # Maven projects
-/afs/afs-case/target/
 /afs/afs-core/target/
+/afs/afs-ext-base/target/
 /afs/afs-local/target/
 /afs/afs-mapdb/target/
 /afs/afs-mapdb-storage/target/

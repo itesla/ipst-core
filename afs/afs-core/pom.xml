@@ -19,7 +19,7 @@
     </parent>
 
     <artifactId>afs-core</artifactId>
-    <name>AFS core components</name>
+    <name>AFS core</name>
 
     <build>
         <plugins>

@@ -24,7 +24,7 @@
 
     <modules>
         <module>afs-core</module>
-        <module>afs-case</module>
+        <module>afs-ext-base</module>
         <module>afs-local</module>
         <module>afs-mapdb</module>
         <module>afs-mapdb-storage</module>

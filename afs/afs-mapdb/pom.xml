@@ -21,6 +21,7 @@
     <name>AFS MapDB impl</name>
 
     <dependencies>
+        <!-- Compilation dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>afs-core</artifactId>
@@ -32,6 +33,7 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Test dependencies -->
         <dependency>
             <groupId>com.google.jimfs</groupId>
             <artifactId>jimfs</artifactId>
