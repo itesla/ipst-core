@@ -10,10 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import eu.itesla_project.contingency.BranchContingency;
-import eu.itesla_project.contingency.ContingencyElement;
-import eu.itesla_project.contingency.ContingencyElementType;
-import eu.itesla_project.contingency.GeneratorContingency;
+import eu.itesla_project.contingency.*;
 
 import java.io.IOException;
 
@@ -60,6 +57,9 @@ public class ContingencyElementDeserializer extends StdDeserializer<ContingencyE
 
                 case GENERATOR:
                     return new GeneratorContingency(id);
+
+                case BUSBAR_SECTION:
+                    return new BusbarSectionContingency(id);
 
                 default:
                     throw new AssertionError();

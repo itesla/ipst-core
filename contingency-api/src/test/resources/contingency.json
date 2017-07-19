@@ -11,5 +11,8 @@
   }, {
     "id" : "GEN",
     "type" : "GENERATOR"
+  }, {
+    "id" : "BBS1",
+    "type" : "BUSBAR_SECTION"
   } ]
 }

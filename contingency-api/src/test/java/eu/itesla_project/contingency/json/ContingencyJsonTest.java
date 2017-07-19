@@ -23,6 +23,7 @@ public class ContingencyJsonTest extends ConverterBaseTest {
         elements.add(new BranchContingency("NHV1_NHV2_2", "VLHV1"));
         elements.add(new BranchContingency("NHV1_NHV2_1"));
         elements.add(new GeneratorContingency("GEN"));
+        elements.add(new BusbarSectionContingency("BBS1"));
 
         return new ContingencyImpl("contingency", elements);
     }
