@@ -9,7 +9,6 @@ package eu.itesla_project.afs.core;
 import eu.itesla_project.afs.storage.AppFileSystemStorage;
 import eu.itesla_project.afs.storage.NodeId;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,18 +39,9 @@ public abstract class ProjectNode extends NodeBase<ProjectFolder> {
     }
 
     public NodePath getPath() {
-        return NodePath.find(this, path -> {
-            StringBuilder builder = new StringBuilder();
-            Iterator<String> it = path.iterator();
-            it.next(); // skip project node
-            while (it.hasNext()) {
-                builder.append(it.next());
-                if (it.hasNext()) {
-                    builder.append(AppFileSystem.PATH_SEPARATOR);
-                }
-            }
-            return builder.toString();
-        });
+        return NodePath.find(this, path -> path.stream()
+                                               .skip(1) // skip project node
+                                               .collect(Collectors.joining(AppFileSystem.PATH_SEPARATOR)));
     }
 
     public Project getProject() {

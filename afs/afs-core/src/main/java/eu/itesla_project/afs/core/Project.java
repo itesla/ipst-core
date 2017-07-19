@@ -19,7 +19,7 @@ public class Project extends File {
 
     public static final String PSEUDO_CLASS = PseudoClass.PROJECT_PSEUDO_CLASS;
 
-    private static final String PROJECT_LABEL = ResourceBundle.getBundle("lang.Project").getString("project");
+    private static final String PROJECT_LABEL = ResourceBundle.getBundle("lang.Project").getString("Project");
 
     private static final FileIcon PROJECT_ICON = new FileIcon(PROJECT_LABEL, Project.class.getResourceAsStream("/icons/project16x16.png"));
 

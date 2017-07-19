@@ -39,6 +39,7 @@ public class LocalAppFileSystemConfigTest {
         MapModuleConfig moduleConfig = platformConfig.createModuleConfig("local-app-file-system");
         moduleConfig.setStringProperty("drive-name", "local");
         moduleConfig.setPathProperty("root-dir", fileSystem.getPath("/work"));
+        moduleConfig.setStringProperty("drive-count", "2");
         moduleConfig.setStringProperty("drive-name-1", "local1");
         moduleConfig.setPathProperty("root-dir-1", fileSystem.getPath("/work"));
     }

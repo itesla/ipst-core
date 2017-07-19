@@ -38,7 +38,8 @@ public class LocalAppFileSystemConfig {
                 Path rootDir = moduleConfig.getPathProperty("root-dir");
                 configs.add(new LocalAppFileSystemConfig(driveName, rootDir));
             }
-            for (int i = 0; i < 9; i++) {
+            int driveCount = moduleConfig.getIntProperty("drive-count", 0);
+            for (int i = 0; i < driveCount; i++) {
                 if (moduleConfig.hasProperty("drive-name-" + i) && moduleConfig.hasProperty("root-dir-" + i)) {
                     String driveName = moduleConfig.getStringProperty("drive-name-" + i);
                     Path rootDir = moduleConfig.getPathProperty("root-dir-" + i);
