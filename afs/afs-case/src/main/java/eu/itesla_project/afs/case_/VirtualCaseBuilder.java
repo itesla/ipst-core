@@ -67,7 +67,7 @@ public class VirtualCaseBuilder implements ProjectFileBuilder<VirtualCase> {
             throw new AfsException("Case path is not set");
         }
         if (scriptPath == null) {
-            throw new AfsException("GroovyScript path is not set");
+            throw new AfsException("Script path is not set");
         }
 
         // check links
@@ -76,9 +76,9 @@ public class VirtualCaseBuilder implements ProjectFileBuilder<VirtualCase> {
         if (aCase == null) {
             throw new AfsException("Invalid case path " + casePath);
         }
-        GroovyScript script = (GroovyScript) project.getRootFolder().getChild(scriptPath);
+        ModificationScript script = (ModificationScript) project.getRootFolder().getChild(scriptPath);
         if (script == null) {
-            throw new AfsException("Invalid groovy script path " + scriptPath);
+            throw new AfsException("Invalid script path " + scriptPath);
         }
 
         try {
@@ -86,10 +86,10 @@ public class VirtualCaseBuilder implements ProjectFileBuilder<VirtualCase> {
             NodeId id = storage.createNode(folderId, name, VirtualCase.PSEUDO_CLASS);
 
             // create case link
-            storage.addDependency(id, "case", aCase.getId());
+            storage.addDependency(id, VirtualCase.CASE_DEPENDENCY_NAME, aCase.getId());
 
             // create script link
-            storage.addDependency(id, "script", script.getId());
+            storage.addDependency(id, VirtualCase.SCRIPT_DEPENDENCY_NAME, script.getId());
 
             storage.commit();
 

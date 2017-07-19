@@ -25,7 +25,11 @@ import java.util.Properties;
  */
 public class ImportedCase extends ProjectCase {
 
-    public static final String PSEUDO_CLASS = "imported-case";
+    public static final String PSEUDO_CLASS = "importedCase";
+
+    static final String FORMAT = "format";
+    static final String DATA_SOURCE = "dataSource";
+    static final String PARAMETERS = "parameters";
 
     public ImportedCase(NodeId id, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
         super(id, storage, projectId, fileSystem);
@@ -40,12 +44,12 @@ public class ImportedCase extends ProjectCase {
     }
 
     public ReadOnlyDataSource getDataSource() {
-        return storage.getDataSourceAttribute(id, "dataSource");
+        return storage.getDataSourceAttribute(id, DATA_SOURCE);
     }
 
     public Properties getParameters() {
         Properties parameters = new Properties();
-        try (StringReader reader = new StringReader(storage.getStringAttribute(id, "parameters"))) {
+        try (StringReader reader = new StringReader(storage.getStringAttribute(id, PARAMETERS))) {
             parameters.load(reader);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -54,7 +58,7 @@ public class ImportedCase extends ProjectCase {
     }
 
     public Importer getImporter() {
-        String format = storage.getStringAttribute(id, "format");
+        String format = storage.getStringAttribute(id, FORMAT);
         return getProject().getFileSystem().getData().getImportersLoader().loadImporters()
                 .stream()
                 .filter(importer -> importer.getFormat().equals(format))

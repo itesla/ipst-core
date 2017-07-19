@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class GroovyScriptBuilder implements ProjectFileBuilder<GroovyScript> {
+public class ModificationScriptBuilder implements ProjectFileBuilder<ModificationScript> {
 
     private final NodeId folderId;
 
@@ -29,30 +29,40 @@ public class GroovyScriptBuilder implements ProjectFileBuilder<GroovyScript> {
 
     private String name;
 
+    private ModificationScript.ScriptType type;
+
     private String content;
 
-    public GroovyScriptBuilder(NodeId folderId, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
+    public ModificationScriptBuilder(NodeId folderId, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
         this.folderId = Objects.requireNonNull(folderId);
         this.storage = Objects.requireNonNull(storage);
         this.projectId = Objects.requireNonNull(projectId);
         this.fileSystem = Objects.requireNonNull(fileSystem);
     }
 
-    public GroovyScriptBuilder withName(String name) {
+    public ModificationScriptBuilder withName(String name) {
         this.name = name;
         return this;
     }
 
-    public GroovyScriptBuilder withContent(String content) {
+    public ModificationScriptBuilder withType(ModificationScript.ScriptType type) {
+        this.type = type;
+        return this;
+    }
+
+    public ModificationScriptBuilder withContent(String content) {
         this.content = content;
         return this;
     }
 
     @Override
-    public GroovyScript build() {
+    public ModificationScript build() {
         // check parameters
         if (name == null) {
             throw new AfsException("Name is not set");
+        }
+        if (type == null) {
+            throw new AfsException("Script type is not set");
         }
         if (content == null) {
             throw new AfsException("Content is not set");
@@ -60,14 +70,17 @@ public class GroovyScriptBuilder implements ProjectFileBuilder<GroovyScript> {
 
         try {
             // create project file
-            NodeId id = storage.createNode(folderId, name, GroovyScript.PSEUDO_CLASS);
+            NodeId id = storage.createNode(folderId, name, ModificationScript.PSEUDO_CLASS);
+
+            // set type
+            storage.setStringAttribute(id, ModificationScript.SCRIPT_TYPE, type.name());
 
             // store script
-            storage.setStringAttribute(id, "script", content);
+            storage.setStringAttribute(id, ModificationScript.SCRIPT_CONTENT, content);
 
             storage.commit();
 
-            return new GroovyScript(id, storage, projectId, fileSystem);
+            return new ModificationScript(id, storage, projectId, fileSystem);
         } catch (Exception e) {
             storage.rollback();
             throw e;

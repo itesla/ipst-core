@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class GroovyScriptTest extends AbstractProjectFileTest {
+public class ModificationScriptTest extends AbstractProjectFileTest {
 
     @Override
     protected AppFileSystemStorage createStorage() {
@@ -33,7 +33,7 @@ public class GroovyScriptTest extends AbstractProjectFileTest {
 
     @Override
     protected List<ProjectFileExtension> getProjectFileExtensions() {
-        return ImmutableList.of(new GroovyScriptExtension());
+        return ImmutableList.of(new ModificationScriptExtension());
     }
 
     @Test
@@ -43,20 +43,32 @@ public class GroovyScriptTest extends AbstractProjectFileTest {
 
         // create groovy script
         try {
-            rootFolder.fileBuilder(GroovyScriptBuilder.class)
+            rootFolder.fileBuilder(ModificationScriptBuilder.class)
+                    .withType(ModificationScript.ScriptType.GROOVY)
+                    .withContent("println 'hello'")
                     .build();
             fail();
         } catch (AfsException ignored) {
         }
         try {
-            rootFolder.fileBuilder(GroovyScriptBuilder.class)
+            rootFolder.fileBuilder(ModificationScriptBuilder.class)
                     .withName("script")
+                    .withContent("println 'hello'")
                     .build();
             fail();
         } catch (AfsException ignored) {
         }
-        GroovyScript script = rootFolder.fileBuilder(GroovyScriptBuilder.class)
+        try {
+            rootFolder.fileBuilder(ModificationScriptBuilder.class)
+                    .withName("script")
+                    .withType(ModificationScript.ScriptType.GROOVY)
+                    .build();
+            fail();
+        } catch (AfsException ignored) {
+        }
+        ModificationScript script = rootFolder.fileBuilder(ModificationScriptBuilder.class)
                 .withName("script")
+                .withType(ModificationScript.ScriptType.GROOVY)
                 .withContent("println 'hello'")
                 .build();
         assertNotNull(script);
@@ -68,10 +80,10 @@ public class GroovyScriptTest extends AbstractProjectFileTest {
         script.write("println 'bye'");
         assertEquals("println 'bye'", script.read());
 
-        // check groovy script file is correctly scanned
+        // check script file is correctly scanned
         assertEquals(1, rootFolder.getChildren().size());
         ProjectNode firstNode = rootFolder.getChildren().get(0);
-        assertTrue(firstNode instanceof GroovyScript);
+        assertTrue(firstNode instanceof ModificationScript);
         assertEquals("script", firstNode.getName());
     }
 }

@@ -67,10 +67,10 @@ public class ImportedCaseBuilder implements ProjectFileBuilder<ImportedCase> {
             NodeId id = storage.createNode(folderId, aCase.getName(), ImportedCase.PSEUDO_CLASS);
 
             // store importer format
-            storage.setStringAttribute(id, "format", aCase.getImporter().getFormat());
+            storage.setStringAttribute(id, ImportedCase.FORMAT, aCase.getImporter().getFormat());
 
             // store case data
-            aCase.getImporter().copy(aCase.getDataSource(), storage.getDataSourceAttribute(id, "dataSource"));
+            aCase.getImporter().copy(aCase.getDataSource(), storage.getDataSourceAttribute(id, ImportedCase.DATA_SOURCE));
 
             // store parameters
             try {
@@ -80,7 +80,7 @@ public class ImportedCaseBuilder implements ProjectFileBuilder<ImportedCase> {
                 } finally {
                     writer.close();
                 }
-                storage.setStringAttribute(id, "parameters", writer.toString());
+                storage.setStringAttribute(id, ImportedCase.PARAMETERS, writer.toString());
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

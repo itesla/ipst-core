@@ -13,5 +13,5 @@ public interface PseudoClass {
 
     String FOLDER_PSEUDO_CLASS = "folder";
     String PROJECT_PSEUDO_CLASS = "project";
-    String PROJECT_FOLDER_PSEUDO_CLASS = "project-folder";
+    String PROJECT_FOLDER_PSEUDO_CLASS = "projectFolder";
 }

@@ -43,7 +43,7 @@ public class VirtualCaseTest extends AbstractProjectFileTest {
 
     @Override
     protected List<ProjectFileExtension> getProjectFileExtensions() {
-        return ImmutableList.of(new ImportedCaseExtension(), new GroovyScriptExtension(), new VirtualCaseExtension());
+        return ImmutableList.of(new ImportedCaseExtension(), new ModificationScriptExtension(), new VirtualCaseExtension());
     }
 
     @Before
@@ -51,7 +51,7 @@ public class VirtualCaseTest extends AbstractProjectFileTest {
         super.setup();
         NodeId rootFolderId = storage.getRootNode();
         NodeId caseId = storage.createNode(rootFolderId, "network", Case.PSEUDO_CLASS);
-        storage.setStringAttribute(caseId, "format", TestImporter.FORMAT);
+        storage.setStringAttribute(caseId, Case.FORMAT, TestImporter.FORMAT);
     }
 
     @Test
@@ -71,8 +71,9 @@ public class VirtualCaseTest extends AbstractProjectFileTest {
                 .build();
 
         // create groovy script
-        GroovyScript script = folder.fileBuilder(GroovyScriptBuilder.class)
+        ModificationScript script = folder.fileBuilder(ModificationScriptBuilder.class)
                 .withName("script")
+                .withType(ModificationScript.ScriptType.GROOVY)
                 .withContent("print 'hello'")
                 .build();
 

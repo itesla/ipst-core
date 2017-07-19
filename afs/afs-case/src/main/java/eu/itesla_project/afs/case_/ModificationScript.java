@@ -15,13 +15,20 @@ import eu.itesla_project.afs.storage.NodeId;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class GroovyScript extends ProjectFile {
+public class ModificationScript extends ProjectFile {
 
-    public static final String PSEUDO_CLASS = "groovy-script";
+    public static final String PSEUDO_CLASS = "modificationScript";
 
-    private static final FileIcon SCRIPT_ICON = new FileIcon("script", GroovyScript.class.getResourceAsStream("/icons/script16x16.png"));
+    static final String SCRIPT_TYPE = "scriptType";
+    static final String SCRIPT_CONTENT = "scriptContent";
 
-    public GroovyScript(NodeId id, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
+    public enum ScriptType {
+        GROOVY
+    }
+
+    private static final FileIcon SCRIPT_ICON = new FileIcon("script", ModificationScript.class.getResourceAsStream("/icons/script16x16.png"));
+
+    public ModificationScript(NodeId id, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
         super(id, storage, projectId, fileSystem);
     }
 
@@ -30,12 +37,16 @@ public class GroovyScript extends ProjectFile {
         return SCRIPT_ICON;
     }
 
+    public ScriptType getScriptType() {
+        return ScriptType.valueOf(storage.getStringAttribute(id, SCRIPT_TYPE));
+    }
+
     public String read() {
-        return storage.getStringAttribute(id, "script");
+        return storage.getStringAttribute(id, SCRIPT_CONTENT);
     }
 
     public void write(String content) {
-        storage.setStringAttribute(id, "script", content);
+        storage.setStringAttribute(id, SCRIPT_CONTENT, content);
         storage.commit();
         notifyDependencyChanged();
     }

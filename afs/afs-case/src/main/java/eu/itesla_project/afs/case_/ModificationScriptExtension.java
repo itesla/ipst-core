@@ -16,29 +16,29 @@ import eu.itesla_project.afs.storage.NodeId;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 @AutoService(ProjectFileExtension.class)
-public class GroovyScriptExtension implements ProjectFileExtension {
+public class ModificationScriptExtension implements ProjectFileExtension {
     @Override
-    public Class<GroovyScript> getProjectFileClass() {
-        return GroovyScript.class;
+    public Class<ModificationScript> getProjectFileClass() {
+        return ModificationScript.class;
     }
 
     @Override
     public String getProjectFilePseudoClass() {
-        return GroovyScript.PSEUDO_CLASS;
+        return ModificationScript.PSEUDO_CLASS;
     }
 
     @Override
-    public Class<GroovyScriptBuilder> getProjectFileBuilderClass() {
-        return GroovyScriptBuilder.class;
+    public Class<ModificationScriptBuilder> getProjectFileBuilderClass() {
+        return ModificationScriptBuilder.class;
     }
 
     @Override
-    public GroovyScript createProjectFile(NodeId id, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
-        return new GroovyScript(id, storage, projectId, fileSystem);
+    public ModificationScript createProjectFile(NodeId id, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
+        return new ModificationScript(id, storage, projectId, fileSystem);
     }
 
     @Override
-    public GroovyScriptBuilder createProjectFileBuilder(NodeId folderId, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
-        return new GroovyScriptBuilder(folderId, storage, projectId, fileSystem);
+    public ModificationScriptBuilder createProjectFileBuilder(NodeId folderId, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
+        return new ModificationScriptBuilder(folderId, storage, projectId, fileSystem);
     }
 }

@@ -19,12 +19,15 @@ public class Case extends File {
 
     public static final String PSEUDO_CLASS = "case";
 
+    static final String FORMAT = "format";
+    static final String DATA_SOURCE = "dataSource";
+
     public Case(NodeId id, AppFileSystemStorage storage, AppFileSystem fileSystem) {
         super(id, storage, fileSystem);
     }
 
     private String getFormat() {
-        return storage.getStringAttribute(id, "format");
+        return storage.getStringAttribute(id, FORMAT);
     }
 
     @Override
@@ -33,7 +36,7 @@ public class Case extends File {
     }
 
     public ReadOnlyDataSource getDataSource() {
-        return storage.getDataSourceAttribute(id, "dataSource");
+        return storage.getDataSourceAttribute(id, DATA_SOURCE);
     }
 
     public Importer getImporter() {
