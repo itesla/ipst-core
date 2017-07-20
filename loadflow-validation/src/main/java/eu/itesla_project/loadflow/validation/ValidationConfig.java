@@ -82,7 +82,7 @@ public class ValidationConfig {
         this.epsilonX = epsilonX;
         this.applyReactanceCorrection = applyReactanceCorrection;
         this.validationOutputWriter = Objects.requireNonNull(validationOutputWriter);
-        this.loadFlowParameters = loadFlowParameters;
+        this.loadFlowParameters = Objects.requireNonNull(loadFlowParameters);
     }
 
     public float getThreshold() {
@@ -146,7 +146,7 @@ public class ValidationConfig {
     }
 
     public void setLoadFlowParameters(LoadFlowParameters loadFlowParameters) {
-        this.loadFlowParameters = loadFlowParameters;
+        this.loadFlowParameters = Objects.requireNonNull(loadFlowParameters);
     }
 
     @Override
