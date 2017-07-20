@@ -40,7 +40,7 @@ public class MapDbAppFileSystemConfigTest {
         MapModuleConfig moduleConfig = platformConfig.createModuleConfig("mapdb-app-file-system");
         moduleConfig.setStringProperty("drive-name", "db");
         moduleConfig.setPathProperty("db-file", fileSystem.getPath("/db"));
-        moduleConfig.setStringProperty("drive-count", "1");
+        moduleConfig.setStringProperty("max-additional-drive-count", "1");
         moduleConfig.setStringProperty("drive-name-0", "db0");
         moduleConfig.setPathProperty("db-file-0", fileSystem.getPath("/db0"));
     }

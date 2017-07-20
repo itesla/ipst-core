@@ -142,14 +142,14 @@ public class VirtualCaseTest extends AbstractProjectFileTest {
         assertNotNull(network);
 
         // check script output
-        assertEquals("hello", CharStreams.toString(virtualCase.getOutReader()));
+        assertEquals("hello", CharStreams.toString(virtualCase.getScriptOutputReader()));
 
         // test cache invalidation
         script.write("print 'bye'");
-        assertNull(virtualCase.getOutReader());
+        assertNull(virtualCase.getScriptOutputReader());
         Network network2 = virtualCase.loadNetwork();
         assertNotNull(network2);
-        assertEquals("bye", CharStreams.toString(virtualCase.getOutReader()));
+        assertEquals("bye", CharStreams.toString(virtualCase.getScriptOutputReader()));
 
         virtualCase.delete();
         assertTrue(importedCase.getBackwardDependencies().isEmpty());

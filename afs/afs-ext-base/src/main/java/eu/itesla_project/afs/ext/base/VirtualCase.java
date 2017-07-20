@@ -51,11 +51,11 @@ public class VirtualCase extends ProjectCase {
         return (ModificationScript) findProjectFile(storage.getDependency(id, SCRIPT_DEPENDENCY_NAME));
     }
 
-    public Writer getOutWriter() {
+    public Writer getScriptOutputWriter() {
         return storage.writeStringAttribute(id, SCRIPT_OUTPUT);
     }
 
-    public Reader getOutReader() {
+    public Reader getScriptOutputReader() {
         return storage.readStringAttribute(id, SCRIPT_OUTPUT);
     }
 
@@ -107,7 +107,7 @@ public class VirtualCase extends ProjectCase {
             ModificationScript script = getScript();
 
             try (Reader reader = new StringReader(script.read());
-                 Writer out = getOutWriter()) {
+                 Writer out = getScriptOutputWriter()) {
                 switch (script.getScriptType()) {
                     case GROOVY:
                         runGroovyScript(network, reader, out);

@@ -80,11 +80,7 @@ public class AppData implements AutoCloseable {
 
     public AppFileSystem getFileSystem(String name) {
         Objects.requireNonNull(name);
-        AppFileSystem fileSystem = fileSystems.get(name);
-        if (fileSystem == null) {
-            throw new AfsException("File system '" + name + "' not found");
-        }
-        return fileSystem;
+        return fileSystems.get(name);
     }
 
     public Node getNode(String pathStr) {

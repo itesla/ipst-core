@@ -59,6 +59,7 @@ public class AfsBaseTest {
     @Test
     public void test() throws IOException {
         assertSame(afs, ad.getFileSystem("mem"));
+        assertNull(ad.getFileSystem("???"));
         assertEquals("mem", afs.getName());
         assertTrue(ad.getProjectFileClasses().isEmpty()); // no plugin
         Folder root = afs.getRootFolder();
