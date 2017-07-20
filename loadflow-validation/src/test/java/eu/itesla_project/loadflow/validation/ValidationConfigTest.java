@@ -51,7 +51,7 @@ public class ValidationConfigTest {
     public void testNoConfig() {
         ValidationConfig config = ValidationConfig.load(platformConfig);
         checkValues(config, ValidationConfig.THRESHOLD_DEFAULT, ValidationConfig.VERBOSE_DEFAULT, loadFlowFactory, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
-                    ValidationConfig.EPSILON_X_DEFAULT, ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationConfig.VALIDATION_OUPUT_WRITER_DEFAULT);
+                    ValidationConfig.EPSILON_X_DEFAULT, ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationConfig.VALIDATION_OUTPUT_WRITER_DEFAULT);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class ValidationConfigTest {
         moduleConfig.setStringProperty("apply-reactance-correction", Boolean.toString(applyReactanceCorrection));
         ValidationConfig config = ValidationConfig.load(platformConfig);
         checkValues(config, threshold, verbose, loadFlowFactory, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT, epsilonX, applyReactanceCorrection,
-                    ValidationConfig.VALIDATION_OUPUT_WRITER_DEFAULT);
+                    ValidationConfig.VALIDATION_OUTPUT_WRITER_DEFAULT);
     }
 
     @Test

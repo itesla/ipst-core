@@ -20,7 +20,6 @@ import eu.itesla_project.commons.io.table.TableFormatterFactory;
  */
 public class ValidationFormatterCsvMultilineWriter extends ValidationFormatterWriter {
 
-    private static TableFormatterConfig TABLE_FORMATTER_CONFIG = TableFormatterConfig.load();
     private final boolean verbose;
 
     public ValidationFormatterCsvMultilineWriter(String id, Class<? extends TableFormatterFactory> formatterFactoryClass, 
@@ -36,7 +35,7 @@ public class ValidationFormatterCsvMultilineWriter extends ValidationFormatterWr
 
     public ValidationFormatterCsvMultilineWriter(String id, Class<? extends TableFormatterFactory> formatterFactoryClass, 
                                             Writer writer, boolean verbose, ValidationType validationType) {
-        this(id, formatterFactoryClass, TABLE_FORMATTER_CONFIG, writer, verbose, validationType);
+        this(id, formatterFactoryClass, TableFormatterConfig.load(), writer, verbose, validationType);
     }
 
     protected Column[] getColumns() {

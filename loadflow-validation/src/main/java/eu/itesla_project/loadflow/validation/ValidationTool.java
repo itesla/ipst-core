@@ -43,7 +43,7 @@ public class ValidationTool implements Tool {
 
         @Override
         public String getDescription() {
-            return "Validate load-flow data of a network";
+            return "Validate load-flow results of a network";
         }
 
         @Override
@@ -122,7 +122,7 @@ public class ValidationTool implements Tool {
                     })
                     .join();
         }
-        context.getOutputStream().println("Validate load-flow data of network " + network.getId() + " - validation type: " + validationType + " - result: " + (Validation.check(validationType, network, config, outputFile) ? "success" : "fail"));
+        context.getOutputStream().println("Validate load-flow results of network " + network.getId() + " - validation type: " + validationType + " - result: " + (Validation.check(validationType, network, config, outputFile) ? "success" : "fail"));
     }
     
 }

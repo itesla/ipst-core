@@ -27,7 +27,7 @@ public class ValidationConfig {
     public static final Class<? extends TableFormatterFactory> TABLE_FORMATTER_FACTORY_DEFAULT = CsvTableFormatterFactory.class;
     public static final float EPSILON_X_DEFAULT = 0.01f;
     public static final boolean APPLY_REACTANCE_CORRECTION_DEFAULT = false;
-    public static final ValidationOutputWriter VALIDATION_OUPUT_WRITER_DEFAULT = ValidationOutputWriter.CSV_MULTILINE;
+    public static final ValidationOutputWriter VALIDATION_OUTPUT_WRITER_DEFAULT = ValidationOutputWriter.CSV_MULTILINE;
 
     private float threshold;
     private boolean verbose;
@@ -49,7 +49,7 @@ public class ValidationConfig {
         Class<? extends TableFormatterFactory> tableFormatterFactory = TABLE_FORMATTER_FACTORY_DEFAULT;
         float epsilonX = EPSILON_X_DEFAULT;
         boolean applyReactanceCorrection = APPLY_REACTANCE_CORRECTION_DEFAULT;
-        ValidationOutputWriter validationOutputWriter = VALIDATION_OUPUT_WRITER_DEFAULT;
+        ValidationOutputWriter validationOutputWriter = VALIDATION_OUTPUT_WRITER_DEFAULT;
         LoadFlowParameters loadFlowParameter = LoadFlowParameters.load();
         if (platformConfig.moduleExists("loadflow-validation")) {
             ModuleConfig config = platformConfig.getModuleConfig("loadflow-validation");
@@ -61,7 +61,7 @@ public class ValidationConfig {
             tableFormatterFactory = config.getClassProperty("table-formatter-factory", TableFormatterFactory.class, TABLE_FORMATTER_FACTORY_DEFAULT);
             epsilonX = config.getFloatProperty("epsilon-x", EPSILON_X_DEFAULT);
             applyReactanceCorrection = config.getBooleanProperty("apply-reactance-correction", APPLY_REACTANCE_CORRECTION_DEFAULT);
-            validationOutputWriter = config.getEnumProperty("output-writer", ValidationOutputWriter.class, VALIDATION_OUPUT_WRITER_DEFAULT);
+            validationOutputWriter = config.getEnumProperty("output-writer", ValidationOutputWriter.class, VALIDATION_OUTPUT_WRITER_DEFAULT);
         }
         return new ValidationConfig(threshold, verbose, loadFlowFactory, tableFormatterFactory, epsilonX, applyReactanceCorrection, validationOutputWriter, loadFlowParameter);
     }
