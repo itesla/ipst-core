@@ -6,6 +6,9 @@
  */
 package eu.itesla_project.iidm.tools;
 
+import eu.itesla_project.commons.config.InMemoryPlatformConfig;
+import eu.itesla_project.commons.config.MapModuleConfig;
+import eu.itesla_project.commons.config.PlatformConfig;
 import eu.itesla_project.commons.tools.AbstractToolTest;
 import eu.itesla_project.commons.tools.CommandLineTools;
 import eu.itesla_project.commons.tools.Tool;
@@ -22,12 +25,14 @@ import java.util.Collections;
  */
 public class ConversionToolTest extends AbstractToolTest {
 
-    private static ConversionTool createConversionTool() {
+    private PlatformConfig platformConfig;
+
+    private ConversionTool createConversionTool() {
         return new ConversionTool() {
 
             @Override
             protected ImportConfig createImportConfig() {
-                return new ImportConfig();
+                return ImportConfig.load(platformConfig);
             }
         };
     }
@@ -40,6 +45,12 @@ public class ConversionToolTest extends AbstractToolTest {
         Files.copy(getClass().getResourceAsStream("/import-parameters.xml"), fileSystem.getPath("/import-parameters.xml"));
         Files.copy(getClass().getResourceAsStream("/export-parameters.properties"), fileSystem.getPath("/export-parameters.properties"));
         createFile("/input.txt", "");
+
+        InMemoryPlatformConfig platformConfig = new InMemoryPlatformConfig(fileSystem);
+        MapModuleConfig moduleConfig = platformConfig.createModuleConfig("import");
+        moduleConfig.setStringListProperty("postProcessors", Collections.emptyList());
+
+        this.platformConfig = platformConfig;
     }
 
     @Override
