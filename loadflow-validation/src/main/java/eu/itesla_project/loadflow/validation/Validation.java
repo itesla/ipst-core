@@ -174,8 +174,14 @@ public class Validation {
             float x = twt.getX();
             double g1 = twt.getG();
             double g2 = 0f;
-            double b1 = twt.getB() / 2;
-            double b2 = twt.getB() / 2;
+            double b1 = twt.getB();
+            double b2 = 0f;
+            if (config.getLoadFlowParameters().isSpecificCompatibility()) {
+                g1 = twt.getG() / 2;
+                g2 = twt.getG() / 2;
+                b1 = twt.getB() / 2;
+                b2 = twt.getB() / 2;
+            }
             if (twt.getRatioTapChanger() != null) {
                 r *= (1 + twt.getRatioTapChanger().getCurrentStep().getR() / 100);
                 x *= (1 + twt.getRatioTapChanger().getCurrentStep().getX() / 100);

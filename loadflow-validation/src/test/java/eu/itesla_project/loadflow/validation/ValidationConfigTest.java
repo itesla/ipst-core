@@ -6,24 +6,23 @@
  */
 package eu.itesla_project.loadflow.validation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.nio.file.FileSystem;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
-
 import eu.itesla_project.commons.config.InMemoryPlatformConfig;
 import eu.itesla_project.commons.config.MapModuleConfig;
 import eu.itesla_project.commons.io.table.AsciiTableFormatterFactory;
 import eu.itesla_project.commons.io.table.TableFormatterFactory;
 import eu.itesla_project.loadflow.api.LoadFlowFactory;
+import eu.itesla_project.loadflow.api.LoadFlowParameters;
 import eu.itesla_project.loadflow.api.mock.LoadFlowFactoryMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.nio.file.FileSystem;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -126,31 +125,31 @@ public class ValidationConfigTest {
     public void testWrongConfig() {
         try {
             new ValidationConfig(-1, false, loadFlowFactory, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT, 1, 
-                                 ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationOutputWriter.CSV_MULTILINE);
+                                 ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationOutputWriter.CSV_MULTILINE, new LoadFlowParameters());
             fail();
         } catch(Exception ignored) {
         }
         try {
             new ValidationConfig(1, false, null, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT, 1, 
-                                 ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationOutputWriter.CSV_MULTILINE);
+                                 ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationOutputWriter.CSV_MULTILINE, new LoadFlowParameters());
             fail();
         } catch(Exception ignored) {
         }
         try {
             new ValidationConfig(1, false, loadFlowFactory, null, ValidationConfig.EPSILON_X_DEFAULT, 
-                                ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationOutputWriter.CSV_MULTILINE);
+                                ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationOutputWriter.CSV_MULTILINE, new LoadFlowParameters());
             fail();
         } catch(Exception ignored) {
         }
         try {
             new ValidationConfig(1, false, loadFlowFactory, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT, -1, 
-                                 ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationOutputWriter.CSV_MULTILINE);
+                                 ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, ValidationOutputWriter.CSV_MULTILINE, new LoadFlowParameters());
             fail();
         } catch(Exception ignored) {
         }
         try {
             new ValidationConfig(1, false, loadFlowFactory, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT, 1, 
-                                 ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, null);
+                                 ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT, null, new LoadFlowParameters());
             fail();
         } catch(Exception ignored) {
         }

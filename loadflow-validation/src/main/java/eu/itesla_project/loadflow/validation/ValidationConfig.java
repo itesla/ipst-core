@@ -14,6 +14,7 @@ import eu.itesla_project.commons.config.PlatformConfig;
 import eu.itesla_project.commons.io.table.CsvTableFormatterFactory;
 import eu.itesla_project.commons.io.table.TableFormatterFactory;
 import eu.itesla_project.loadflow.api.LoadFlowFactory;
+import eu.itesla_project.loadflow.api.LoadFlowParameters;
 
 /**
  *
@@ -35,6 +36,7 @@ public class ValidationConfig {
     private float epsilonX;
     private boolean applyReactanceCorrection;
     private ValidationOutputWriter validationOutputWriter;
+    private LoadFlowParameters loadFlowParameters;
     public static ValidationConfig load() {
         return load(PlatformConfig.defaultConfig());
     }
@@ -48,6 +50,7 @@ public class ValidationConfig {
         float epsilonX = EPSILON_X_DEFAULT;
         boolean applyReactanceCorrection = APPLY_REACTANCE_CORRECTION_DEFAULT;
         ValidationOutputWriter validationOutputWriter = VALIDATION_OUPUT_WRITER_DEFAULT;
+        LoadFlowParameters loadFlowParameter = LoadFlowParameters.load();
         if (platformConfig.moduleExists("loadflow-validation")) {
             ModuleConfig config = platformConfig.getModuleConfig("loadflow-validation");
             threshold = config.getFloatProperty("threshold", THRESHOLD_DEFAULT);
@@ -60,12 +63,12 @@ public class ValidationConfig {
             applyReactanceCorrection = config.getBooleanProperty("apply-reactance-correction", APPLY_REACTANCE_CORRECTION_DEFAULT);
             validationOutputWriter = config.getEnumProperty("output-writer", ValidationOutputWriter.class, VALIDATION_OUPUT_WRITER_DEFAULT);
         }
-        return new ValidationConfig(threshold, verbose, loadFlowFactory, tableFormatterFactory, epsilonX, applyReactanceCorrection, validationOutputWriter);
+        return new ValidationConfig(threshold, verbose, loadFlowFactory, tableFormatterFactory, epsilonX, applyReactanceCorrection, validationOutputWriter, loadFlowParameter);
     }
 
     public ValidationConfig(float threshold, boolean verbose, Class<? extends LoadFlowFactory> loadFlowFactory, 
                             Class<? extends TableFormatterFactory> tableFormatterFactory, float epsilonX, 
-                            boolean applyReactanceCorrection, ValidationOutputWriter validationOutputWriter) {
+                            boolean applyReactanceCorrection, ValidationOutputWriter validationOutputWriter, LoadFlowParameters loadFlowParameters) {
         if (threshold < 0) {
            throw new IllegalArgumentException("Negative values for threshold not permitted");
         }
@@ -79,6 +82,7 @@ public class ValidationConfig {
         this.epsilonX = epsilonX;
         this.applyReactanceCorrection = applyReactanceCorrection;
         this.validationOutputWriter = Objects.requireNonNull(validationOutputWriter);
+        this.loadFlowParameters = loadFlowParameters;
     }
 
     public float getThreshold() {
@@ -109,6 +113,10 @@ public class ValidationConfig {
         return applyReactanceCorrection;
     }
 
+    public LoadFlowParameters getLoadFlowParameters() {
+        return loadFlowParameters;
+    }
+
     public void setThreshold(float threshold) {
         this.threshold = threshold;
     }
@@ -137,6 +145,10 @@ public class ValidationConfig {
         this.validationOutputWriter = Objects.requireNonNull(validationOutputWriter);
     }
 
+    public void setLoadFlowParameters(LoadFlowParameters loadFlowParameters) {
+        this.loadFlowParameters = loadFlowParameters;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + " [" + 
@@ -147,6 +159,7 @@ public class ValidationConfig {
                 ", epsilonX=" + epsilonX +
                 ", applyReactanceCorrection=" + applyReactanceCorrection +
                 ", validationOutputWriter=" + validationOutputWriter +
+                ", loadFlowParameters=" + loadFlowParameters +
                 "]";
     }
 }

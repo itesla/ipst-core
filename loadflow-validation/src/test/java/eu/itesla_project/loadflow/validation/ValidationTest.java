@@ -6,27 +6,19 @@
  */
 package eu.itesla_project.loadflow.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.stream.Stream;
-
+import eu.itesla_project.iidm.network.*;
+import eu.itesla_project.iidm.network.Terminal.BusView;
+import eu.itesla_project.loadflow.api.LoadFlowParameters;
+import eu.itesla_project.loadflow.api.mock.LoadFlowFactoryMock;
 import org.apache.commons.io.output.NullWriter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import eu.itesla_project.iidm.network.Bus;
-import eu.itesla_project.iidm.network.Generator;
-import eu.itesla_project.iidm.network.Line;
-import eu.itesla_project.iidm.network.Network;
-import eu.itesla_project.iidm.network.RatioTapChanger;
-import eu.itesla_project.iidm.network.RatioTapChangerStep;
-import eu.itesla_project.iidm.network.ReactiveLimits;
-import eu.itesla_project.iidm.network.Terminal;
-import eu.itesla_project.iidm.network.Terminal.BusView;
-import eu.itesla_project.iidm.network.TwoWindingsTransformer;
-import eu.itesla_project.loadflow.api.mock.LoadFlowFactoryMock;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -58,7 +50,10 @@ public class ValidationTest {
 
     private ValidationConfig looseConfig;
     private ValidationConfig strictConfig;
-    
+    private ValidationConfig looseConfigSpecificCompatibility;
+    private ValidationConfig strictConfigSpecificCompatibility;
+
+
     private float p = -39.5056f;
     private float q = 3.72344f;
     private float v = 380f;
@@ -139,10 +134,17 @@ public class ValidationTest {
 
         looseConfig = new ValidationConfig(0.1f, true, LoadFlowFactoryMock.class, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
                                            ValidationConfig.EPSILON_X_DEFAULT, ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
-                                           ValidationOutputWriter.CSV_MULTILINE);
+                                           ValidationOutputWriter.CSV_MULTILINE, new LoadFlowParameters());
         strictConfig = new ValidationConfig(0.01f, false, LoadFlowFactoryMock.class, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
                                             ValidationConfig.EPSILON_X_DEFAULT, ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
-                                            ValidationOutputWriter.CSV_MULTILINE);
+                                            ValidationOutputWriter.CSV_MULTILINE, new LoadFlowParameters());
+        looseConfigSpecificCompatibility = new ValidationConfig(0.1f, true, LoadFlowFactoryMock.class, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
+                ValidationConfig.EPSILON_X_DEFAULT, ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
+                ValidationOutputWriter.CSV_MULTILINE, new LoadFlowParameters().setSpecificCompatibility(true));
+        strictConfigSpecificCompatibility = new ValidationConfig(0.01f, false, LoadFlowFactoryMock.class, ValidationConfig.TABLE_FORMATTER_FACTORY_DEFAULT,
+                ValidationConfig.EPSILON_X_DEFAULT, ValidationConfig.APPLY_REACTANCE_CORRECTION_DEFAULT,
+                ValidationOutputWriter.CSV_MULTILINE, new LoadFlowParameters().setSpecificCompatibility(true));
+
 
         Bus genBus = Mockito.mock(Bus.class);
         Mockito.when(genBus.getV()).thenReturn(v);
@@ -197,6 +199,12 @@ public class ValidationTest {
     public void checkTransformerFlows() {
         assertTrue(Validation.checkFlows(transformer1, looseConfig, NullWriter.NULL_WRITER));
         assertFalse(Validation.checkFlows(transformer1, strictConfig, NullWriter.NULL_WRITER));
+    }
+
+    @Test
+    public void checkTransformerFlowsSpecificCompatibility() {
+        assertTrue(Validation.checkFlows(transformer1, looseConfigSpecificCompatibility, NullWriter.NULL_WRITER));
+        assertFalse(Validation.checkFlows(transformer1, strictConfigSpecificCompatibility, NullWriter.NULL_WRITER));
     }
 
     @Test
