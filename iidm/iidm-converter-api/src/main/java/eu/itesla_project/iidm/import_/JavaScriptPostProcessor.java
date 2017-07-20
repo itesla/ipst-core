@@ -48,7 +48,7 @@ public class JavaScriptPostProcessor implements ImportPostProcessor {
 
     @Override
     public void process(Network network, ComputationManager computationManager) throws Exception {
-        Path js = PlatformConfig.CONFIG_DIR.resolve("import-post-processor.js");
+        Path js = PlatformConfig.defaultConfig().getConfigDir().resolve("import-post-processor.js");
         if (Files.exists(js)) {
             LOGGER.debug("Execute JS post processor {}", js);
             try (Reader reader = Files.newBufferedReader(js)) {
