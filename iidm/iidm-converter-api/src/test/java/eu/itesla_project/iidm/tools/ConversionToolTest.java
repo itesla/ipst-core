@@ -9,6 +9,7 @@ package eu.itesla_project.iidm.tools;
 import eu.itesla_project.commons.tools.AbstractToolTest;
 import eu.itesla_project.commons.tools.CommandLineTools;
 import eu.itesla_project.commons.tools.Tool;
+import eu.itesla_project.iidm.import_.ImportConfig;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +21,16 @@ import java.util.Collections;
  * @author Mathieu Bague <mathieu.bague@rte-france.com>
  */
 public class ConversionToolTest extends AbstractToolTest {
+
+    private static ConversionTool createConversionTool() {
+        return new ConversionTool() {
+
+            @Override
+            protected ImportConfig createImportConfig() {
+                return new ImportConfig();
+            }
+        };
+    }
 
     @Before
     @Override
@@ -33,12 +44,12 @@ public class ConversionToolTest extends AbstractToolTest {
 
     @Override
     protected Iterable<Tool> getTools() {
-        return Collections.singletonList(new ConversionTool());
+        return Collections.singletonList(createConversionTool());
     }
 
     @Override
     public void assertCommand() {
-        Tool tool = new ConversionTool();
+        Tool tool = createConversionTool();
         assertCommand(tool.getCommand(), "convert-network", 7, 3);
         assertOption(tool.getCommand().getOptions(), "input-file", true, true);
         assertOption(tool.getCommand().getOptions(), "output-file", true, true);
