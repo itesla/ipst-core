@@ -60,7 +60,7 @@ public class LocalAppFileSystemConfig {
 
     public LocalAppFileSystemConfig(String driveName, Path rootDir) {
         this.driveName = Objects.requireNonNull(driveName);
-        this.rootDir = checkRootDir(rootDir);
+        this.rootDir = checkRootDir(rootDir).toAbsolutePath();
     }
 
     public String getDriveName() {

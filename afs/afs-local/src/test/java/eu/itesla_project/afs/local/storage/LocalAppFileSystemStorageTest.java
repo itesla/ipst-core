@@ -77,6 +77,8 @@ public class LocalAppFileSystemStorageTest {
         assertEquals(rootNode, storage.getParentNode(case1));
         NodeId case2 = storage.getChildNode(rootNode, "n2.tst");
         assertNotNull(case2);
+        assertEquals("/cases/n.tst", case1.toString());
+        assertEquals(case1, storage.fromString(case1.toString()));
         assertNull(storage.getChildNode(rootNode, "n3.tst"));
         assertEquals(PseudoClass.FOLDER_PSEUDO_CLASS, storage.getNodePseudoClass(rootNode));
         assertEquals(Case.PSEUDO_CLASS, storage.getNodePseudoClass(case1));

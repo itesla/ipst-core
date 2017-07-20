@@ -236,6 +236,11 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
+    public NodeId fromString(String str) {
+        return new UuidNodeId(UUID.fromString(str));
+    }
+
+    @Override
     public NodeId getRootNode() {
         return rootNodeMap.get("rootNode");
     }

@@ -49,6 +49,7 @@ public abstract class AbstractAppFileSystemStorageTest {
         assertEquals(rootFolderId, storage.getParentNode(testFolderId));
         assertEquals("test", storage.getNodeName(testFolderId));
         assertEquals(PseudoClass.FOLDER_PSEUDO_CLASS, storage.getNodePseudoClass(testFolderId));
+        assertEquals(testFolderId, storage.fromString(testFolderId.toString()));
         assertTrue(storage.getChildNodes(testFolderId).isEmpty());
         assertEquals(1, storage.getChildNodes(rootFolderId).size());
         assertEquals(testFolderId, storage.getChildNodes(rootFolderId).get(0));

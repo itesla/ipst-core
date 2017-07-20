@@ -19,6 +19,8 @@ import java.util.List;
  */
 public interface AppFileSystemStorage extends AutoCloseable {
 
+    NodeId fromString(String str);
+
     String getNodeName(NodeId nodeId);
 
     boolean isWritable(NodeId nodeId);
