@@ -50,7 +50,7 @@ public class InMemoryPlatformConfig extends PlatformConfig {
         if (config != null) {
             throw new RuntimeException("Module " + name + " already exists");
         }
-        config = new MapModuleConfig(getFileSystem());
+        config = new MapModuleConfig(fileSystem);
         configs.put(name, config);
         return config;
     }

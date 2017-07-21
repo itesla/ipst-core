@@ -12,7 +12,6 @@ import eu.itesla_project.commons.config.InMemoryPlatformConfig;
 import eu.itesla_project.commons.config.MapModuleConfig;
 import eu.itesla_project.commons.config.PlatformConfig;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +19,9 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Mathieu Bague <mathieu.bague@rte-france.com>
@@ -51,11 +53,11 @@ public class JavaScriptPostProcessorTest {
     @Test
     public void test() throws Exception {
         JavaScriptPostProcessor processor = new JavaScriptPostProcessor(platformConfig);
-        Assert.assertEquals("javaScript", processor.getName());
+        assertEquals("javaScript", processor.getName());
 
         try {
             processor.process(null, null);
-            Assert.fail();
+            fail();
         } catch (Exception ignored) {
         }
     }

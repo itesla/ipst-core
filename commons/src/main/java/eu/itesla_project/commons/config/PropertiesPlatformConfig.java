@@ -42,7 +42,7 @@ public class PropertiesPlatformConfig extends PlatformConfig {
     }
 
     private Path getModulePath(String name) {
-        return getConfigDir().resolve(name + ".properties");
+        return configDir.resolve(name + ".properties");
     }
 
     @Override
@@ -75,7 +75,7 @@ public class PropertiesPlatformConfig extends PlatformConfig {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new MapModuleConfig(properties, getFileSystem());
+        return new MapModuleConfig(properties, fileSystem);
     }
 
     public static void writeXml(Path configDir, Path xmlFile) throws IOException, XMLStreamException {
