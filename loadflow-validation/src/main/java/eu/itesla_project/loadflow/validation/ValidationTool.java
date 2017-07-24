@@ -6,7 +6,19 @@
  */
 package eu.itesla_project.loadflow.validation;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+
 import com.google.auto.service.AutoService;
+
 import eu.itesla_project.commons.tools.Command;
 import eu.itesla_project.commons.tools.Tool;
 import eu.itesla_project.commons.tools.ToolRunningContext;
@@ -15,12 +27,6 @@ import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.network.StateManager;
 import eu.itesla_project.loadflow.api.LoadFlow;
 import eu.itesla_project.loadflow.api.LoadFlowParameters;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  *
@@ -55,10 +61,10 @@ public class ValidationTool implements Tool {
                     .argName("FILE")
                     .required()
                     .build());
-            options.addOption(Option.builder().longOpt("output-file")
-                    .desc("output file path")
+            options.addOption(Option.builder().longOpt("output-folder")
+                    .desc("output folder path")
                     .hasArg()
-                    .argName("FILE")
+                    .argName("FOLDER")
                     .required()
                     .build());
             options.addOption(Option.builder().longOpt("load-flow")
@@ -72,11 +78,10 @@ public class ValidationTool implements Tool {
                     .hasArg()
                     .argName("VALIDATION_WRITER")
                     .build());
-            options.addOption(Option.builder().longOpt("type")
-                    .desc("validation type (FLOWS/GENERATORS/...)")
+            options.addOption(Option.builder().longOpt("types")
+                    .desc("validation types (FLOWS/GENERATORS/...) to run, all of them if the option if not specified")
                     .hasArg()
-                    .argName("VALIDATION_TYPE")
-                    .required()
+                    .argName("VALIDATION_TYPE,VALIDATION_TYPE,...")
                     .build());
             return options;
         }
@@ -96,8 +101,10 @@ public class ValidationTool implements Tool {
     @Override
     public void run(CommandLine line, ToolRunningContext context) throws Exception {
         Path caseFile = Paths.get(line.getOptionValue("case-file"));
-        Path outputFile = Paths.get(line.getOptionValue("output-file"));
-        ValidationType validationType = ValidationType.valueOf(line.getOptionValue("type"));
+        Path outputFolder = Paths.get(line.getOptionValue("output-folder"));
+        if (!Files.exists(outputFolder)) {
+            Files.createDirectories(outputFolder);
+        }
         ValidationConfig config = ValidationConfig.load();
         if (line.hasOption("verbose")) {
             config.setVerbose(true);
@@ -122,7 +129,24 @@ public class ValidationTool implements Tool {
                     })
                     .join();
         }
-        context.getOutputStream().println("Validate load-flow results of network " + network.getId() + " - validation type: " + validationType + " - result: " + (Validation.check(validationType, network, config, outputFile) ? "success" : "fail"));
+        List<ValidationType> validationTypes = Arrays.asList(ValidationType.values());
+        if (line.hasOption("types")) {
+            validationTypes = Arrays.stream(line.getOptionValue("types")
+                                    .split(","))
+                                    .map(ValidationType::valueOf)
+                                    .collect(Collectors.toList());
+        }
+        validationTypes.forEach(validationType -> {
+            try {
+                context.getOutputStream().println("Validate load-flow results of network " + network.getId() 
+                                                  + " - validation type: " + validationType 
+                                                  + " - result: " + (validationType.check(network, config, outputFolder) ? "success" : "fail"));
+            } catch (Exception e) {
+                context.getErrorStream().println("Error validating load-flow results of network " + network.getId() 
+                                                 + " - validation type: " + validationType 
+                                                 + " - error: " + e.getMessage());
+            }
+        });
     }
     
 }

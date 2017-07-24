@@ -354,15 +354,4 @@ public class Validation {
         return ok;
     }
 
-    public static boolean check(ValidationType validationType, Network network, ValidationConfig config, Path file) throws IOException {
-        switch (validationType) {
-        case FLOWS:
-            return Validation.checkFlows(network, config, file);
-        case GENERATORS:
-            return Validation.checkGenerators(network, config, file);
-        default:
-            throw new InternalError();
-        }
-    }
-
 }
