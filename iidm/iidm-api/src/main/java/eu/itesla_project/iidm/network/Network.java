@@ -399,6 +399,12 @@ public interface Network extends Container<Network> {
     Switch getSwitch(String id);
 
     /**
+     * Get all switches
+     * return all switches
+     */
+    Stream<Switch> getSwitchStream();
+
+    /**
      * Get a busbar section from its id.
      * @param id id of the busbar section
      * @return the busbar section

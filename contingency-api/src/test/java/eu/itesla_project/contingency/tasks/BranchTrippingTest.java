@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ import static org.junit.Assert.*;
 /**
  * @author Mathieu Bague <mathieu.bague at rte-france.com>
  */
-public class BranchTrippingTest {
+public class BranchTrippingTest extends TrippingTest {
 
     @Test
     public void lineTrippingTest() {
@@ -91,18 +92,24 @@ public class BranchTrippingTest {
 
     @Test
     public void fictitiousSwitchTest() {
+        Set<String> switchIds = Sets.newHashSet("BD", "BL");
+
         Network network = FictitiousSwitchFactory.create();
+        List<Boolean> expectedSwitchStates = getSwitchStates(network, switchIds);
 
         BranchTripping tripping = new BranchTripping("CJ", "C");
 
         Set<Switch> switchesToOpen = new HashSet<>();
         Set<Terminal> terminalsToDisconnect = new HashSet<>();
         tripping.traverse(network, null, switchesToOpen, terminalsToDisconnect);
-        assertEquals(Sets.newHashSet("BD", "BL"), switchesToOpen.stream().map(Switch::getId).collect(Collectors.toSet()));
+        assertEquals(switchIds, switchesToOpen.stream().map(Switch::getId).collect(Collectors.toSet()));
         assertEquals(Collections.emptySet(), terminalsToDisconnect);
 
         tripping.modify(network, null);
         assertTrue(network.getSwitch("BD").isOpen());
         assertTrue(network.getSwitch("BL").isOpen());
+
+        List<Boolean> switchStates = getSwitchStates(network, switchIds);
+        assertEquals(expectedSwitchStates, switchStates);
     }
 }

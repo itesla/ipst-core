@@ -48,7 +48,6 @@ class ContingencyTopologyTraverser {
 
                 if (isOpenable(aSwitch)) {
                     switchesToOpen.add(aSwitch);
-                    traverse = false;
                 } else if (! aSwitch.isOpen()) {
                     traverse = true;
                 }

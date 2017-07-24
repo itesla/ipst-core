@@ -29,9 +29,9 @@ public class BranchTripping extends TrippingTask {
         this(branchId, null);
     }
 
-    public BranchTripping(String branchId, String voltageId) {
+    public BranchTripping(String branchId, String voltageLevelId) {
         this.branchId = Objects.requireNonNull(branchId);
-        this.voltageLevelId = voltageId;
+        this.voltageLevelId = voltageLevelId;
     }
 
     @Override
@@ -46,9 +46,9 @@ public class BranchTripping extends TrippingTask {
             }
         }
         if (voltageLevelId != null) {
-            if (voltageLevelId.equalsIgnoreCase(branch.getTerminal1().getVoltageLevel().getId())) {
+            if (voltageLevelId.equals(branch.getTerminal1().getVoltageLevel().getId())) {
                 ContingencyTopologyTraverser.traverse(branch.getTerminal1(), switchesToOpen, terminalsToDisconnect);
-            } else if (voltageLevelId.equalsIgnoreCase(branch.getTerminal2().getVoltageLevel().getId())) {
+            } else if (voltageLevelId.equals(branch.getTerminal2().getVoltageLevel().getId())) {
                 ContingencyTopologyTraverser.traverse(branch.getTerminal2(), switchesToOpen, terminalsToDisconnect);
             } else {
                 throw new ITeslaException("VoltageLevel '" + voltageLevelId + "' not connected to branch '" + branchId + "'");

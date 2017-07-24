@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ import static org.junit.Assert.*;
 /**
  * @author Mathieu Bague <mathieu.bague at rte-france.com>
  */
-public class GeneratorTrippingTest {
+public class GeneratorTrippingTest extends TrippingTest {
 
     @Test
     public void generatorTrippingTest() {
@@ -52,19 +53,24 @@ public class GeneratorTrippingTest {
 
     @Test
     public void fictitiousSwitchTest() {
+        Set<String> switchIds = Collections.singleton("BJ");
+
         Network network = FictitiousSwitchFactory.create();
         network.getSwitch("BT").setFictitious(true);
+        List<Boolean> expectedSwitchStates = getSwitchStates(network, switchIds);
 
         GeneratorTripping tripping = new GeneratorTripping("CD");
 
         Set<Switch> switchesToOpen = new HashSet<>();
         Set<Terminal> terminalsToDisconnect = new HashSet<>();
         tripping.traverse(network, null, switchesToOpen, terminalsToDisconnect);
-        assertEquals(Collections.singleton("BJ"), switchesToOpen.stream().map(Switch::getId).collect(Collectors.toSet()));
+        assertEquals(switchIds, switchesToOpen.stream().map(Switch::getId).collect(Collectors.toSet()));
         assertEquals(Collections.emptySet(), terminalsToDisconnect);
 
         tripping.modify(network, null);
-
         assertTrue(network.getSwitch("BJ").isOpen());
+
+        List<Boolean> switchStates = getSwitchStates(network, switchIds);
+        assertEquals(expectedSwitchStates, switchStates);
     }
 }

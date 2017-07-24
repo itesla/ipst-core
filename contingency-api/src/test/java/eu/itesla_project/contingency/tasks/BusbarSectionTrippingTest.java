@@ -17,6 +17,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Mathieu Bague <mathieu.bague@rte-france.com>
  */
-public class BusbarSectionTrippingTest {
+public class BusbarSectionTrippingTest extends TrippingTest {
 
     @Test
     public void busbarSectionTrippingTest() throws IOException {
@@ -37,6 +38,7 @@ public class BusbarSectionTrippingTest {
 
     public void busbarSectionTrippingTest(String bbsId, Set<String> switchIds) {
         Network network = FictitiousSwitchFactory.create();
+        List<Boolean> expectedSwitchStates = getSwitchStates(network, switchIds);
 
         BusbarSectionTripping tripping = new BusbarSectionTripping(bbsId);
 
@@ -50,6 +52,9 @@ public class BusbarSectionTrippingTest {
         for (String id : switchIds) {
             assertTrue(network.getSwitch(id).isOpen());
         }
+
+        List<Boolean> switchStates = getSwitchStates(network, switchIds);
+        assertEquals(expectedSwitchStates, switchStates);
     }
 
     @Test(expected = ITeslaException.class)
