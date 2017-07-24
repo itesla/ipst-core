@@ -21,6 +21,7 @@
 
     <modules>
         <module>action</module>
+        <module>afs</module>
         <module>case-repository</module>
         <module>commons</module>
         <module>computation</module>
@@ -73,6 +74,7 @@
         <jodatime.version>2.9.7</jodatime.version>
         <junit.version>4.12</junit.version>
         <logback.version>1.1.8</logback.version>
+        <mapdb.version>3.0.3</mapdb.version>
         <mockito.version>1.10.19</mockito.version>
         <protobuf.version>2.5.0</protobuf.version>
         <sirocco.version>1.0</sirocco.version>
@@ -182,25 +184,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${maven.jacoco.version}</version>
-                <configuration>
-                    <excludes>
-                        <!-- exclude generated classes -->
-                        <exclude>eu/itesla_project/computation/mpi/messages/*</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <version>${maven.license.version}</version>
@@ -283,11 +266,46 @@
                             <sourceDirectory>${project.basedir}/iidm-groovy-extension/src/main/groovy</sourceDirectory>
                             <sourceDirectory>${project.basedir}/loadflow-api/src/main/groovy</sourceDirectory>
                         </sourceDirectories>
+                        <jacocoReports>
+                            <jacocoReport>${project.basedir}/distribution-core/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+                        </jacocoReports>
                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>jacoco</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${maven.jacoco.version}</version>
+                        <configuration>
+                            <excludes>
+                                <!-- exclude generated classes -->
+                                <exclude>eu/itesla_project/computation/mpi/messages/*</exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>
@@ -341,6 +359,11 @@
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>${jodatime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapdb</groupId>
+                <artifactId>mapdb</artifactId>
+                <version>${mapdb.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.stax-utils</groupId>
