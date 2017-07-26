@@ -301,8 +301,8 @@ public class Validation {
         boolean voltageRegulatorOn = gen.isVoltageRegulatorOn();
         float minQ = gen.getReactiveLimits().getMinQ(p);
         float maxQ = gen.getReactiveLimits().getMaxQ(p);
-        if (bus != null && !Float.isNaN(p) && !Float.isNaN(q) && !Float.isNaN(gen.getTerminal().getBusView().getBus().getV())) {
-            float v = gen.getTerminal().getBusView().getBus().getV();
+        if (bus != null && !Float.isNaN(bus.getV())) {
+            float v = bus.getV();
             return checkGenerators(gen.getId(), p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, config, generatorsWriter);
         }
         try {
@@ -331,21 +331,35 @@ public class Validation {
         boolean ok = true;
         try {
             generatorsWriter.write(id, p, q, v, targetP, targetQ, targetV, true, voltageRegulatorOn, minQ, maxQ);
+            // a validation error should be detected if there is both a voltage and a target but no p or q
+            if (Float.isNaN(p) || Float.isNaN(q)) {
+                if ((!Float.isNaN(targetP) && targetP != 0) 
+                    || (!Float.isNaN(targetQ) && targetQ != 0)) {
+                    LOGGER.warn(id + ": P=" + p + " targetP=" + targetP + " - Q=" + q + " targetP=" + targetQ);
+                    return false;
+                } else {
+                    return true;
+                }
+            }
             // active power should be equal to set point
             if (Math.abs(p + targetP) > config.getThreshold()) {
-                LOGGER.warn(id + " P " + p + " " + targetP);
+                LOGGER.warn(id + ": P=" + p + " targetP=" + targetP);
                 ok = false;
             }
             // if voltageRegulatorOn="false" then reactive power should be equal to set point
             if (!voltageRegulatorOn && Math.abs(q + targetQ) > config.getThreshold() ) {
-                LOGGER.warn(id + " voltage regulator off - Q " + q + " " + targetQ);
+                LOGGER.warn(id + ": voltage regulator off - Q=" + q + " targetQ=" + targetQ);
                 ok = false;
             }
-            // if voltageRegulatorOn="true" then either q is equal to g.getReactiveLimits().getMinQ(p) or q is equal to g.getReactiveLimits().getMaxQ(p)
+            // if voltageRegulatorOn="true" then 
+            // either q is equal to g.getReactiveLimits().getMinQ(p) and V is lower than g.getTargetV()
+            // or q is equal to g.getReactiveLimits().getMaxQ(p) and V is higher than g.getTargetV()
             // or V at the connected bus is equal to g.getTargetV()
-            if (voltageRegulatorOn && Math.abs(q + minQ) > config.getThreshold() && Math.abs(q + maxQ) > config.getThreshold() 
-                && Math.abs(v - targetV) > config.getThreshold() ) {
-                LOGGER.warn(id + " voltage regulator on - Q " + q + " " + minQ + " " + maxQ + " - V " + v + " " + targetV);
+            if (voltageRegulatorOn 
+                && (Math.abs(q + minQ) > config.getThreshold() || (v - targetV) >= config.getThreshold()) 
+                && (Math.abs(q + maxQ) > config.getThreshold() || (targetV - v) >= config.getThreshold()) 
+                && Math.abs(v - targetV) > config.getThreshold()) {
+                LOGGER.warn(id + ": voltage regulator on - Q=" + q + " minQ=" + minQ + " maxQ=" + maxQ + " - V=" + v + " targetV=" + targetV);
                 ok = false;
             }
         } catch (IOException e) {

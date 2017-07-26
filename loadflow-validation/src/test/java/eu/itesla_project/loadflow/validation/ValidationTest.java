@@ -57,8 +57,8 @@ public class ValidationTest {
     private float p = -39.5056f;
     private float q = 3.72344f;
     private float v = 380f;
-    private final float targetP = 39.5056f;
-    private final float targetQ = -3.72344f;
+    private float targetP = 39.5056f;
+    private float targetQ = -3.72344f;
     private final float targetV = 380f;
     private boolean voltageRegulatorOn = true;
     private final float minQ = -10f;
@@ -266,17 +266,31 @@ public class ValidationTest {
         v = 400f;
         assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
 
-        // if voltageRegulatorOn="true" then either q is equal to g.getReactiveLimits().getMinQ(p)
+        // if voltageRegulatorOn="true" then either q is equal to g.getReactiveLimits().getMinQ(p) and v is lower than targetV
         q = 10f;
+        v = 360f;
         assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        v = 400f;
+        assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
         q = 5f;
         assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
 
-        // if voltageRegulatorOn="true" then either q is equal to g.getReactiveLimits().getMaxQ(p)
+        // if voltageRegulatorOn="true" then either q is equal to g.getReactiveLimits().getMaxQ(p) and v is higher than targetV
         q = 0f;
         assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
-        q = 5f;
+        v = 360f;
         assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        q = 5f;
+        v = 400f;
+        assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        // a validation error should be detected if there is both a voltage and a target but no p or q
+        v = 380f;
+        p = Float.NaN;
+        q = Float.NaN;
+        assertFalse(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
+        targetP = 0f;
+        targetQ = 0f;
+        assertTrue(Validation.checkGenerators("test", p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, strictConfig, NullWriter.NULL_WRITER));
     }
 
     @Test

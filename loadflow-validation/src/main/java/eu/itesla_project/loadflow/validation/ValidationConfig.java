@@ -25,7 +25,7 @@ public class ValidationConfig {
     public static final float THRESHOLD_DEFAULT = 0.0f;
     public static final boolean VERBOSE_DEFAULT = false;
     public static final Class<? extends TableFormatterFactory> TABLE_FORMATTER_FACTORY_DEFAULT = CsvTableFormatterFactory.class;
-    public static final float EPSILON_X_DEFAULT = 0.01f;
+    public static final float EPSILON_X_DEFAULT = 0.1f;
     public static final boolean APPLY_REACTANCE_CORRECTION_DEFAULT = false;
     public static final ValidationOutputWriter VALIDATION_OUTPUT_WRITER_DEFAULT = ValidationOutputWriter.CSV_MULTILINE;
 
