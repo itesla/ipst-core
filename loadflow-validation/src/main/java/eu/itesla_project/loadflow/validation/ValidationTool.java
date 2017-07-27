@@ -10,7 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
@@ -129,12 +130,11 @@ public class ValidationTool implements Tool {
                     })
                     .join();
         }
-        List<ValidationType> validationTypes = Arrays.asList(ValidationType.values());
+        Set<ValidationType> validationTypes = new HashSet<>(Arrays.asList(ValidationType.values()));
         if (line.hasOption("types")) {
-            validationTypes = Arrays.stream(line.getOptionValue("types")
-                                    .split(","))
+            validationTypes = Arrays.stream(line.getOptionValue("types").split(","))
                                     .map(ValidationType::valueOf)
-                                    .collect(Collectors.toList());
+                                    .collect(Collectors.toSet());
         }
         validationTypes.forEach(validationType -> {
             try {
