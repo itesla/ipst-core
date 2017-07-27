@@ -6,20 +6,8 @@
  */
 package eu.itesla_project.loadflow.validation;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-
 import com.google.auto.service.AutoService;
-
+import com.google.common.collect.Sets;
 import eu.itesla_project.commons.tools.Command;
 import eu.itesla_project.commons.tools.Tool;
 import eu.itesla_project.commons.tools.ToolRunningContext;
@@ -28,6 +16,16 @@ import eu.itesla_project.iidm.network.Network;
 import eu.itesla_project.iidm.network.StateManager;
 import eu.itesla_project.loadflow.api.LoadFlow;
 import eu.itesla_project.loadflow.api.LoadFlowParameters;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -130,7 +128,7 @@ public class ValidationTool implements Tool {
                     })
                     .join();
         }
-        Set<ValidationType> validationTypes = new HashSet<>(Arrays.asList(ValidationType.values()));
+        Set<ValidationType> validationTypes = Sets.newHashSet(ValidationType.values());
         if (line.hasOption("types")) {
             validationTypes = Arrays.stream(line.getOptionValue("types").split(","))
                                     .map(ValidationType::valueOf)
