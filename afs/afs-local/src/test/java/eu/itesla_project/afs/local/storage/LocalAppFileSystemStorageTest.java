@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import eu.itesla_project.afs.ext.base.Case;
-import eu.itesla_project.afs.core.TestImporter;
+import eu.itesla_project.afs.TestImporter;
 import eu.itesla_project.afs.storage.NodeId;
 import eu.itesla_project.afs.storage.PseudoClass;
 import eu.itesla_project.computation.ComputationManager;
