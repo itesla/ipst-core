@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package eu.itesla_project.scripting.groovy;
+package eu.itesla_project.scripting;
 
 import eu.itesla_project.commons.config.ComponentDefaultConfig;
 import eu.itesla_project.commons.tools.AbstractToolTest;
@@ -19,17 +19,17 @@ import java.util.Collections;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class GroovyScriptToolTest extends AbstractToolTest {
+public class RunScriptToolTest extends AbstractToolTest {
 
     private ComponentDefaultConfig componentDefaultConfig;
 
-    private GroovyScriptTool tool;
+    private RunScriptTool tool;
 
     @Override
     @Before
     public void setUp() throws Exception {
         componentDefaultConfig = Mockito.mock(ComponentDefaultConfig.class);
-        tool = new GroovyScriptTool(componentDefaultConfig, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        tool = new RunScriptTool(componentDefaultConfig, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         super.setUp();
     }
 
@@ -40,8 +40,8 @@ public class GroovyScriptToolTest extends AbstractToolTest {
 
     @Override
     public void assertCommand() {
-        assertCommand(tool.getCommand(), "groovy-script", 1, 1);
-        assertOption(tool.getCommand().getOptions(), "script", true, true);
+        assertCommand(tool.getCommand(), "run-script", 1, 1);
+        assertOption(tool.getCommand().getOptions(), "file", true, true);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class GroovyScriptToolTest extends AbstractToolTest {
         String helloFile = "/hello.groovy";
         createFile(helloFile, "print 'hello'");
 
-        assertCommand(new String[] {"groovy-script", "--script", helloFile}, CommandLineTools.COMMAND_OK_STATUS, "hello", "");
+        assertCommand(new String[] {"run-script", "--file", helloFile}, CommandLineTools.COMMAND_OK_STATUS, "hello", "");
     }
 
     @Test
@@ -57,6 +57,6 @@ public class GroovyScriptToolTest extends AbstractToolTest {
         String helloFile = "/hello.groovy";
         createFile(helloFile, "print 'hello ' + args[0]");
 
-        assertCommand(new String[] {"groovy-script", "--script", helloFile, "John Doe"}, CommandLineTools.COMMAND_OK_STATUS, "hello John Doe", "");
+        assertCommand(new String[] {"run-script", "--file", helloFile, "John Doe"}, CommandLineTools.COMMAND_OK_STATUS, "hello John Doe", "");
     }
 }
