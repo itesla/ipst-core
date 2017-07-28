@@ -4,9 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package eu.itesla_project.commons.tools;
+package eu.itesla_project.scripting.groovy;
 
+import eu.itesla_project.commons.config.ComponentDefaultConfig;
+import eu.itesla_project.commons.tools.AbstractToolTest;
+import eu.itesla_project.commons.tools.CommandLineTools;
+import eu.itesla_project.commons.tools.Tool;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Collections;
 
@@ -15,14 +21,25 @@ import java.util.Collections;
  */
 public class GroovyScriptToolTest extends AbstractToolTest {
 
+    private ComponentDefaultConfig componentDefaultConfig;
+
+    private GroovyScriptTool tool;
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        componentDefaultConfig = Mockito.mock(ComponentDefaultConfig.class);
+        tool = new GroovyScriptTool(componentDefaultConfig, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        super.setUp();
+    }
+
     @Override
     protected Iterable<Tool> getTools() {
-        return Collections.singleton(new GroovyScriptTool());
+        return Collections.singleton(tool);
     }
 
     @Override
     public void assertCommand() {
-        Tool tool = new GroovyScriptTool();
         assertCommand(tool.getCommand(), "groovy-script", 1, 1);
         assertOption(tool.getCommand().getOptions(), "script", true, true);
     }
