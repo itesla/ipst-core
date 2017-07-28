@@ -9,6 +9,8 @@ package eu.itesla_project.afs.core;
 import eu.itesla_project.afs.storage.AppFileSystemStorage;
 import eu.itesla_project.afs.storage.NodeId;
 
+import java.util.Objects;
+
 /**
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -24,10 +26,10 @@ class FooFileBuilder implements ProjectFileBuilder<FooFile> {
     private final AppFileSystem fileSystem;
 
     FooFileBuilder(NodeId folderId, AppFileSystemStorage storage, NodeId projectId, AppFileSystem fileSystem) {
-        this.folderId = folderId;
-        this.storage = storage;
-        this.projectId = projectId;
-        this.fileSystem = fileSystem;
+        this.folderId = Objects.requireNonNull(folderId);
+        this.storage = Objects.requireNonNull(storage);
+        this.projectId = Objects.requireNonNull(projectId);
+        this.fileSystem = Objects.requireNonNull(fileSystem);
     }
 
     @Override

@@ -34,9 +34,9 @@
         <module>loadflow-api</module>
         <module>loadflow-validation</module>
         <module>math</module>
+        <module>scripting</module>
         <module>security-analysis</module>
         <module>simulation-api</module>
-        <module>scripting</module>
         <module>tools</module>
     </modules>
 
