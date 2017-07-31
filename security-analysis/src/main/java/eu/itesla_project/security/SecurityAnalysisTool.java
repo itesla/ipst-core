@@ -31,6 +31,7 @@ import eu.itesla_project.commons.tools.Command;
 import eu.itesla_project.commons.tools.Tool;
 import eu.itesla_project.commons.tools.ToolRunningContext;
 import eu.itesla_project.security.json.SecurityAnalysisResultSerializer;
+import eu.itesla_project.security.SecurityAnalyzer.Format;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -76,7 +77,7 @@ public class SecurityAnalysisTool implements Tool {
                         .argName("FILE")
                         .build());
                 options.addOption(Option.builder().longOpt("output-format")
-                        .desc("the output format " + Arrays.toString(SecurityAnalyzer.Format.values()))
+                        .desc("the output format " + Arrays.toString(Format.values()))
                         .hasArg()
                         .argName("FORMAT")
                         .build());
@@ -102,13 +103,13 @@ public class SecurityAnalysisTool implements Tool {
                 ? Arrays.stream(line.getOptionValue("limit-types").split(",")).map(LimitViolationType::valueOf).collect(Collectors.toSet())
                 : EnumSet.allOf(LimitViolationType.class);
         Path outputFile = null;
-        SecurityAnalyzer.Format format = null;
+        Format format = null;
         if (line.hasOption("output-file")) {
             outputFile = context.getFileSystem().getPath(line.getOptionValue("output-file"));
             if (! line.hasOption("output-format")) {
                 throw new ParseException("Missing required option: output-format");
             }
-            format = SecurityAnalyzer.Format.valueOf(line.getOptionValue("output-format"));
+            format = Format.valueOf(line.getOptionValue("output-format"));
         }
 
         context.getOutputStream().println("Loading network '" + caseFile + "'");
@@ -138,7 +139,7 @@ public class SecurityAnalysisTool implements Tool {
         Security.printPostContingencyViolations(result, writer, asciiTableFormatterFactory, limitViolationFilter);
     }
 
-    private void exportResult(SecurityAnalysisResult result, LimitViolationFilter limitViolationFilter, ToolRunningContext context, Path outputFile, SecurityAnalyzer.Format format) throws IOException {
+    private void exportResult(SecurityAnalysisResult result, LimitViolationFilter limitViolationFilter, ToolRunningContext context, Path outputFile, Format format) throws IOException {
         context.getOutputStream().println("Writing results to '" + outputFile + "'");
         switch (format) {
             case CSV:
