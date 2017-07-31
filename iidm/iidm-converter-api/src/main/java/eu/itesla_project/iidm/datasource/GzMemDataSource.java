@@ -23,13 +23,17 @@ public class GzMemDataSource extends ReadOnlyMemDataSource {
     public GzMemDataSource() {
         super();
     }
-    
-    public GzMemDataSource(byte[] content, String filename) {
-        super();
-        Objects.requireNonNull(filename);
+
+    public GzMemDataSource(InputStream content, String filename) {
+        super(DataSourceUtil.getBaseName(filename));
         String zipped = filename.substring(0,filename.lastIndexOf("."));
-        String format = zipped.substring(zipped.lastIndexOf(".")+1);
-        putData(null, format, content);
+        try{
+            putData(zipped, content);
+        }
+        catch(IOException ie)
+        {
+            throw new RuntimeException(ie);
+        }
     }
 
     protected String getCompressionExt() {
@@ -40,10 +44,9 @@ public class GzMemDataSource extends ReadOnlyMemDataSource {
         return new GZIPInputStream(is);
     }
 
-
     @Override
     public InputStream newInputStream(String suffix, String ext) throws IOException {
-        return getCompressedInputStream(super.newInputStream(suffix, ext));
+    	return newInputStream(DataSourceUtil.getFileName(getBaseName(), suffix, ext));
     }
 
     @Override

@@ -6,6 +6,8 @@
  */
 package eu.itesla_project.iidm.datasource;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -20,9 +22,15 @@ public interface DataSourceUtil {
     OpenOption[] APPEND_OPEN_OPTIONS = { StandardOpenOption.APPEND };
 
     static String getFileName(String baseName, String suffix, String ext) {
+    	Objects.requireNonNull(baseName);
         return baseName + (suffix != null ? suffix : "") + (ext != null ? "." + ext : "");
     }
 
+    static String getCompressedFileName(String baseName, String suffix, String format, String ext) {
+    	Objects.requireNonNull(baseName);
+        return baseName + (suffix != null ? suffix : "") + (format != null ? "." + format : "") + (ext != null ? "." + ext : "");
+    }
+    
     static OpenOption[] getOpenOptions(boolean append) {
         return append ? APPEND_OPEN_OPTIONS : DEFAULT_OPEN_OPTIONS;
     }
@@ -32,6 +40,7 @@ public interface DataSourceUtil {
     }
 
     static String getBaseName(String fileName) {
+    	Objects.requireNonNull(fileName);
         int pos = fileName.indexOf('.'); // find first dot in case of double extension (.xml.gz)
         return pos == -1 ? fileName : fileName.substring(0, pos);
     }
@@ -50,42 +59,40 @@ public interface DataSourceUtil {
             return new FileDataSource(directory, getBaseName(fileNameOrBaseName), observer);
         }
     }
-    
-    static ReadOnlyMemDataSource createMemDataSource(byte[] data, String extension, String format) {
+
+    static ReadOnlyMemDataSource createMemDataSource(InputStream data, String basename, String extension, String format) throws IOException{
         Objects.requireNonNull(data);
         Objects.requireNonNull(extension);
         ReadOnlyMemDataSource mem = null;
         if (extension.equalsIgnoreCase("zip")) {
-            mem = new ZipMemDataSource();
-        } else 
+            mem = new ZipMemDataSource(data, basename);
+        } else
         if (extension.equalsIgnoreCase("gz")) {
-            mem = new GzMemDataSource();
+            mem = new GzMemDataSource(data, getCompressedFileName(basename, null, format, extension));
         } else if (extension.equalsIgnoreCase("bz2")) {
-           mem = new Bzip2MemDataSource();
+           mem = new Bzip2MemDataSource(data, getCompressedFileName(basename, null, format, extension));
         } else {
             mem = new MemDataSource();
+            mem.putData(getFileName(basename, null, format), data);
         }
-        mem.putData(null, format, data);
         return mem;
     }
-    
-    static ReadOnlyMemDataSource createMemDataSource(byte[] data, String filename) {
+
+    static ReadOnlyMemDataSource createMemDataSource(InputStream data, String filename) throws IOException{
         Objects.requireNonNull(data);
         Objects.requireNonNull(filename);
         ReadOnlyMemDataSource mem = null;
         if (filename.endsWith(".zip")) {
-            mem = new ZipMemDataSource(data);
-        } else 
+            mem = new ZipMemDataSource(data, getBaseName(filename));
+        } else
         if (filename.endsWith(".gz")) {
             mem = new GzMemDataSource(data, filename);
         } else if (filename.endsWith(".bz2")) {
            mem = new Bzip2MemDataSource(data, filename);
         } else {
-            mem = new ReadOnlyMemDataSource();
-            String format = filename.substring(filename.lastIndexOf(".")+1);
-            mem.putData(null, format, data);
+            mem = new ReadOnlyMemDataSource(getBaseName(filename));
+            mem.putData(filename, data);
         }
         return mem;
     }
-    
 }

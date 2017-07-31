@@ -3,7 +3,9 @@ package eu.itesla_project.iidm.datasource;
 import static org.junit.Assert.*;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -13,28 +15,37 @@ import org.junit.Test;
 public class ZipMemDataSourceTest {
 
     private byte[] data;
-    
+
     @Before
     public void setUp() throws Exception {
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(bao));){
-            ZipEntry entry = new ZipEntry("data.xiidm");
+        try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(bao));) {
+            ZipEntry entry = new ZipEntry("one.xiidm");
             zip.putNextEntry(entry);
+            zip.closeEntry();
+            ZipEntry entry2 = new ZipEntry("two.xiidm");
+            zip.putNextEntry(entry2);
             zip.closeEntry();
             zip.close();
             data = bao.toByteArray();
         }
     }
-    
+
     @Test
     public void testFilename() {
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(data, "data.zip");
-            assertTrue(mem.exists(null, "xiidm"));
+        try {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream(data), "data.zip");
+            assertTrue(mem.exists("two.xiidm"));
+        } catch (IOException e) {
+        }
     }
 
     @Test
     public void testFormat() {
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(data, "zip","xiidm");
+        try {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream(data), "one", "zip", "xiidm");
             assertTrue(mem.exists(null, "xiidm"));
+        } catch (IOException e) {
+        }
     }
 }

@@ -7,32 +7,30 @@
 package eu.itesla_project.iidm.datasource;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Objects;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari@techrain.it>
  */
 public class Bzip2MemDataSource extends ReadOnlyMemDataSource {
 
-    public Bzip2MemDataSource() {
-        super();
+    public Bzip2MemDataSource(String baseName) {
+        super(baseName);
     }
-    
-    public Bzip2MemDataSource(byte[] content, String filename) {
-        super();
-        Objects.requireNonNull(filename);       
+
+    public Bzip2MemDataSource(InputStream content, String filename) {
+    	super(DataSourceUtil.getBaseName(filename));
         String zipped = filename.substring(0,filename.lastIndexOf("."));
-        String format = zipped.substring(zipped.lastIndexOf(".")+1);
-        putData(null, format, content);
+        try{
+            putData(zipped, content);
+        }
+        catch(IOException ie)
+        {
+            throw new RuntimeException(ie);
+        }
     }
 
     protected String getCompressionExt() {
@@ -45,7 +43,7 @@ public class Bzip2MemDataSource extends ReadOnlyMemDataSource {
 
     @Override
     public InputStream newInputStream(String suffix, String ext) throws IOException {
-        return getCompressedInputStream(super.newInputStream(suffix, ext));
+    	return newInputStream(DataSourceUtil.getFileName(getBaseName(), suffix, ext));
     }
 
     @Override

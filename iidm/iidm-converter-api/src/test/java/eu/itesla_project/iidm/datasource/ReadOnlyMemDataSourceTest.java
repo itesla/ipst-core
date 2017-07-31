@@ -4,17 +4,27 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
 public class ReadOnlyMemDataSourceTest {
-    
+
     @Test
-    public void test(){
-        ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "data.xiidm");
-        assertTrue(mem.exists(null, "xiidm"));
+    public void test() {
+        try {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream("data".getBytes()), "data.xiidm");
+            assertTrue(mem.exists(null, "xiidm"));
+        } catch (IOException e) {
+        }
     }
-    
+
     @Test
     public void testFormat() {
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "xiidm","xiidm");
+        try {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream("data".getBytes()), "", "xiidm", "xiidm");
             assertTrue(mem.exists(null, "xiidm"));
+        } catch (IOException e) {
+
+        }
     }
 }

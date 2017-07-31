@@ -1,21 +1,32 @@
 package eu.itesla_project.iidm.datasource;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 public class Bzip2MemDataSourceTest {
-    
+
     @Test
-    public void test(){
-        ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "data.xiidm.bz2");
-        assertTrue(mem.exists(null, "xiidm"));
+    public void test() {
+        try {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream("data".getBytes()), "data.xiidm.bz2");
+            assertTrue(mem.exists("data.xiidm"));
+        } catch (IOException e) {
+        }
     }
-    
+
     @Test
     public void testFormat() {
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource("data".getBytes(), "bz2","xiidm");
+        try {
+            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream("data".getBytes()), "data", "bz2", "xiidm");
             assertTrue(mem.exists(null, "xiidm"));
+        } catch (IOException e) {
+        }
     }
 
 }

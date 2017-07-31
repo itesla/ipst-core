@@ -6,26 +6,16 @@
  */
 package eu.itesla_project.security;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.Properties;
-
-import org.apache.commons.compress.utils.IOUtils;
-
-import com.google.common.io.Files;
 
 import eu.itesla_project.commons.config.ComponentDefaultConfig;
 import eu.itesla_project.computation.ComputationManager;
 import eu.itesla_project.contingency.ContingenciesProvider;
 import eu.itesla_project.contingency.ContingenciesProviderFactory;
-import eu.itesla_project.iidm.datasource.MemDataSource;
-import eu.itesla_project.iidm.datasource.ReadOnlyDataSource;
 import eu.itesla_project.iidm.import_.Importers;
 import eu.itesla_project.iidm.network.Network;
 
@@ -79,11 +69,16 @@ public class SecurityAnalyzer {
 
     }
     
-    public SecurityAnalysisResult analyze(byte[] networkData, String filename, byte[] contingencies) {
+    public SecurityAnalysisResult analyze(InputStream networkData, String filename, InputStream contingencies) {
         Objects.requireNonNull(networkData);
         Objects.requireNonNull(filename);
-
-        Network network = Importers.loadNetwork(networkData, filename);
+        Network network = null;
+        try{
+            network = Importers.loadNetwork(networkData, filename);
+        }
+        catch(IOException ex)
+        {            
+        }
         if (network == null) {
             throw new RuntimeException("Error loading network");
         }

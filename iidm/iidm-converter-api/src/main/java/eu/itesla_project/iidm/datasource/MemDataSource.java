@@ -6,9 +6,9 @@
  */
 package eu.itesla_project.iidm.datasource;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Objects;
 
 /**
@@ -16,23 +16,9 @@ import java.util.Objects;
  */
 public class MemDataSource extends ReadOnlyMemDataSource implements DataSource{
 
-
     @Override
     public OutputStream newOutputStream(final String suffix, final String ext, boolean append) throws IOException {
-        final Key key = new Key(suffix, ext);
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        if (append) {
-            byte[] ba = data.get(new Key(suffix, ext));
-            if (ba != null) {
-                os.write(ba, 0, ba.length);
-            }
-        }
-        return new ObservableOutputStream(os, key.toString(), new AbstractDataSourceObserver() {
-            @Override
-            public void closed(String streamName) {
-                data.put(key, os.toByteArray());
-            }
-        });
+    	return newOutputStream(DataSourceUtil.getFileName("", suffix, ext), append);
     }
 
     @Override
@@ -40,7 +26,7 @@ public class MemDataSource extends ReadOnlyMemDataSource implements DataSource{
         Objects.requireNonNull(fileName);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         if (append) {
-            byte[] ba = data2.get(fileName);
+            byte[] ba = getData(fileName);
             if (ba != null) {
                 os.write(ba, 0, ba.length);
             }
@@ -48,7 +34,7 @@ public class MemDataSource extends ReadOnlyMemDataSource implements DataSource{
         return new ObservableOutputStream(os, fileName, new AbstractDataSourceObserver() {
             @Override
             public void closed(String streamName) {
-                data2.put(fileName, os.toByteArray());
+                putData(fileName, os.toByteArray());
             }
         });
     }
