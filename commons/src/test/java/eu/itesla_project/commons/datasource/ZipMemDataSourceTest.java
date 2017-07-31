@@ -1,4 +1,4 @@
-package eu.itesla_project.iidm.datasource;
+package eu.itesla_project.commons.datasource;
 
 import static org.junit.Assert.*;
 
@@ -11,6 +11,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import eu.itesla_project.commons.datasource.ReadOnlyMemDataSource;
 
 public class ZipMemDataSourceTest {
 

@@ -26,7 +26,7 @@ import eu.itesla_project.contingency.BranchContingency;
 import eu.itesla_project.contingency.ContingenciesProvider;
 import eu.itesla_project.contingency.Contingency;
 import eu.itesla_project.contingency.tasks.ModificationTask;
-import eu.itesla_project.iidm.datasource.MemDataSource;
+import eu.itesla_project.commons.datasource.MemDataSource;
 import eu.itesla_project.iidm.import_.Importers;
 import eu.itesla_project.iidm.network.Bus;
 import eu.itesla_project.iidm.network.Network;

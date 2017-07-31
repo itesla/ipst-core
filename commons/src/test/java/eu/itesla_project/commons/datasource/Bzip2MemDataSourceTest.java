@@ -1,7 +1,9 @@
-package eu.itesla_project.iidm.datasource;
+package eu.itesla_project.commons.datasource;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.junit.Test;
+
+import eu.itesla_project.commons.datasource.ReadOnlyMemDataSource;
 
 import static org.junit.Assert.*;
 
