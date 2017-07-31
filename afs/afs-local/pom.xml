@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>afs-storage</artifactId>
+            <artifactId>afs-storage-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -63,7 +63,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>afs-core</artifactId>
+            <artifactId>afs-ext-base</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
             <type>test-jar</type>
