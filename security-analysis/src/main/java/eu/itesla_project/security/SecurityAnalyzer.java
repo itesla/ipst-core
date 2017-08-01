@@ -6,18 +6,19 @@
  */
 package eu.itesla_project.security;
 
+import eu.itesla_project.commons.config.ComponentDefaultConfig;
+import eu.itesla_project.computation.ComputationManager;
+import eu.itesla_project.contingency.ContingenciesProvider;
+import eu.itesla_project.contingency.ContingenciesProviderFactory;
+import eu.itesla_project.contingency.EmptyContingencyListProvider;
+import eu.itesla_project.iidm.import_.Importers;
+import eu.itesla_project.iidm.network.Network;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Objects;
-
-import eu.itesla_project.commons.config.ComponentDefaultConfig;
-import eu.itesla_project.computation.ComputationManager;
-import eu.itesla_project.contingency.ContingenciesProvider;
-import eu.itesla_project.contingency.ContingenciesProviderFactory;
-import eu.itesla_project.iidm.import_.Importers;
-import eu.itesla_project.iidm.network.Network;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari@techrain.it>
@@ -42,13 +43,12 @@ public class SecurityAnalyzer {
         contingenciesProviderFactory = defaultConfig.newFactoryImpl(ContingenciesProviderFactory.class);
     }
     
-    public SecurityAnalyzer(ComputationManager computationManager, int priority, SecurityAnalysisFactory securityAnalysisFactory, ContingenciesProviderFactory contingenciesProviderFactory){
+    public SecurityAnalyzer(ComputationManager computationManager, int priority, SecurityAnalysisFactory securityAnalysisFactory, ContingenciesProviderFactory contingenciesProviderFactory) {
         this.computationManager = Objects.requireNonNull(computationManager);
         this.priority = priority;
         this.securityAnalysisFactory = Objects.requireNonNull(securityAnalysisFactory);
         this.contingenciesProviderFactory = Objects.requireNonNull(contingenciesProviderFactory);
     }
-
 
     public SecurityAnalysisResult analyze(Path caseFile, Path contingenciesFile) {
         Objects.requireNonNull(caseFile);
@@ -62,11 +62,9 @@ public class SecurityAnalyzer {
         SecurityAnalysis securityAnalysis = securityAnalysisFactory.create(network, computationManager, priority);
 
         ContingenciesProvider contingenciesProvider = contingenciesFile != null
-                ? contingenciesProviderFactory.create(contingenciesFile) : contingenciesProviderFactory.create();
+                ? contingenciesProviderFactory.create(contingenciesFile) : new EmptyContingencyListProvider();
 
-        // run security analysis on all N-1 lines
         return securityAnalysis.runAsync(contingenciesProvider).join();
-
     }
     
     public SecurityAnalysisResult analyze(InputStream networkData, String filename, InputStream contingencies) {
