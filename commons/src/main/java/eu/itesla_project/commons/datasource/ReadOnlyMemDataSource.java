@@ -21,66 +21,66 @@ import java.util.Objects;
  */
 public class ReadOnlyMemDataSource implements ReadOnlyDataSource {
 
-	private final Map<String, byte[]> data = new HashMap<>();
+    private final Map<String, byte[]> data = new HashMap<>();
 
-	private final String baseName;
+    private final String baseName;
 
-	public ReadOnlyMemDataSource() {
-		this("");
-	}
+    public ReadOnlyMemDataSource() {
+        this("");
+    }
 
-	public ReadOnlyMemDataSource(String baseName) {
-		this.baseName = Objects.requireNonNull(baseName);
-	}
+    public ReadOnlyMemDataSource(String baseName) {
+        this.baseName = Objects.requireNonNull(baseName);
+    }
 
-	public byte[] getData(String suffix, String ext) {
-		return getData(DataSourceUtil.getFileName(baseName, suffix, ext));
-	}
+    public byte[] getData(String suffix, String ext) {
+        return getData(DataSourceUtil.getFileName(baseName, suffix, ext));
+    }
 
-	public byte[] getData(String fileName) {
-		return data.get(fileName);
-	}
+    public byte[] getData(String fileName) {
+        return data.get(fileName);
+    }
 
-	protected void putData(String fileName, InputStream data) {
-		try {
+    protected void putData(String fileName, InputStream data) {
+        try {
             putData(fileName, ByteStreams.toByteArray(data));
         } catch (IOException e) {
-		    throw new UncheckedIOException(e);
+            throw new UncheckedIOException(e);
         }
-	}
+    }
 
-	protected void putData(String fileName, byte[] data) {
-		this.data.put(fileName, data);
-	}
+    protected void putData(String fileName, byte[] data) {
+        this.data.put(fileName, data);
+    }
 
-	@Override
-	public String getBaseName() {
-		return baseName;
-	}
+    @Override
+    public String getBaseName() {
+        return baseName;
+    }
 
-	@Override
-	public boolean exists(String suffix, String ext) throws IOException {
-		return exists(DataSourceUtil.getFileName(baseName, suffix, ext));
-	}
+    @Override
+    public boolean exists(String suffix, String ext) throws IOException {
+        return exists(DataSourceUtil.getFileName(baseName, suffix, ext));
+    }
 
-	@Override
-	public boolean exists(String fileName) throws IOException {
-		Objects.requireNonNull(fileName);
-		return data.containsKey(fileName);
-	}
+    @Override
+    public boolean exists(String fileName) throws IOException {
+        Objects.requireNonNull(fileName);
+        return data.containsKey(fileName);
+    }
 
-	@Override
-	public InputStream newInputStream(String suffix, String ext) throws IOException {
-		return newInputStream(DataSourceUtil.getFileName(baseName, suffix, ext));
-	}
+    @Override
+    public InputStream newInputStream(String suffix, String ext) throws IOException {
+        return newInputStream(DataSourceUtil.getFileName(baseName, suffix, ext));
+    }
 
-	@Override
-	public InputStream newInputStream(String fileName) throws IOException {
-		Objects.requireNonNull(fileName);
-		byte[] ba = data.get(fileName);
-		if (ba == null) {
-			throw new IOException(fileName + " does not exist");
-		}
-		return new ByteArrayInputStream(ba);
-	}
+    @Override
+    public InputStream newInputStream(String fileName) throws IOException {
+        Objects.requireNonNull(fileName);
+        byte[] ba = data.get(fileName);
+        if (ba == null) {
+            throw new IOException(fileName + " does not exist");
+        }
+        return new ByteArrayInputStream(ba);
+    }
 }
