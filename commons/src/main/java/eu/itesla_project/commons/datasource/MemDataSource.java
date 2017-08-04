@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class MemDataSource extends ReadOnlyMemDataSource implements DataSource{
+public class MemDataSource extends ReadOnlyMemDataSource implements DataSource {
 
     @Override
     public OutputStream newOutputStream(final String suffix, final String ext, boolean append) throws IOException {

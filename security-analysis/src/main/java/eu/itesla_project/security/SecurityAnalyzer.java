@@ -14,8 +14,6 @@ import eu.itesla_project.contingency.EmptyContingencyListProvider;
 import eu.itesla_project.iidm.import_.Importers;
 import eu.itesla_project.iidm.network.Network;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -57,39 +55,37 @@ public class SecurityAnalyzer {
         if (network == null) {
             throw new RuntimeException("Case '" + caseFile + "' not found");
         }
-        network.getStateManager().allowStateMultiThreadAccess(true);
-
-        SecurityAnalysis securityAnalysis = securityAnalysisFactory.create(network, computationManager, priority);
 
         ContingenciesProvider contingenciesProvider = contingenciesFile != null
                 ? contingenciesProviderFactory.create(contingenciesFile) : new EmptyContingencyListProvider();
 
-        return securityAnalysis.runAsync(contingenciesProvider).join();
+        return analyze(network, contingenciesProvider);
     }
     
-    public SecurityAnalysisResult analyze(InputStream networkData, String filename, InputStream contingencies) {
+    public SecurityAnalysisResult analyze(String filename, InputStream networkData, InputStream contingencies) {
         Objects.requireNonNull(networkData);
         Objects.requireNonNull(filename);
-        Network network = null;
-        try{
-            network = Importers.loadNetwork(networkData, filename);
-        }
-        catch(IOException ex)
-        {            
-        }
+
+        Network network = Importers.loadNetwork(filename, networkData);
         if (network == null) {
             throw new RuntimeException("Error loading network");
         }
+
+        ContingenciesProvider contingenciesProvider = contingencies != null
+                ? contingenciesProviderFactory.create(contingencies) : new EmptyContingencyListProvider();
+
+        return analyze(network, contingenciesProvider);
+    }
+
+    private SecurityAnalysisResult analyze(Network network, ContingenciesProvider contingenciesProvider) {
+        Objects.requireNonNull(network);
+        Objects.requireNonNull(contingenciesProvider);
+
         network.getStateManager().allowStateMultiThreadAccess(true);
 
         SecurityAnalysis securityAnalysis = securityAnalysisFactory.create(network, computationManager, priority);
 
-        ContingenciesProvider contingenciesProvider = contingencies != null
-                ? contingenciesProviderFactory.create(contingencies) : contingenciesProviderFactory.create();
-
-        // run security analysis on all N-1 lines
         return securityAnalysis.runAsync(contingenciesProvider).join();
-
     }
 
 }

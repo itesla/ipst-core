@@ -1,27 +1,32 @@
 /**
- * Copyright (c) 2016, All partners of the iTesla project (http://www.itesla-project.eu/consortium)
+ * Copyright (c) 2017, All partners of the iTesla project (http://www.itesla-project.eu/consortium)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package eu.itesla_project.commons.datasource;
 
-import java.io.*;
+import com.google.common.io.ByteStreams;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.apache.commons.io.IOUtils;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari@techrain.it>
  */
 public class ReadOnlyMemDataSource implements ReadOnlyDataSource {
 
-	protected final Map<String, byte[]> data = new HashMap<>();
+	private final Map<String, byte[]> data = new HashMap<>();
+
 	private final String baseName;
 
 	public ReadOnlyMemDataSource() {
-		this.baseName = "";
+		this("");
 	}
 
 	public ReadOnlyMemDataSource(String baseName) {
@@ -36,11 +41,15 @@ public class ReadOnlyMemDataSource implements ReadOnlyDataSource {
 		return data.get(fileName);
 	}
 
-	public void putData(String fileName, InputStream data) throws IOException {
-		putData(fileName, IOUtils.toByteArray(data));
+	protected void putData(String fileName, InputStream data) {
+		try {
+            putData(fileName, ByteStreams.toByteArray(data));
+        } catch (IOException e) {
+		    throw new UncheckedIOException(e);
+        }
 	}
 
-	public void putData(String fileName, byte[] data) {
+	protected void putData(String fileName, byte[] data) {
 		this.data.put(fileName, data);
 	}
 

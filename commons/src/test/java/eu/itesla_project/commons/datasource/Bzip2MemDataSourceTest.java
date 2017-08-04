@@ -1,34 +1,35 @@
+/**
+ * Copyright (c) 2017, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package eu.itesla_project.commons.datasource;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.junit.Test;
 
-import eu.itesla_project.commons.datasource.ReadOnlyMemDataSource;
-
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class Bzip2MemDataSourceTest {
+/**
+ * @author Giovanni Ferrari <giovanni.ferrari at techrain.it>
+ * @author Mathieu Bague <mathieu.bague at rte-france.com>
+ */
+public class Bzip2MemDataSourceTest extends ReadOnlyMemDataSourceTest {
 
-    @Test
-    public void test() {
-        try {
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream("data".getBytes()), "data.xiidm.bz2");
-            assertTrue(mem.exists("data.xiidm"));
-        } catch (IOException e) {
+    @Override
+    protected byte[] getCompressedData() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (BZip2CompressorOutputStream os = new BZip2CompressorOutputStream(bos)) {
+            os.write(getUncompressedData());
         }
+
+        return bos.toByteArray();
     }
 
     @Test
-    public void testFormat() {
-        try {
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream("data".getBytes()), "data", "bz2", "xiidm");
-            assertTrue(mem.exists(null, "xiidm"));
-        } catch (IOException e) {
-        }
+    public void test() throws IOException {
+        testDataSource(".bz2");
     }
-
 }

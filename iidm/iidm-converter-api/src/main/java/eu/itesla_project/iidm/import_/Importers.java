@@ -425,12 +425,12 @@ public class Importers {
         loadNetworks(dir, false, LocalComputationManager.getDefault(), CONFIG.get(), consumer);
     }
     
-    public static Network loadNetwork(InputStream data, String baseName, String extension, String format, ComputationManager computationManager, ImportConfig config, Properties parameters) throws IOException {
-        return loadNetwork(data, baseName, extension, format, computationManager, config, parameters, LOADER);
+    public static Network loadNetwork(String filename, InputStream data, ComputationManager computationManager, ImportConfig config, Properties parameters) {
+        return loadNetwork(filename, data, computationManager, config, parameters, LOADER);
     }
 
-    public static Network loadNetwork(InputStream data, String baseName, String extension, String format, ComputationManager computationManager, ImportConfig config, Properties parameters, ImportersLoader loader) throws IOException {
-        ReadOnlyMemDataSource dataSource = DataSourceUtil.createMemDataSource(data, baseName, extension, format);
+    public static Network loadNetwork(String filename, InputStream data, ComputationManager computationManager, ImportConfig config, Properties parameters, ImportersLoader loader) {
+        ReadOnlyMemDataSource dataSource = DataSourceUtil.createReadOnlyMemDataSource(filename, data);
         for (Importer importer : Importers.list(loader, computationManager, config)) {
             if (importer.exists(dataSource)) {
                 return importer.import_(dataSource, parameters);
@@ -439,26 +439,8 @@ public class Importers {
         return null;
     }
 
-    public static Network loadNetwork(InputStream data, String baseName, String extension, String format) throws IOException {
-        return loadNetwork(data, baseName, extension, format, LocalComputationManager.getDefault(), CONFIG.get(), null);
-    }
-
-    public static Network loadNetwork(InputStream data, String filename, ComputationManager computationManager, ImportConfig config, Properties parameters) throws IOException {
-        return loadNetwork(data, filename, computationManager, config, parameters, LOADER);
-    }
-
-    public static Network loadNetwork(InputStream data, String filename, ComputationManager computationManager, ImportConfig config, Properties parameters, ImportersLoader loader) throws IOException {
-        ReadOnlyMemDataSource dataSource = DataSourceUtil.createMemDataSource(data, filename);
-        for (Importer importer : Importers.list(loader, computationManager, config)) {
-            if (importer.exists(dataSource)) {
-                return importer.import_(dataSource, parameters);
-            }
-        }
-        return null;
-    }
-
-    public static Network loadNetwork(InputStream data, String filename) throws IOException {
-        return loadNetwork(data, filename, LocalComputationManager.getDefault(), CONFIG.get(), null);
+    public static Network loadNetwork(String filename, InputStream data) {
+        return loadNetwork(filename, data, LocalComputationManager.getDefault(), CONFIG.get(), null);
     }
 
 }

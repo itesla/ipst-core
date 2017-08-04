@@ -1,47 +1,44 @@
 /**
- * Copyright (c) 2016, All partners of the iTesla project (http://www.itesla-project.eu/consortium)
+ * Copyright (c) 2017, All partners of the iTesla project (http://www.itesla-project.eu/consortium)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package eu.itesla_project.commons.datasource;
 
+import com.google.common.io.ByteStreams;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import com.google.common.io.ByteStreams;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari@techrain.it>
  */
 public class ZipMemDataSource extends ReadOnlyMemDataSource {
 
-    public ZipMemDataSource(InputStream is, String basename) {
-        super(basename);
-        Objects.requireNonNull(is);
+    ZipMemDataSource(String fileName, InputStream content) {
+        super(DataSourceUtil.getBaseName(fileName));
 
-        try( ZipInputStream zipStream = new ZipInputStream(is)) {
+        Objects.requireNonNull(content);
+        try (ZipInputStream zipStream = new ZipInputStream(content)) {
             ZipEntry entry = zipStream.getNextEntry();
-            while(entry != null)
+            while (entry != null)
             {
-                String entryname = entry.getName();
-                ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                ByteStreams.copy(zipStream, bao);
-                putData(entryname, bao.toByteArray());
-                bao.close();
+                String entryName = entry.getName();
+                try (ByteArrayOutputStream bao = new ByteArrayOutputStream()) {
+                    ByteStreams.copy(zipStream, bao);
+                    putData(entryName, bao.toByteArray());
+                }
                 entry = zipStream.getNextEntry();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
-    }
-
-    protected String getCompressionExt() {
-        return ".zip";
     }
 
     @Override

@@ -1,53 +1,74 @@
+/**
+ * Copyright (c) 2017, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package eu.itesla_project.commons.datasource;
 
-import static org.junit.Assert.*;
+import com.google.common.io.ByteStreams;
+import org.junit.Test;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-import eu.itesla_project.commons.datasource.ReadOnlyMemDataSource;
+/**
+ * @author Giovanni Ferrari <giovanni.ferrari at techrain.it>
+ * @author Mathieu Bague <mathieu.bague at rte-france.com>
+ */
+public class ZipMemDataSourceTest extends ReadOnlyMemDataSourceTest {
 
-public class ZipMemDataSourceTest {
+    private byte[] getExtraUncompressedData() {
+        return "extra data".getBytes(StandardCharsets.UTF_8);
+    }
 
-    private byte[] data;
+    @Override
+    protected byte[] getCompressedData() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ZipOutputStream os = new ZipOutputStream(bos)) {
 
-    @Before
-    public void setUp() throws Exception {
-        ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(bao));) {
-            ZipEntry entry = new ZipEntry("one.xiidm");
-            zip.putNextEntry(entry);
-            zip.closeEntry();
-            ZipEntry entry2 = new ZipEntry("two.xiidm");
-            zip.putNextEntry(entry2);
-            zip.closeEntry();
-            zip.close();
-            data = bao.toByteArray();
+            ZipEntry entry1 = new ZipEntry("data.xiidm");
+            byte[] data = getUncompressedData();
+            entry1.setSize(data.length);
+            os.putNextEntry(entry1);
+            os.write(data);
+            os.closeEntry();
+
+            ZipEntry entry2 = new ZipEntry("extra_data.xiidm");
+            byte[] extraData = getExtraUncompressedData();
+            entry2.setSize(extraData.length);
+            os.putNextEntry(entry2);
+            os.write(extraData);
+            os.closeEntry();
         }
+
+        return bos.toByteArray();
+    }
+
+    @Override
+    protected ReadOnlyMemDataSource testDataSource(String extension) throws IOException {
+        ReadOnlyMemDataSource dataSource = super.testDataSource(extension);
+
+        assertTrue(dataSource.exists("extra_data.xiidm"));
+        assertArrayEquals(getExtraUncompressedData(), ByteStreams.toByteArray(dataSource.newInputStream("extra_data.xiidm")));
+
+        try {
+            assertFalse(dataSource.exists("_data", "xiidm")); // baseName = data, data_data.xiidm does not exist
+            assertArrayEquals(getExtraUncompressedData(), ByteStreams.toByteArray(dataSource.newInputStream("_data", "xiidm")));
+            fail();
+        } catch (IOException e) {
+        }
+
+        return dataSource;
     }
 
     @Test
-    public void testFilename() {
-        try {
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream(data), "data.zip");
-            assertTrue(mem.exists("two.xiidm"));
-        } catch (IOException e) {
-        }
-    }
-
-    @Test
-    public void testFormat() {
-        try {
-            ReadOnlyMemDataSource mem = DataSourceUtil.createMemDataSource(new ByteArrayInputStream(data), "one", "zip", "xiidm");
-            assertTrue(mem.exists(null, "xiidm"));
-        } catch (IOException e) {
-        }
+    public void test() throws IOException {
+        testDataSource(".zip");
     }
 }
