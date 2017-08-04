@@ -105,6 +105,54 @@ public class LineTest {
         assertEquals(hl1b1 + hl2b1, tieLine.getB1(), delta);
         assertEquals(hl1b2 + hl2b2, tieLine.getB2(), delta);
 
+        boolean thrownBySetR = false;
+        try {
+            tieLine.setR(1.0f);
+        } catch (ValidationException e) {
+            thrownBySetR = true;
+        }
+        assertTrue(thrownBySetR);
+
+        boolean thrownBySetX = false;
+        try {
+            tieLine.setX(1.0f);
+        } catch (ValidationException e) {
+            thrownBySetX = true;
+        }
+        assertTrue(thrownBySetX);
+
+        boolean thrownBySetB1 = false;
+        try {
+            tieLine.setB1(1.0f);
+        } catch (ValidationException e) {
+            thrownBySetB1 = true;
+        }
+        assertTrue(thrownBySetB1);
+
+        boolean thrownBySetB2 = false;
+        try {
+            tieLine.setB2(1.0f);
+        } catch (ValidationException e) {
+            thrownBySetB2 = true;
+        }
+        assertTrue(thrownBySetB2);
+
+        boolean thrownBySetG1 = false;
+        try {
+            tieLine.setG1(1.0f);
+        } catch (ValidationException e) {
+            thrownBySetG1 = true;
+        }
+        assertTrue(thrownBySetG1);
+
+        boolean thrownBySetG2 = false;
+        try {
+            tieLine.setG2(1.0f);
+        } catch (ValidationException e) {
+            thrownBySetG2 = true;
+        }
+        assertTrue(thrownBySetG2);
+
         TieLineImpl.HalfLineImpl h1 = tieLine.getHalf1();
         assertEquals(xnodeP, h1.getXnodeP(), delta);
         assertEquals(xnodeQ, h1.getXnodeQ(), delta);
