@@ -176,5 +176,24 @@ public class LineTest {
         assertEquals(id, danglingLine.getId());
         assertEquals(name, danglingLine.getName());
         assertEquals(ucteXnodeCode, danglingLine.getUcteXnodeCode());
+
+        float r2 = 11.0f;
+        float x2 = 21.0f;
+        float g2 = 31.0f;
+        float b2 = 41.0f;
+        float p02 = 51.0f;
+        float q02 = 61.0f;
+        assertEquals(danglingLine, danglingLine.setR(r2));
+        assertEquals(r2, danglingLine.getR(), delta);
+        assertEquals(danglingLine, danglingLine.setX(x2));
+        assertEquals(x2, danglingLine.getX(), delta);
+        assertEquals(danglingLine, danglingLine.setG(g2));
+        assertEquals(g2, danglingLine.getG(), delta);
+        assertEquals(danglingLine, danglingLine.setB(b2));
+        assertEquals(b2, danglingLine.getB(), delta);
+        assertEquals(danglingLine, danglingLine.setP0(p02));
+        assertEquals(p02, danglingLine.getP0(), delta);
+        assertEquals(danglingLine, danglingLine.setQ0(q02));
+        assertEquals(q02, danglingLine.getQ0(), delta);
     }
 }
