@@ -6,7 +6,7 @@
  */
 package eu.itesla_project.iidm.network.impl;
 
-import eu.itesla_project.iidm.network.Network;
+import eu.itesla_project.iidm.network.*;
 import eu.itesla_project.iidm.network.test.EurostagTutorialExample1Factory;
 import org.junit.Test;
 
@@ -16,7 +16,8 @@ public class LineTest {
 
     @Test
     public void testSetterGetter() {
-        LineImpl line = createLineImpl();
+        Network network = EurostagTutorialExample1Factory.create();
+        Line line = network.getLine("NHV1_NHV2_1");
         float r = 10.0f;
         float x = 20.0f;
         float g1 = 30.0f;
@@ -38,16 +39,9 @@ public class LineTest {
         assertEquals(b2, line.getB2(), delta);
     }
 
-    private LineImpl createLineImpl() {
-        Network network = EurostagTutorialExample1Factory.create();
-        LineImpl lineImpl = (LineImpl) network.getLine("NHV1_NHV2_1");
-        return lineImpl;
-    }
-
     @Test
     public void testTieLineSetterGetter() {
         Network network = EurostagTutorialExample1Factory.create();
-        TieLineAdderImpl tieLineAdder = new TieLineAdderImpl((NetworkImpl) network);
         float r = 10.0f;
         float r2 = 1.0f;
         float x = 20.0f;
@@ -63,7 +57,7 @@ public class LineTest {
         float xnodeP = 50.0f;
         float xnodeQ = 60.0f;
         float delta = 0.0f;
-        TieLineImpl tieLine = tieLineAdder.setId("testTie")
+        TieLine tieLine = network.newTieLine().setId("testTie")
                             .setName("testNameTie")
                             .setVoltageLevel1("VLHV1")
                             .setBus1("NHV1")
@@ -105,56 +99,82 @@ public class LineTest {
         assertEquals(hl1b1 + hl2b1, tieLine.getB1(), delta);
         assertEquals(hl1b2 + hl2b2, tieLine.getB2(), delta);
 
-        boolean thrownBySetR = false;
         try {
             tieLine.setR(1.0f);
-        } catch (ValidationException e) {
-            thrownBySetR = true;
+            fail();
+        } catch (ValidationException ignored) {
         }
-        assertTrue(thrownBySetR);
 
-        boolean thrownBySetX = false;
         try {
             tieLine.setX(1.0f);
-        } catch (ValidationException e) {
-            thrownBySetX = true;
+            fail();
+        } catch (ValidationException ignored) {
         }
-        assertTrue(thrownBySetX);
 
-        boolean thrownBySetB1 = false;
         try {
             tieLine.setB1(1.0f);
-        } catch (ValidationException e) {
-            thrownBySetB1 = true;
+            fail();
+        } catch (ValidationException ignored) {
         }
-        assertTrue(thrownBySetB1);
 
-        boolean thrownBySetB2 = false;
         try {
             tieLine.setB2(1.0f);
-        } catch (ValidationException e) {
-            thrownBySetB2 = true;
+            fail();
+        } catch (ValidationException ignored) {
         }
-        assertTrue(thrownBySetB2);
 
-        boolean thrownBySetG1 = false;
         try {
             tieLine.setG1(1.0f);
-        } catch (ValidationException e) {
-            thrownBySetG1 = true;
+            fail();
+        } catch (ValidationException ignored) {
         }
-        assertTrue(thrownBySetG1);
 
-        boolean thrownBySetG2 = false;
         try {
             tieLine.setG2(1.0f);
-        } catch (ValidationException e) {
-            thrownBySetG2 = true;
+            fail();
+        } catch (ValidationException ignored) {
         }
-        assertTrue(thrownBySetG2);
 
-        TieLineImpl.HalfLineImpl h1 = tieLine.getHalf1();
-        assertEquals(xnodeP, h1.getXnodeP(), delta);
-        assertEquals(xnodeQ, h1.getXnodeQ(), delta);
+        TieLineImpl.HalfLine half1 = tieLine.getHalf1();
+        assertEquals(xnodeP, half1.getXnodeP(), delta);
+        assertEquals(xnodeQ, half1.getXnodeQ(), delta);
+    }
+
+    @Test
+    public void testDanglingLine() {
+        Network network = EurostagTutorialExample1Factory.create();
+        VoltageLevel vl = network.getVoltageLevel("VLHV1");
+        float r = 10.0f;
+        float x = 20.0f;
+        float g = 30.0f;
+        float b = 40.0f;
+        float p0 = 50.0f;
+        float q0 = 60.0f;
+        float delta = 0.0f;
+        String id = "danglingId";
+        String name = "danlingName";
+        String ucteXnodeCode = "code";
+        DanglingLine danglingLine = vl.newDanglingLine()
+                .setBus("NHV1")
+                .setConnectableBus("NHV1")
+                .setId(id)
+                .setR(r)
+                .setX(x)
+                .setG(g)
+                .setB(b)
+                .setP0(p0)
+                .setQ0(q0)
+                .setName(name)
+                .setUcteXnodeCode(ucteXnodeCode)
+                .add();
+        assertEquals(r, danglingLine.getR(), delta);
+        assertEquals(x, danglingLine.getX(), delta);
+        assertEquals(g, danglingLine.getG(), delta);
+        assertEquals(b, danglingLine.getB(), delta);
+        assertEquals(p0, danglingLine.getP0(), delta);
+        assertEquals(q0, danglingLine.getQ0(), delta);
+        assertEquals(id, danglingLine.getId());
+        assertEquals(name, danglingLine.getName());
+        assertEquals(ucteXnodeCode, danglingLine.getUcteXnodeCode());
     }
 }
