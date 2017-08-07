@@ -49,6 +49,9 @@ public class TwoWindingsTransformerTest {
         TwoWindingsTransformer twoWindingsTransformer = network.getTwoWindingsTransformer("CI");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         assertNotNull(phaseTapChanger);
+        PhaseTapChangerStep phaseTapChangerStep = phaseTapChanger.getStep(0);
+        phaseTapChangerStep.setAlpha(5.0f);
+        assertEquals(5.0f, phaseTapChangerStep.getAlpha(), 0.0f);
         float regulationValue = 1.0f;
 
         phaseTapChanger.setRegulationValue(regulationValue);
@@ -71,8 +74,11 @@ public class TwoWindingsTransformerTest {
                 .setRegulating(false)
                 .setRegulationTerminal(twoWindingsTransformer.getTerminal(TwoTerminalsConnectable.Side.ONE))
                 .beginStep().setR(39.78473f).setX(39.784725f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
+                .beginStep().setR(39.78474f).setX(39.784726f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
+                .beginStep().setR(39.78475f).setX(39.784727f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
                 .add();
         assertEquals(targetV, ratioTapChanger.getTargetV(), 0.0f);
+        assertEquals(0, ratioTapChanger.getLowTapPosition(), 0.0f);
         assertEquals(ratioTapChanger, ratioTapChanger.setTargetV(110.0f));
         assertEquals(ratioTapChanger, ratioTapChanger.setRegulating(true));
         assertEquals(ratioTapChanger, ratioTapChanger.setRegulationTerminal(terminal));
@@ -81,5 +87,23 @@ public class TwoWindingsTransformerTest {
         assertEquals(false, ratioTapChanger.hasLoadTapChangingCapabilities());
         ratioTapChanger.remove();
         assertNull(twoWindingsTransformer.getRatioTapChanger());
+
+        assertEquals(3, ratioTapChanger.getStepCount());
+        RatioTapChangerStep step = ratioTapChanger.getStep(0);
+        float stepR = 10.0f;
+        float stepX = 20.0f;
+        float stepG = 30.0f;
+        float stepB = 40.0f;
+        float stepRho = 50.0f;
+        step.setR(stepR);
+        assertEquals(stepR, step.getR(), 0.0f);
+        step.setX(stepX);
+        assertEquals(stepX, step.getX(), 0.0f);
+        step.setG(stepG);
+        assertEquals(stepG, step.getG(), 0.0f);
+        step.setB(stepB);
+        assertEquals(stepB, step.getB(), 0.0f);
+        step.setRho(stepRho);
+        assertEquals(stepRho, step.getRho(), 0.0f);
     }
 }
