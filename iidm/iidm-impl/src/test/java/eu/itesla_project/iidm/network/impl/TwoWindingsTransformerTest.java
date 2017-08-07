@@ -79,9 +79,9 @@ public class TwoWindingsTransformerTest {
                 .add();
         assertEquals(targetV, ratioTapChanger.getTargetV(), 0.0f);
         assertEquals(0, ratioTapChanger.getLowTapPosition(), 0.0f);
-        assertEquals(ratioTapChanger, ratioTapChanger.setTargetV(110.0f));
-        assertEquals(ratioTapChanger, ratioTapChanger.setRegulating(true));
-        assertEquals(ratioTapChanger, ratioTapChanger.setRegulationTerminal(terminal));
+        ratioTapChanger.setTargetV(110.0f);
+        ratioTapChanger.setRegulating(true);
+        ratioTapChanger.setRegulationTerminal(terminal);
         assertEquals(terminal, ratioTapChanger.getRegulationTerminal());
         assertEquals(0, ratioTapChanger.getTapPosition(), 0.0f);
         assertEquals(false, ratioTapChanger.hasLoadTapChangingCapabilities());
