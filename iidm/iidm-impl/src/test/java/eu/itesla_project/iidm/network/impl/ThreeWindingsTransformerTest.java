@@ -15,15 +15,15 @@ import static org.junit.Assert.*;
 public class ThreeWindingsTransformerTest {
     @Test
     public void testSetterGetter() {
-        String id3WindingsTransformer = "ABCD_ID";
-        String name3WindingsTransformer = "XYZ_NAME";
+        String idThreeWindingsTransformer = "ABCD_ID";
+        String nameThreeWindingsTransformer = "XYZ_NAME";
 
         Network network = EurostagTutorialExample1Factory.create();
         Substation p1 = network.getSubstation("P1");
         assertNotNull(p1);
 
-        ThreeWindingsTransformerAdder transfomerAdder = p1.newThreeWindingsTransformer();
-        ThreeWindingsTransformer transformer = transfomerAdder
+        ThreeWindingsTransformerAdder transformerAdder = p1.newThreeWindingsTransformer();
+        ThreeWindingsTransformer transformer = transformerAdder
                 .newLeg1().setR(1.3f).setX(1.4f).setRatedU(1.1f)
                 .setG(1.6f).setB(1.7f)
                 .setVoltageLevel("VLGEN").setConnectableBus("NGEN").add()
@@ -31,10 +31,10 @@ public class ThreeWindingsTransformerTest {
                 .setVoltageLevel("VLGEN").setConnectableBus("NGEN").add()
                 .newLeg3().setR(3.3f).setX(3.4f).setRatedU(3.5f)
                 .setVoltageLevel("VLGEN").setConnectableBus("NGEN").add()
-                .setId(id3WindingsTransformer)
-                .setName(name3WindingsTransformer).add();
-        assertEquals(id3WindingsTransformer, transformer.getId());
-        assertEquals(name3WindingsTransformer, transformer.getName());
+                .setId(idThreeWindingsTransformer)
+                .setName(nameThreeWindingsTransformer).add();
+        assertEquals(idThreeWindingsTransformer, transformer.getId());
+        assertEquals(nameThreeWindingsTransformer, transformer.getName());
         assertEquals(p1, transformer.getSubstation());
         assertEquals(ConnectableType.THREE_WINDINGS_TRANSFORMER, transformer.getType());
 
@@ -45,6 +45,7 @@ public class ThreeWindingsTransformerTest {
         assertEquals(1.1f, leg1.getRatedU(), 0.0f);
         assertEquals(1.6f, leg1.getG(), 0.0f);
         assertEquals(1.7f, leg1.getB(), 0.0f);
+        assertSame(transformer.getTerminal(ThreeWindingsTransformer.Side.ONE), leg1.getTerminal());
 
         // leg2/3 getter
         ThreeWindingsTransformer.Leg2or3 leg2 = transformer.getLeg2();
@@ -55,6 +56,52 @@ public class ThreeWindingsTransformerTest {
         assertEquals(3.3f, leg3.getR(), 0.0f);
         assertEquals(3.4f, leg3.getX(), 0.0f);
         assertEquals(3.5f, leg3.getRatedU(), 0.0f);
+        assertSame(transformer.getTerminal(ThreeWindingsTransformer.Side.TWO), leg2.getTerminal());
+        assertSame(transformer.getTerminal(ThreeWindingsTransformer.Side.THREE), leg3.getTerminal());
+
+        RatioTapChanger ratioTapChangerInLeg2 = leg2.newRatioTapChanger()
+                                            .setTargetV(200.0f)
+                                            .setLoadTapChangingCapabilities(false)
+                                            .setLowTapPosition(0)
+                                            .setTapPosition(0)
+                                            .setRegulating(false)
+                                            .setRegulationTerminal(transformer.getTerminal(ThreeWindingsTransformer.Side.TWO))
+                                            .beginStep().setR(39.78473f).setX(39.784725f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
+                                            .beginStep().setR(39.78474f).setX(39.784726f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
+                                            .beginStep().setR(39.78475f).setX(39.784727f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
+                                    .add();
+        assertSame(ratioTapChangerInLeg2, leg2.getRatioTapChanger());
+        CurrentLimits currentLimitsInLeg2 = leg2.newCurrentLimits()
+                                        .setPermanentLimit(100)
+                                        .beginTemporaryLimit()
+                                        .setName("20'")
+                                        .setAcceptableDuration(20 * 60)
+                                        .setValue(1200)
+                                        .endTemporaryLimit()
+                                    .add();
+        assertSame(currentLimitsInLeg2, leg2.getCurrentLimits());
+
+        RatioTapChanger ratioTapChangerInLeg3 = leg3.newRatioTapChanger()
+                                                    .setTargetV(200.0f)
+                                                    .setLoadTapChangingCapabilities(false)
+                                                    .setLowTapPosition(0)
+                                                    .setTapPosition(0)
+                                                    .setRegulating(false)
+                                                    .setRegulationTerminal(transformer.getTerminal(ThreeWindingsTransformer.Side.THREE))
+                                                    .beginStep().setR(39.78473f).setX(39.784725f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
+                                                    .beginStep().setR(39.78474f).setX(39.784726f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
+                                                    .beginStep().setR(39.78475f).setX(39.784727f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
+                                                .add();
+        assertSame(ratioTapChangerInLeg3, leg3.getRatioTapChanger());
+        CurrentLimits currentLimitsInLeg3 = leg3.newCurrentLimits()
+                .setPermanentLimit(100)
+                .beginTemporaryLimit()
+                .setName("20'")
+                .setAcceptableDuration(20 * 60)
+                .setValue(1200)
+                .endTemporaryLimit()
+                .add();
+        assertSame(currentLimitsInLeg3, leg3.getCurrentLimits());
 
         ThreeWindingsTransformerImpl.Leg1Impl t = new ThreeWindingsTransformerImpl.Leg1Impl(0.1f, 0.2f, 0.3f, 4f, 4f);
         t.setR(2.1f);
