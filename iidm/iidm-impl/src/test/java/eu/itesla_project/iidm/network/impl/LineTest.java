@@ -37,6 +37,27 @@ public class LineTest {
         assertEquals(b1, line.getB1(), delta);
         line.setB2(b2);
         assertEquals(b2, line.getB2(), delta);
+        assertFalse(line.isTieLine());
+
+        CurrentLimits currentLimits1 = line.newCurrentLimits1()
+                                            .setPermanentLimit(100)
+                                            .beginTemporaryLimit()
+                                            .setName("5'")
+                                            .setAcceptableDuration(5 * 60)
+                                            .setValue(1400)
+                                            .setFictitious(true)
+                                            .endTemporaryLimit()
+                                        .add();
+        CurrentLimits currentLimits2 = line.newCurrentLimits2()
+                                            .setPermanentLimit(50)
+                                            .beginTemporaryLimit()
+                                            .setName("20'")
+                                            .setAcceptableDuration(20 * 60)
+                                            .setValue(1200)
+                                            .endTemporaryLimit()
+                                        .add();
+        assertSame(currentLimits1, line.getCurrentLimits1());
+        assertSame(currentLimits2, line.getCurrentLimits2());
     }
 
     @Test
@@ -183,17 +204,17 @@ public class LineTest {
         float b2 = 41.0f;
         float p02 = 51.0f;
         float q02 = 61.0f;
-        assertEquals(danglingLine, danglingLine.setR(r2));
+        danglingLine.setR(r2);
         assertEquals(r2, danglingLine.getR(), delta);
-        assertEquals(danglingLine, danglingLine.setX(x2));
+        danglingLine.setX(x2);
         assertEquals(x2, danglingLine.getX(), delta);
-        assertEquals(danglingLine, danglingLine.setG(g2));
+        danglingLine.setG(g2);
         assertEquals(g2, danglingLine.getG(), delta);
-        assertEquals(danglingLine, danglingLine.setB(b2));
+        danglingLine.setB(b2);
         assertEquals(b2, danglingLine.getB(), delta);
-        assertEquals(danglingLine, danglingLine.setP0(p02));
+        danglingLine.setP0(p02);
         assertEquals(p02, danglingLine.getP0(), delta);
-        assertEquals(danglingLine, danglingLine.setQ0(q02));
+        danglingLine.setQ0(q02);
         assertEquals(q02, danglingLine.getQ0(), delta);
     }
 }
