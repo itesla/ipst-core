@@ -78,13 +78,13 @@ public class TwoWindingsTransformerTest {
                 .beginStep().setR(39.78475f).setX(39.784727f).setG(0.0f).setB(0.0f).setRho(1.0f).endStep()
                 .add();
         assertEquals(targetV, ratioTapChanger.getTargetV(), 0.0f);
-        assertEquals(0, ratioTapChanger.getLowTapPosition(), 0.0f);
+        assertEquals(0, ratioTapChanger.getLowTapPosition());
         ratioTapChanger.setTargetV(110.0f);
         ratioTapChanger.setRegulating(true);
         ratioTapChanger.setRegulationTerminal(terminal);
         assertEquals(terminal, ratioTapChanger.getRegulationTerminal());
-        assertEquals(0, ratioTapChanger.getTapPosition(), 0.0f);
-        assertEquals(false, ratioTapChanger.hasLoadTapChangingCapabilities());
+        assertEquals(0, ratioTapChanger.getTapPosition());
+        assertFalse(ratioTapChanger.hasLoadTapChangingCapabilities());
         ratioTapChanger.remove();
         assertNull(twoWindingsTransformer.getRatioTapChanger());
 

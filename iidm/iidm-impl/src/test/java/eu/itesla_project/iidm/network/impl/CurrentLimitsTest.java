@@ -84,24 +84,24 @@ public class CurrentLimitsTest {
         assertFalse(l.isOverloaded());
         l.getTerminal1().getBusBreakerView().getBus().setV(390);
         l.getTerminal1().setP(100).setQ(50); // i = 165.51212
-        assertTrue(!Float.isNaN(l.getTerminal1().getI()));
+        assertFalse(Float.isNaN(l.getTerminal1().getI()));
         assertFalse(l.isOverloaded());
         assertFalse(l.checkPermanentLimit1());
         assertNull(l.checkTemporaryLimits1());
 
         l.getTerminal1().setP(800).setQ(400); // i = 1324.0969
         assertTrue(l.isOverloaded());
-        assertTrue(l.getOverloadDuration() == 5 * 60);
+        assertEquals(5 * 60, l.getOverloadDuration());
         assertTrue(l.checkPermanentLimit1());
         assertNotNull(l.checkTemporaryLimits1());
-        assertTrue(l.checkTemporaryLimits1().getTemporaryLimit().getAcceptableDuration() == 5 * 60);
-        assertTrue(l.checkTemporaryLimits1().getPreviousLimit() == 1200);
+        assertEquals(5 * 60, l.checkTemporaryLimits1().getTemporaryLimit().getAcceptableDuration());
+        assertEquals(1200.0f, l.checkTemporaryLimits1().getPreviousLimit(), 0.0f);
 
         l.getTerminal1().setP(900).setQ(500); // i = 1524.1499
-        assertTrue(l.getOverloadDuration() == 60);
+        assertEquals(60, l.getOverloadDuration());
         assertNotNull(l.checkTemporaryLimits1());
-        assertTrue(l.checkTemporaryLimits1().getTemporaryLimit().getAcceptableDuration() == 60);
-        assertTrue(l.checkTemporaryLimits1().getPreviousLimit() == 1400);
+        assertEquals(60, l.checkTemporaryLimits1().getTemporaryLimit().getAcceptableDuration());
+        assertEquals(1400.0f, l.checkTemporaryLimits1().getPreviousLimit(), 0.0f);
     }
 
     @Test
@@ -134,12 +134,12 @@ public class CurrentLimitsTest {
         currentLimits.setPermanentLimit(1000f);
         assertEquals(1000f, currentLimits.getPermanentLimit(), 0.0f);
         assertEquals(3, currentLimits.getTemporaryLimits().size());
-        assertEquals(Float.NaN, currentLimits.getTemporaryLimitValue(2),0.0f);
+        assertTrue(Float.isNaN(currentLimits.getTemporaryLimitValue(2)));
 
         CurrentLimits.TemporaryLimit temporaryLimit300 = currentLimits.getTemporaryLimit(300);
         assertEquals("5'", temporaryLimit300.getName());
-        assertEquals(true, temporaryLimit300.isFictitious());
+        assertTrue(temporaryLimit300.isFictitious());
         assertEquals(1400f, temporaryLimit300.getValue(), 0.0f);
-        assertEquals(300, temporaryLimit300.getAcceptableDuration(),0.0f);
+        assertEquals(300, temporaryLimit300.getAcceptableDuration());
     }
 }

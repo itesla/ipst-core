@@ -15,7 +15,7 @@ public class VoltageLevelTest {
 
     @Test
     public void testSetterGetter() {
-        Network network = NetworkFactory.create("test","test");
+        Network network = NetworkFactory.create("test", "test");
         Substation substation = network.newSubstation()
                                     .setCountry(Country.AF).setTso("tso").setName("sub").setId("subId").add();
         VoltageLevel voltageLevel = substation.newVoltageLevel()
