@@ -40,6 +40,13 @@ public class MultiStatesTest {
         float generatorP0 = generator.getTargetP();
         Load load = networkFictious.getLoad("CE");
         float loadP0 = load.getP0();
+        ShuntCompensator shuntCompensator = networkEurosTag.getShunt("sc");
+        float shuntCurrentB0 = shuntCompensator.getCurrentB();
+        VscConverterStation vscConverterStation = networkEurosTag.getVscConverterStation("vsc");
+        float vscPoint0 = vscConverterStation.getReactivePowerSetpoint();
+        StaticVarCompensator staticVarCompensator = networkEurosTag.getStaticVarCompensator("svc");
+        float svcPoint0 = staticVarCompensator.getReactivePowerSetPoint();
+
         // extend 4 more states
         stateManagerFictious.cloneState(StateManager.INITIAL_STATE_ID, statesToAdd);
         stateManagerEurosTag.cloneState(StateManager.INITIAL_STATE_ID, statesToAdd);
@@ -54,11 +61,18 @@ public class MultiStatesTest {
         float ratioTapChangerV4 = ratioTapChanger.getTargetV();
         float generatorP4 = generator.getTargetP();
         float loadP4 = load.getP0();
+        float shuntCurrentB4 = shuntCompensator.getCurrentB();
+        float vscPoint4 = vscConverterStation.getReactivePowerSetpoint();
+        float svcPoint4 = staticVarCompensator.getReactivePowerSetPoint();
+
         // check cloned by extend
         assertEquals(phaseTapChangerV0, phaseTapChangerV4, 0.0f);
         assertEquals(ratioTapChangerV0, ratioTapChangerV4, 0.0f);
         assertEquals(generatorP0, generatorP4, 0.0f);
         assertEquals(loadP0, loadP4, 0.0f);
+        assertEquals(shuntCurrentB0, shuntCurrentB4, 0.0f);
+        assertEquals(vscPoint0, vscPoint4, 0.0f);
+        assertEquals(svcPoint0, svcPoint4, 0.0f);
 
         // delete s2
         stateManagerFictious.removeState("s2");
@@ -89,11 +103,18 @@ public class MultiStatesTest {
         float ratioTapChangerV22 = ratioTapChanger.getTargetV();
         float generatorP22 = generator.getTargetP();
         float loadP22 = load.getP0();
+        float shuntCurrentB22 = shuntCompensator.getCurrentB();
+        float vscPoint22 = vscConverterStation.getReactivePowerSetpoint();
+        float svcPoint22 = staticVarCompensator.getReactivePowerSetPoint();
+
         // check cloned by allocate
         assertEquals(phaseTapChangerV4, phaseTapChangerV22, 0.0f);
         assertEquals(ratioTapChangerV4, ratioTapChangerV22, 0.0f);
         assertEquals(generatorP4, generatorP22, 0.0f);
         assertEquals(loadP4, loadP22, 0.0f);
+        assertEquals(shuntCurrentB4, shuntCurrentB22, 0.0f);
+        assertEquals(vscPoint4, vscPoint22, 0.0f);
+        assertEquals(svcPoint4, svcPoint22, 0.0f);
 
         // reduce s4
         stateManagerFictious.removeState("s4");
@@ -130,8 +151,8 @@ public class MultiStatesTest {
 
     private Network addMoreEquipmentsToEurosTagNetwork() {
         Network network = EurostagTutorialExample1Factory.create();
-        network.getVoltageLevel("VLHV1")
-                .newDanglingLine()
+        VoltageLevel voltageLevel = network.getVoltageLevel("VLHV1");
+        voltageLevel.newDanglingLine()
                     .setBus("NHV1")
                     .setConnectableBus("NHV1")
                     .setId("danglingId")
@@ -144,6 +165,45 @@ public class MultiStatesTest {
                     .setName("danglingName")
                     .setUcteXnodeCode("code")
                 .add();
+        ShuntCompensator shuntCompensator = voltageLevel.newShunt()
+                                                .setName("shunt")
+                                                .setId("sc")
+                                                .setConnectableBus("NHV1")
+                                                .setbPerSection(1.0f)
+                                                .setCurrentSectionCount(3)
+                                                .setMaximumSectionCount(10)
+                                            .add();
+        ThreeWindingsTransformer transformer = network.getSubstation("P1").newThreeWindingsTransformer()
+                                                .newLeg1().setR(1.3f).setX(1.4f).setRatedU(1.1f)
+                                                .setG(1.6f).setB(1.7f)
+                                                .setVoltageLevel("VLGEN").setConnectableBus("NGEN").add()
+                                                .newLeg2().setR(2.03f).setX(2.04f).setRatedU(2.05f)
+                                                .setVoltageLevel("VLGEN").setConnectableBus("NGEN").add()
+                                                .newLeg3().setR(3.3f).setX(3.4f).setRatedU(3.5f)
+                                                .setVoltageLevel("VLGEN").setConnectableBus("NGEN").add()
+                                                .setId("3wt")
+                                                .setName("3wt")
+                                            .add();
+        VscConverterStation vscConverterStation = voltageLevel.newVscConverterStation()
+                                                    .setId("vsc")
+                                                    .setName("vsc")
+                                                    .setReactivePowerSetpoint(1.0f)
+                                                    .setVoltageRegulatorOn(true)
+                                                    .setVoltageSetpoint(2.0f)
+                                                    .setLossFactor(1.0f)
+                                                    .setBus("NHV1")
+                                                    .setConnectableBus("NHV1")
+                                                .add();
+        StaticVarCompensator staticVarCompensator = voltageLevel.newStaticVarCompensator()
+                                                    .setId("svc")
+                                                    .setName("svc")
+                                                    .setBmax(50.0f)
+                                                    .setBmin(20.0f)
+                                                    .setReactivePowerSetPoint(2.0f)
+                                                    .setRegulationMode(StaticVarCompensator.RegulationMode.OFF)
+                                                    .setBus("NHV1")
+                                                    .setConnectableBus("NHV1")
+                                                .add();
         return network;
     }
 
