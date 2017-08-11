@@ -19,44 +19,44 @@ import static org.junit.Assert.*;
 
 public class MultiStatesTest {
     @Test
-    public void test1() {
-        Network networkFictious = addMoreEquipmentsToFictitiousSwitchNetwork();
-        Network networkEurosTag = addMoreEquipmentsToEurosTagNetwork();
+    public void testChangeStates() {
+        Network fictitiousNetwork = addMoreEquipmentsToFictitiousSwitchNetwork();
+        Network eurosTagNetwork = addMoreEquipmentsToEurosTagNetwork();
         List<String> statesToAdd = new ArrayList<>();
         statesToAdd.add("s1");
         statesToAdd.add("s2");
         statesToAdd.add("s3");
         statesToAdd.add("s4");
-        StateManager stateManagerFictious = networkFictious.getStateManager();
-        StateManager stateManagerEurosTag = networkEurosTag.getStateManager();
+        StateManager fictitiousNetworkStateManager = fictitiousNetwork.getStateManager();
+        StateManager eurosTagNetworkStateManager = eurosTagNetwork.getStateManager();
 
         // get equipment value from init state
-        TwoWindingsTransformer twoWindingsTransformer = networkFictious.getTwoWindingsTransformer("CI");
+        TwoWindingsTransformer twoWindingsTransformer = fictitiousNetwork.getTwoWindingsTransformer("CI");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         float phaseTapChangerV0 = phaseTapChanger.getRegulationValue();
         RatioTapChanger ratioTapChanger = twoWindingsTransformer.getRatioTapChanger();
         float ratioTapChangerV0 = ratioTapChanger.getTargetV();
-        Generator generator = networkFictious.getGenerator("CB");
+        Generator generator = fictitiousNetwork.getGenerator("CB");
         float generatorP0 = generator.getTargetP();
-        Load load = networkFictious.getLoad("CE");
+        Load load = fictitiousNetwork.getLoad("CE");
         float loadP0 = load.getP0();
-        ShuntCompensator shuntCompensator = networkEurosTag.getShunt("sc");
+        ShuntCompensator shuntCompensator = eurosTagNetwork.getShunt("sc");
         float shuntCurrentB0 = shuntCompensator.getCurrentB();
-        VscConverterStation vscConverterStation = networkEurosTag.getVscConverterStation("vsc");
+        VscConverterStation vscConverterStation = eurosTagNetwork.getVscConverterStation("vsc");
         float vscPoint0 = vscConverterStation.getReactivePowerSetpoint();
-        StaticVarCompensator staticVarCompensator = networkEurosTag.getStaticVarCompensator("svc");
+        StaticVarCompensator staticVarCompensator = eurosTagNetwork.getStaticVarCompensator("svc");
         float svcPoint0 = staticVarCompensator.getReactivePowerSetPoint();
 
         // extend 4 more states
-        stateManagerFictious.cloneState(StateManager.INITIAL_STATE_ID, statesToAdd);
-        stateManagerEurosTag.cloneState(StateManager.INITIAL_STATE_ID, statesToAdd);
-        assertEquals(5, stateManagerFictious.getStateIds().size());
-        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s2", "s3", "s4").equals(stateManagerFictious.getStateIds()));
-        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s2", "s3", "s4").equals(stateManagerEurosTag.getStateIds()));
+        fictitiousNetworkStateManager.cloneState(StateManager.INITIAL_STATE_ID, statesToAdd);
+        eurosTagNetworkStateManager.cloneState(StateManager.INITIAL_STATE_ID, statesToAdd);
+        assertEquals(5, fictitiousNetworkStateManager.getStateIds().size());
+        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s2", "s3", "s4").equals(fictitiousNetworkStateManager.getStateIds()));
+        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s2", "s3", "s4").equals(eurosTagNetworkStateManager.getStateIds()));
 
         // change working state to s4
-        stateManagerFictious.setWorkingState("s4");
-        stateManagerEurosTag.setWorkingState("s4");
+        fictitiousNetworkStateManager.setWorkingState("s4");
+        eurosTagNetworkStateManager.setWorkingState("s4");
         float phaseTapChangerV4 = phaseTapChanger.getRegulationValue();
         float ratioTapChangerV4 = ratioTapChanger.getTargetV();
         float generatorP4 = generator.getTargetP();
@@ -75,30 +75,30 @@ public class MultiStatesTest {
         assertEquals(svcPoint0, svcPoint4, 0.0f);
 
         // delete s2
-        stateManagerFictious.removeState("s2");
-        stateManagerEurosTag.removeState("s2");
+        fictitiousNetworkStateManager.removeState("s2");
+        eurosTagNetworkStateManager.removeState("s2");
         try {
-            stateManagerFictious.setWorkingState("s2");
+            fictitiousNetworkStateManager.setWorkingState("s2");
             fail();
         } catch (Exception ingored) {
         }
         try {
-            stateManagerEurosTag.setWorkingState("s2");
+            eurosTagNetworkStateManager.setWorkingState("s2");
             fail();
         } catch (Exception ignored){
 
         }
-        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(stateManagerFictious.getStateIds()));
-        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(stateManagerEurosTag.getStateIds()));
+        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(fictitiousNetworkStateManager.getStateIds()));
+        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(eurosTagNetworkStateManager.getStateIds()));
 
 
         // allocate s4 to s22
-        stateManagerFictious.cloneState("s4", "s22");
-        stateManagerEurosTag.cloneState("s4", "s22");
+        fictitiousNetworkStateManager.cloneState("s4", "s22");
+        eurosTagNetworkStateManager.cloneState("s4", "s22");
 
         // change working state to s22
-        stateManagerFictious.setWorkingState("s22");
-        stateManagerEurosTag.setWorkingState("s22");
+        fictitiousNetworkStateManager.setWorkingState("s22");
+        eurosTagNetworkStateManager.setWorkingState("s22");
         float phaseTapChangerV22 = phaseTapChanger.getRegulationValue();
         float ratioTapChangerV22 = ratioTapChanger.getTargetV();
         float generatorP22 = generator.getTargetP();
@@ -117,20 +117,20 @@ public class MultiStatesTest {
         assertEquals(svcPoint4, svcPoint22, 0.0f);
 
         // reduce s4
-        stateManagerFictious.removeState("s4");
-        stateManagerEurosTag.removeState("s4");
+        fictitiousNetworkStateManager.removeState("s4");
+        eurosTagNetworkStateManager.removeState("s4");
         try {
-            stateManagerFictious.setWorkingState("s4");
+            fictitiousNetworkStateManager.setWorkingState("s4");
             fail();
         } catch (Exception ingored) {
         }
         try {
-            stateManagerEurosTag.setWorkingState("s4");
+            eurosTagNetworkStateManager.setWorkingState("s4");
             fail();
         } catch (Exception ingored) {
         }
-        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s22", "s3").equals(stateManagerFictious.getStateIds()));
-        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s22", "s3").equals(stateManagerEurosTag.getStateIds()));
+        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s22", "s3").equals(fictitiousNetworkStateManager.getStateIds()));
+        assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s22", "s3").equals(eurosTagNetworkStateManager.getStateIds()));
     }
 
     private Network addMoreEquipmentsToFictitiousSwitchNetwork() {
