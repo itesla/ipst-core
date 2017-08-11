@@ -79,7 +79,7 @@ abstract class AbstractTapChanger<H extends TapChangerParent, C extends Abstract
                     + getHighTapPosition() + "]");
         }
         int oldValue = this.tapPosition.set(network.get().getStateIndex(), tapPosition);
-        parent.getNetwork().getListeners().notifyUpdate(parent.getTransformer(), getTapChangerAttribute() + ".tapPosition", oldValue, tapPosition);
+        notifyUpdate(getTapChangerAttribute() + ".tapPosition", oldValue, tapPosition);
         return (C) this;
     }
 
@@ -118,6 +118,10 @@ abstract class AbstractTapChanger<H extends TapChangerParent, C extends Abstract
         }
         this.regulationTerminal = (TerminalExt) regulationTerminal;
         return (C) this;
+    }
+
+    protected void notifyUpdate(String attribute, Object oldValue, Object newValue) {
+        getNetwork().getListeners().notifyUpdate(parent.getTransformer(), attribute, oldValue, newValue);
     }
 
     @Override

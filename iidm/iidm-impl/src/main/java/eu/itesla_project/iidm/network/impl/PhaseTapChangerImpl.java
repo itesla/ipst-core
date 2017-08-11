@@ -62,7 +62,8 @@ class PhaseTapChangerImpl extends AbstractTapChanger<TwoWindingsTransformerImpl,
     @Override
     public PhaseTapChangerImpl setRegulationValue(float regulationValue) {
         ValidationUtil.checkPhaseTapChangerRegulation(parent, regulationMode, regulationValue, isRegulating(), getRegulationTerminal(), getNetwork());
-        this.regulationValue.set(network.get().getStateIndex(), regulationValue);
+        float oldValue = this.regulationValue.set(network.get().getStateIndex(), regulationValue);
+        notifyUpdate(getTapChangerAttribute() + ".regulationValue", oldValue, regulationValue);
         return this;
     }
 

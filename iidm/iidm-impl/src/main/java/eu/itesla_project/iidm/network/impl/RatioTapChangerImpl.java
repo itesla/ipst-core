@@ -59,7 +59,8 @@ class RatioTapChangerImpl extends AbstractTapChanger<RatioTapChangerParent, Rati
     @Override
     public RatioTapChangerImpl setTargetV(float targetV) {
         ValidationUtil.checkRatioTapChangerRegulation(parent, loadTapChangingCapabilities, isRegulating(), regulationTerminal, targetV, getNetwork());
-        this.targetV.set(network.get().getStateIndex(), targetV);
+        float oldValue = this.targetV.set(network.get().getStateIndex(), targetV);
+        notifyUpdate(getTapChangerAttribute() + ".TargetV", oldValue, targetV);
         return this;
     }
 
