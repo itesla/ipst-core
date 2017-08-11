@@ -91,6 +91,21 @@ public class MultiStatesTest {
         assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(fictitiousNetworkStateManager.getStateIds()));
         assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(eurosTagNetworkStateManager.getStateIds()));
 
+        // change values in s4
+        phaseTapChanger.setRegulationValue(3.1f);
+        ratioTapChanger.setTargetV(1.4f);
+        generator.setTargetP(4.1f);
+        load.setP0(1.5f);
+        shuntCompensator.setbPerSection(5.9f);
+        vscConverterStation.setReactivePowerSetpoint(9.2f);
+        staticVarCompensator.setReactivePowerSetPoint(2.6f);
+        float phaseTapChangerV4changed = phaseTapChanger.getRegulationValue();
+        float ratioTapChangerV4changed = ratioTapChanger.getTargetV();
+        float generatorP4changed = generator.getTargetP();
+        float loadP4changed = load.getP0();
+        float shuntCurrentB4changed = shuntCompensator.getCurrentB();
+        float vscPoint4changed = vscConverterStation.getReactivePowerSetpoint();
+        float svcPoint4changed = staticVarCompensator.getReactivePowerSetPoint();
 
         // allocate s4 to s22
         fictitiousNetworkStateManager.cloneState("s4", "s22");
@@ -108,13 +123,13 @@ public class MultiStatesTest {
         float svcPoint22 = staticVarCompensator.getReactivePowerSetPoint();
 
         // check cloned by allocate
-        assertEquals(phaseTapChangerV4, phaseTapChangerV22, 0.0f);
-        assertEquals(ratioTapChangerV4, ratioTapChangerV22, 0.0f);
-        assertEquals(generatorP4, generatorP22, 0.0f);
-        assertEquals(loadP4, loadP22, 0.0f);
-        assertEquals(shuntCurrentB4, shuntCurrentB22, 0.0f);
-        assertEquals(vscPoint4, vscPoint22, 0.0f);
-        assertEquals(svcPoint4, svcPoint22, 0.0f);
+        assertEquals(phaseTapChangerV4changed, phaseTapChangerV22, 0.0f);
+        assertEquals(ratioTapChangerV4changed, ratioTapChangerV22, 0.0f);
+        assertEquals(generatorP4changed, generatorP22, 0.0f);
+        assertEquals(loadP4changed, loadP22, 0.0f);
+        assertEquals(shuntCurrentB4changed, shuntCurrentB22, 0.0f);
+        assertEquals(vscPoint4changed, vscPoint22, 0.0f);
+        assertEquals(svcPoint4changed, svcPoint22, 0.0f);
 
         // reduce s4
         fictitiousNetworkStateManager.removeState("s4");
