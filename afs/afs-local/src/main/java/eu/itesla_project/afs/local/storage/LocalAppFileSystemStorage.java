@@ -10,6 +10,7 @@ import eu.itesla_project.afs.ext.base.Case;
 import eu.itesla_project.afs.Folder;
 import eu.itesla_project.afs.storage.AppFileSystemStorage;
 import eu.itesla_project.afs.storage.NodeId;
+import eu.itesla_project.afs.storage.NodeListener;
 import eu.itesla_project.computation.ComputationManager;
 import eu.itesla_project.commons.datasource.DataSource;
 import eu.itesla_project.commons.datasource.ReadOnlyDataSource;
@@ -172,6 +173,56 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
+    public int getIntAttribute(NodeId nodeId, String name) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public void setIntAttribute(NodeId nodeId, String name, int value) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public float getFloatAttribute(NodeId nodeId, String name) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public void setFloatAttribute(NodeId nodeId, String name, float value) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public double getDoubleAttribute(NodeId nodeId, String name) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public void setDoubleAttribute(NodeId nodeId, String name, double value) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public boolean getBooleanAttribute(NodeId nodeId, String name) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public void setBooleanAttribute(NodeId nodeId, String name, boolean value) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public double[] getDoubleArrayAttribute(NodeId nodeId, String name) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public void setDoubleArrayAttribute(NodeId nodeId, String name, double[] values) {
+        throw new AssertionError();
+    }
+
+    @Override
     public Reader readStringAttribute(NodeId nodeId, String name) {
         throw new AssertionError();
     }
@@ -245,6 +296,14 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
 
     @Override
     public void rollback() {
+    }
+
+    @Override
+    public void addListerner(NodeListener listener) {
+    }
+
+    @Override
+    public void removeListerner(NodeListener listener) {
     }
 
     @Override

@@ -43,6 +43,26 @@ public interface AppFileSystemStorage extends AutoCloseable {
 
     void setStringAttribute(NodeId nodeId, String name, String value);
 
+    int getIntAttribute(NodeId nodeId, String name);
+
+    void setIntAttribute(NodeId nodeId, String name, int value);
+
+    float getFloatAttribute(NodeId nodeId, String name);
+
+    void setFloatAttribute(NodeId nodeId, String name, float value);
+
+    double getDoubleAttribute(NodeId nodeId, String name);
+
+    void setDoubleAttribute(NodeId nodeId, String name, double value);
+
+    boolean getBooleanAttribute(NodeId nodeId, String name);
+
+    void setBooleanAttribute(NodeId nodeId, String name, boolean value);
+
+    double[] getDoubleArrayAttribute(NodeId nodeId, String name);
+
+    void setDoubleArrayAttribute(NodeId nodeId, String name, double[] values);
+
     Reader readStringAttribute(NodeId nodeId, String name);
 
     Writer writeStringAttribute(NodeId nodeId, String name);
@@ -76,6 +96,12 @@ public interface AppFileSystemStorage extends AutoCloseable {
     void commit();
 
     void rollback();
+
+    // listeners
+
+    void addListerner(NodeListener listener);
+
+    void removeListerner(NodeListener listener);
 
     @Override
     void close();

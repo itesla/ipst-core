@@ -9,13 +9,13 @@ package eu.itesla_project.afs.mapdb.storage;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import eu.itesla_project.afs.storage.AppFileSystemStorage;
-import eu.itesla_project.afs.storage.NodeId;
-import eu.itesla_project.afs.storage.PseudoClass;
+import eu.itesla_project.afs.storage.*;
 import eu.itesla_project.commons.datasource.DataSource;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.Serializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentMap;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapDbAppFileSystemStorage.class);
 
     public static MapDbAppFileSystemStorage createHeap(String fileSystemName) {
         DBMaker.Maker maker = DBMaker.heapDB();
@@ -116,7 +118,15 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
 
     private final ConcurrentMap<NamedLink, String> stringAttributeMap;
 
-    private final ConcurrentMap<NodeId, Set<String>> stringAttributesMap;
+    private final ConcurrentMap<NamedLink, Integer> integerAttributeMap;
+
+    private final ConcurrentMap<NamedLink, Float> floatAttributeMap;
+
+    private final ConcurrentMap<NamedLink, Double> doubleAttributeMap;
+
+    private final ConcurrentMap<NamedLink, Boolean> booleanAttributeMap;
+
+    private final ConcurrentMap<NodeId, Set<String>> attributesMap;
 
     private final ConcurrentMap<NodeId, NodeId> projectRootNodeMap;
 
@@ -133,6 +143,8 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     private final ConcurrentMap<NodeId, List<NodeId>> backwardDependencyNodesMap;
 
     private final ConcurrentMap<NamedLink, byte[]> cacheMap;
+
+    private final List<NodeListener> listeners = new ArrayList<>();
 
     private MapDbAppFileSystemStorage(String fileSystemName, DBMaker.Maker maker, Supplier<DB> db) {
         this.maker = Objects.requireNonNull(maker);
@@ -166,7 +178,23 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
                 .hashMap("stringAttribute", Serializer.JAVA, Serializer.STRING)
                 .createOrOpen();
 
-        stringAttributesMap = this.db
+        integerAttributeMap = this.db
+                .hashMap("integerAttribute", Serializer.JAVA, Serializer.INTEGER)
+                .createOrOpen();
+
+        floatAttributeMap = this.db
+                .hashMap("floatAttribute", Serializer.JAVA, Serializer.FLOAT)
+                .createOrOpen();
+
+        doubleAttributeMap = this.db
+                .hashMap("doubleAttribute", Serializer.JAVA, Serializer.DOUBLE)
+                .createOrOpen();
+
+        booleanAttributeMap = this.db
+                .hashMap("booleanAttribute", Serializer.JAVA, Serializer.BOOLEAN)
+                .createOrOpen();
+
+        attributesMap = this.db
                 .hashMap("stringAttributes", Serializer.JAVA, Serializer.JAVA)
                 .createOrOpen();
 
@@ -309,6 +337,8 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         // add to new parent
         childNodesMap.put(newParentNodeId, add(childNodesMap.get(newParentNodeId), nodeId));
         childNodeMap.put(new NamedLink(newParentNodeId, name), nodeId);
+
+        notifyNodeEvent(new NodeEvent(nodeId, NodeEvent.Type.NODE_MOVED));
     }
 
     @Override
@@ -326,7 +356,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         NodeId nodeId = UuidNodeId.generate();
         nodeNameMap.put(nodeId, name);
         nodePseudoClassMap.put(nodeId, nodePseudoClass);
-        stringAttributesMap.put(nodeId, Collections.emptySet());
+        attributesMap.put(nodeId, Collections.emptySet());
         childNodesMap.put(nodeId, Collections.emptyList());
         if (parentNodeId != null) {
             parentNodeMap.put(nodeId, parentNodeId);
@@ -340,6 +370,9 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         }
         dependencyNodesMap.put(nodeId, Collections.emptyList());
         backwardDependencyNodesMap.put(nodeId, Collections.emptyList());
+
+        notifyNodeEvent(new NodeEvent(nodeId, NodeEvent.Type.NODE_CREATED));
+
         return nodeId;
     }
 
@@ -364,10 +397,15 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         }
         String name = nodeNameMap.remove(nodeId);
         String nodePseudoClass = nodePseudoClassMap.remove(nodeId);
-        for (String attributeName : stringAttributesMap.get(nodeId)) {
-            stringAttributeMap.remove(new NamedLink(nodeId, attributeName));
+        for (String attributeName : attributesMap.get(nodeId)) {
+            NamedLink namedLink = new NamedLink(nodeId, attributeName);
+            stringAttributeMap.remove(namedLink);
+            integerAttributeMap.remove(namedLink);
+            floatAttributeMap.remove(namedLink);
+            doubleAttributeMap.remove(namedLink);
+            booleanAttributeMap.remove(namedLink);
         }
-        stringAttributesMap.remove(nodeId);
+        attributesMap.remove(nodeId);
         childNodesMap.remove(nodeId);
         NodeId parentNodeId = parentNodeMap.remove(nodeId);
         if (parentNodeId != null) {
@@ -384,20 +422,20 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
             backwardDependencyNodesMap.put(toNodeId, remove(backwardDependencyNodesMap.get(toNodeId), nodeId));
         }
         dependencyNodesMap.remove(nodeId);
+
+        notifyNodeEvent(new NodeEvent(nodeId, NodeEvent.Type.NODE_REMOVED));
     }
 
-    @Override
-    public String getStringAttribute(NodeId nodeId, String name) {
+    private <T> T getAttribute(ConcurrentMap<NamedLink, T> map, NodeId nodeId, String name) {
         Objects.requireNonNull(nodeId);
         Objects.requireNonNull(name);
         if (!nodeNameMap.containsKey(nodeId)) {
             throw new AfsStorageException("Node " + nodeId + " not found");
         }
-        return stringAttributeMap.get(new NamedLink(nodeId, name));
+        return map.get(new NamedLink(nodeId, name));
     }
 
-    @Override
-    public void setStringAttribute(NodeId nodeId, String name, String value) {
+    private <T> void setAttribute(ConcurrentMap<NamedLink, T> map, NodeId nodeId, String name, T value) {
         Objects.requireNonNull(nodeId);
         Objects.requireNonNull(name);
         if (!nodeNameMap.containsKey(nodeId)) {
@@ -405,12 +443,74 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         }
         NamedLink namedLink = new NamedLink(nodeId, name);
         if (value == null) {
-            stringAttributeMap.remove(namedLink);
-            stringAttributesMap.put(nodeId, remove(stringAttributesMap.get(nodeId), name));
+            map.remove(namedLink);
+            attributesMap.put(nodeId, remove(attributesMap.get(nodeId), name));
         } else {
-            stringAttributeMap.put(namedLink, value);
-            stringAttributesMap.put(nodeId, add(stringAttributesMap.get(nodeId), name));
+            map.put(namedLink, value);
+            attributesMap.put(nodeId, add(attributesMap.get(nodeId), name));
         }
+        notifyNodeEvent(new NodeEvent(nodeId, NodeEvent.Type.NODE_ATTRIBUTE_CHANGED));
+    }
+
+    @Override
+    public String getStringAttribute(NodeId nodeId, String name) {
+        return getAttribute(stringAttributeMap, nodeId, name);
+    }
+
+    @Override
+    public void setStringAttribute(NodeId nodeId, String name, String value) {
+        setAttribute(stringAttributeMap, nodeId, name, value);
+    }
+
+    @Override
+    public int getIntAttribute(NodeId nodeId, String name) {
+        return getAttribute(integerAttributeMap, nodeId, name);
+    }
+
+    @Override
+    public void setIntAttribute(NodeId nodeId, String name, int value) {
+        setAttribute(integerAttributeMap, nodeId, name, value);
+    }
+
+    @Override
+    public float getFloatAttribute(NodeId nodeId, String name) {
+        return getAttribute(floatAttributeMap, nodeId, name);
+
+    }
+
+    @Override
+    public void setFloatAttribute(NodeId nodeId, String name, float value) {
+        setAttribute(floatAttributeMap, nodeId, name, value);
+    }
+
+    @Override
+    public double getDoubleAttribute(NodeId nodeId, String name) {
+        return getAttribute(doubleAttributeMap, nodeId, name);
+    }
+
+    @Override
+    public void setDoubleAttribute(NodeId nodeId, String name, double value) {
+        setAttribute(doubleAttributeMap, nodeId, name, value);
+    }
+
+    @Override
+    public boolean getBooleanAttribute(NodeId nodeId, String name) {
+        return getAttribute(booleanAttributeMap, nodeId, name);
+    }
+
+    @Override
+    public void setBooleanAttribute(NodeId nodeId, String name, boolean value) {
+        setAttribute(booleanAttributeMap, nodeId, name, value);
+    }
+
+    @Override
+    public double[] getDoubleArrayAttribute(NodeId nodeId, String name) {
+        return new double[0];
+    }
+
+    @Override
+    public void setDoubleArrayAttribute(NodeId nodeId, String name, double[] values) {
+
     }
 
     @Override
@@ -475,6 +575,8 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
                 .addAll(backwardDependencyNodesMap.get(toNodeId))
                 .add(nodeId)
                 .build());
+
+        notifyNodeEvent(new NodeEvent(nodeId, NodeEvent.Type.NODE_DEPENDENCY_CHANGED));
     }
 
     @Override
@@ -532,6 +634,26 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     @Override
     public void rollback() {
         db.rollback();
+    }
+
+    @Override
+    public void addListerner(NodeListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListerner(NodeListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void notifyNodeEvent(NodeEvent event) {
+        for (NodeListener listener : listeners) {
+            try {
+                listener.onEvent(event);
+            } catch (Exception e) {
+                LOGGER.error(e.toString(), e);
+            }
+        }
     }
 
     @Override
