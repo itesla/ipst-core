@@ -109,7 +109,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(file)) {
             validate(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -124,7 +124,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(file)) {
             validateWithExtensions(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -231,7 +231,7 @@ public class NetworkXml implements XmlConstants {
         try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(xmlFile))) {
             return write(n, options, os);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -338,7 +338,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(xmlFile)) {
             return read(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -422,7 +422,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(xmlFile)) {
             update(network, is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -431,7 +431,7 @@ public class NetworkXml implements XmlConstants {
         try (GZIPOutputStream gzos = new GZIPOutputStream(bos)) {
             NetworkXml.write(network, gzos);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         return bos.toByteArray();
     }
@@ -440,7 +440,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = new GZIPInputStream(new ByteArrayInputStream(networkXmlGz))) {
             return NetworkXml.read(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
