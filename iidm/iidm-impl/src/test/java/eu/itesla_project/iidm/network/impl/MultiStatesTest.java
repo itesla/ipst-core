@@ -34,10 +34,13 @@ public class MultiStatesTest {
         TwoWindingsTransformer twoWindingsTransformer = fictitiousNetwork.getTwoWindingsTransformer("CI");
         PhaseTapChanger phaseTapChanger = twoWindingsTransformer.getPhaseTapChanger();
         float phaseTapChangerV0 = phaseTapChanger.getRegulationValue();
+        PhaseTapChanger.RegulationMode pTapChangerMode0 = phaseTapChanger.getRegulationMode();
         RatioTapChanger ratioTapChanger = twoWindingsTransformer.getRatioTapChanger();
         float ratioTapChangerV0 = ratioTapChanger.getTargetV();
         Generator generator = fictitiousNetwork.getGenerator("CB");
         float generatorP0 = generator.getTargetP();
+        float generatorQ0 = generator.getTargetQ();
+        float generatorV0 = generator.getTargetV();
         Load load = fictitiousNetwork.getLoad("CE");
         float loadP0 = load.getP0();
         ShuntCompensator shuntCompensator = eurosTagNetwork.getShunt("sc");
@@ -46,6 +49,9 @@ public class MultiStatesTest {
         float vscPoint0 = vscConverterStation.getReactivePowerSetpoint();
         StaticVarCompensator staticVarCompensator = eurosTagNetwork.getStaticVarCompensator("svc");
         float svcPoint0 = staticVarCompensator.getReactivePowerSetPoint();
+        Terminal terminal = load.getTerminal();
+        float terminalP0 = terminal.getP();
+        float terminalQ0 = terminal.getQ();
 
         // extend 4 more states
         fictitiousNetworkStateManager.cloneState(StateManager.INITIAL_STATE_ID, statesToAdd);
@@ -58,21 +64,31 @@ public class MultiStatesTest {
         fictitiousNetworkStateManager.setWorkingState("s4");
         eurosTagNetworkStateManager.setWorkingState("s4");
         float phaseTapChangerV4 = phaseTapChanger.getRegulationValue();
+        PhaseTapChanger.RegulationMode pTapChangerMode4 = phaseTapChanger.getRegulationMode();
         float ratioTapChangerV4 = ratioTapChanger.getTargetV();
         float generatorP4 = generator.getTargetP();
+        float generatorQ4 = generator.getTargetQ();
+        float generatorV4 = generator.getTargetV();
         float loadP4 = load.getP0();
         float shuntCurrentB4 = shuntCompensator.getCurrentB();
         float vscPoint4 = vscConverterStation.getReactivePowerSetpoint();
         float svcPoint4 = staticVarCompensator.getReactivePowerSetPoint();
+        float terminalP4 = terminal.getP();
+        float terminalQ4 = terminal.getQ();
 
         // check cloned by extend
         assertEquals(phaseTapChangerV0, phaseTapChangerV4, 0.0f);
+        assertEquals(pTapChangerMode0, pTapChangerMode4);
         assertEquals(ratioTapChangerV0, ratioTapChangerV4, 0.0f);
         assertEquals(generatorP0, generatorP4, 0.0f);
+        assertEquals(generatorQ0, generatorQ4, 0.0f);
+        assertEquals(generatorV0, generatorV4, 0.0f);
         assertEquals(loadP0, loadP4, 0.0f);
         assertEquals(shuntCurrentB0, shuntCurrentB4, 0.0f);
         assertEquals(vscPoint0, vscPoint4, 0.0f);
         assertEquals(svcPoint0, svcPoint4, 0.0f);
+        assertEquals(terminalP0, terminalP4, 0.0f);
+        assertEquals(terminalQ0, terminalQ4, 0.0f);
 
         // delete s2
         fictitiousNetworkStateManager.removeState("s2");
@@ -85,27 +101,37 @@ public class MultiStatesTest {
         try {
             eurosTagNetworkStateManager.setWorkingState("s2");
             fail();
-        } catch (Exception ignored){
-
+        } catch (Exception ignored) {
         }
         assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(fictitiousNetworkStateManager.getStateIds()));
         assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(eurosTagNetworkStateManager.getStateIds()));
 
         // change values in s4
         phaseTapChanger.setRegulationValue(3.1f);
+        phaseTapChanger.setRegulationMode(PhaseTapChanger.RegulationMode.ACTIVE_POWER_CONTROL);
         ratioTapChanger.setTargetV(1.4f);
         generator.setTargetP(4.1f);
+        generator.setTargetQ(4.1f);
+        generator.setTargetV(4.1f);
         load.setP0(1.5f);
         shuntCompensator.setbPerSection(5.9f);
         vscConverterStation.setReactivePowerSetpoint(9.2f);
         staticVarCompensator.setReactivePowerSetPoint(2.6f);
+        terminal.setP(3.1f);
+        terminal.setQ(4.1f);
+        // get changed values in s4
         float phaseTapChangerV4changed = phaseTapChanger.getRegulationValue();
+        PhaseTapChanger.RegulationMode pTapChangerMode4Changed = phaseTapChanger.getRegulationMode();
         float ratioTapChangerV4changed = ratioTapChanger.getTargetV();
         float generatorP4changed = generator.getTargetP();
+        float generatorQ4Changed = generator.getTargetQ();
+        float generatorV4Changed = generator.getTargetV();
         float loadP4changed = load.getP0();
         float shuntCurrentB4changed = shuntCompensator.getCurrentB();
         float vscPoint4changed = vscConverterStation.getReactivePowerSetpoint();
         float svcPoint4changed = staticVarCompensator.getReactivePowerSetPoint();
+        float terminalP4changed = terminal.getP();
+        float terminalQ4changed = terminal.getQ();
 
         // allocate s4 to s22
         fictitiousNetworkStateManager.cloneState("s4", "s22");
@@ -115,21 +141,31 @@ public class MultiStatesTest {
         fictitiousNetworkStateManager.setWorkingState("s22");
         eurosTagNetworkStateManager.setWorkingState("s22");
         float phaseTapChangerV22 = phaseTapChanger.getRegulationValue();
+        PhaseTapChanger.RegulationMode pTapChangerMode22= phaseTapChanger.getRegulationMode();
         float ratioTapChangerV22 = ratioTapChanger.getTargetV();
         float generatorP22 = generator.getTargetP();
+        float generatorQ22 = generator.getTargetQ();
+        float generatorV22 = generator.getTargetV();
         float loadP22 = load.getP0();
         float shuntCurrentB22 = shuntCompensator.getCurrentB();
         float vscPoint22 = vscConverterStation.getReactivePowerSetpoint();
         float svcPoint22 = staticVarCompensator.getReactivePowerSetPoint();
+        float terminalP22 = terminal.getP();
+        float terminalQ22 = terminal.getQ();
 
         // check cloned by allocate
         assertEquals(phaseTapChangerV4changed, phaseTapChangerV22, 0.0f);
+        assertEquals(pTapChangerMode4Changed, pTapChangerMode22);
         assertEquals(ratioTapChangerV4changed, ratioTapChangerV22, 0.0f);
         assertEquals(generatorP4changed, generatorP22, 0.0f);
+        assertEquals(generatorQ4Changed, generatorQ22, 0.0f);
+        assertEquals(generatorV4Changed, generatorV22, 0.0f);
         assertEquals(loadP4changed, loadP22, 0.0f);
         assertEquals(shuntCurrentB4changed, shuntCurrentB22, 0.0f);
         assertEquals(vscPoint4changed, vscPoint22, 0.0f);
         assertEquals(svcPoint4changed, svcPoint22, 0.0f);
+        assertEquals(terminalP4changed, terminalP22, 0.0f);
+        assertEquals(terminalQ4changed, terminalQ22, 0.0f);
 
         // reduce s4
         fictitiousNetworkStateManager.removeState("s4");
