@@ -121,18 +121,8 @@ public class MultiStatesTest {
         assertEquals(hvdcMode0, hvdcMode4);
 
         // delete s2
-        fictitiousNetworkStateManager.removeState("s2");
-        eurosTagNetworkStateManager.removeState("s2");
-        try {
-            fictitiousNetworkStateManager.setWorkingState("s2");
-            fail();
-        } catch (Exception ingored) {
-        }
-        try {
-            eurosTagNetworkStateManager.setWorkingState("s2");
-            fail();
-        } catch (Exception ignored) {
-        }
+        removeStateAndCheck(fictitiousNetworkStateManager, "s2");
+        removeStateAndCheck(eurosTagNetworkStateManager, "s2");
         assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(fictitiousNetworkStateManager.getStateIds()));
         assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s3", "s4").equals(eurosTagNetworkStateManager.getStateIds()));
 
@@ -234,20 +224,19 @@ public class MultiStatesTest {
         assertEquals(hvdcMode4Changed, hvdcMode22);
 
         // reduce s4
-        fictitiousNetworkStateManager.removeState("s4");
-        eurosTagNetworkStateManager.removeState("s4");
-        try {
-            fictitiousNetworkStateManager.setWorkingState("s4");
-            fail();
-        } catch (Exception ingored) {
-        }
-        try {
-            eurosTagNetworkStateManager.setWorkingState("s4");
-            fail();
-        } catch (Exception ingored) {
-        }
+        removeStateAndCheck(fictitiousNetworkStateManager, "s4");
+        removeStateAndCheck(eurosTagNetworkStateManager, "s4");
         assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s22", "s3").equals(fictitiousNetworkStateManager.getStateIds()));
         assertTrue(Sets.newHashSet(StateManager.INITIAL_STATE_ID, "s1", "s22", "s3").equals(eurosTagNetworkStateManager.getStateIds()));
+    }
+
+    private void removeStateAndCheck(StateManager stateManager, String toRemoveState) {
+        stateManager.removeState(toRemoveState);
+        try {
+            stateManager.setWorkingState(toRemoveState);
+            fail();
+        } catch (Exception ignored) {
+        }
     }
 
     private Network addMoreEquipmentsToFictitiousSwitchNetwork() {
