@@ -11,14 +11,17 @@ import java.util.Random;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Colors {
+final public class Colors {
+
+    private static final double GOLDEN_RATIO_CONJUGATE = 0.618033988749895;
 
     private Colors() {
     }
 
-    private static final double GOLDEN_RATIO_CONJUGATE = 0.618033988749895;
-
     public static String[] generateColorScale(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("Color scale size has to be stricly positive");
+        }
         String[] colors = new String[n];
         Random random = new Random();
         for (int i = 0; i < n; i++) {
