@@ -21,8 +21,8 @@ public class GeneratorTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    Network network;
-    VoltageLevel voltageLevel;
+    private Network network;
+    private VoltageLevel voltageLevel;
 
     @Before
     public void initNetwork() {
@@ -61,6 +61,8 @@ public class GeneratorTest {
         assertFalse(generator.isVoltageRegulatorOn());
         generator.setVoltageRegulatorOn(true);
         assertTrue(generator.isVoltageRegulatorOn());
+
+        assertEquals(12, generator.getTerminal().getNodeBreakerView().getNode());
     }
 
     @Test

@@ -13,9 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class DanglingLineTest {
 
@@ -93,6 +91,13 @@ public class DanglingLineTest {
         assertEquals(p02, danglingLine.getP0(), 0.0f);
         danglingLine.setQ0(q02);
         assertEquals(q02, danglingLine.getQ0(), 0.0f);
+
+        danglingLine.newCurrentLimits().setPermanentLimit(100.0f).add();
+        assertEquals(100.0f, danglingLine.getCurrentLimits().getPermanentLimit(), 0.0f);
+
+        Bus bus = voltageLevel.getBusBreakerView().getBus("bus_vl");
+        Bus terminal = danglingLine.getTerminal().getBusBreakerView().getBus();
+        assertSame(bus, terminal);
     }
 
     @Test
