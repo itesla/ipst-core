@@ -6,18 +6,30 @@
  */
 package eu.itesla_project.iidm.network.impl;
 
-import eu.itesla_project.iidm.network.Country;
-import eu.itesla_project.iidm.network.Network;
-import eu.itesla_project.iidm.network.NetworkFactory;
-import eu.itesla_project.iidm.network.Substation;
+import eu.itesla_project.commons.ITeslaException;
+import eu.itesla_project.iidm.network.*;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
 public class SubstationTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    Network network;
+
+    @Before
+    public void initNetwork() {
+        network = NetworkFactory.create("test", "test");
+    }
+
     @Test
-    public void testSetterGetter() {
-        Network network = NetworkFactory.create("test", "test");
+    public void baseTests() {
+        // adder
         Substation substation = network.newSubstation()
                                     .setId("sub")
                                     .setName("sub_name")
@@ -30,9 +42,26 @@ public class SubstationTest {
         assertEquals(Country.AD, substation.getCountry());
         assertEquals("TSO", substation.getTso());
 
+        // setter and getter
         substation.setCountry(Country.AF);
         assertEquals(Country.AF, substation.getCountry());
         substation.setTso("new tso");
         assertEquals("new tso", substation.getTso());
     }
+
+    @Test
+    public void invalidCountry() {
+        thrown.expect(ValidationException.class);
+        thrown.expectMessage("country is invalid");
+        network.newSubstation().setId("no_country").setName("sub_name").add();
+    }
+
+    @Test
+    public void duplicateSubstation() {
+        network.newSubstation().setId("duplicate").setName("sub_name").setCountry(Country.AD).add();
+        thrown.expect(ITeslaException.class);
+        thrown.expectMessage("with the id 'duplicate'");
+        network.newSubstation().setId("duplicate").setName("sub_name").setCountry(Country.AD).add();
+    }
+
 }
