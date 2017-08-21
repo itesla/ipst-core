@@ -173,7 +173,7 @@ public class XMLImporterTest {
         Network network = importer.importData(new FileDataSource(fileSystem.getPath("/"), "test6"), params);
         assertNotNull(network.getSubstation("X1")); // and not P1 !!!!!
 
-        Network network2 = importer.import_(new FileDataSource(fileSystem.getPath("/"), "test7"), null);
+        Network network2 = importer.importData(new FileDataSource(fileSystem.getPath("/"), "test7"), null);
         assertNotNull(network2.getSubstation("P1"));
     }
 }
