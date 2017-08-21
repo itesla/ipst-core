@@ -10,11 +10,16 @@ import eu.itesla_project.commons.ITeslaException;
 import eu.itesla_project.iidm.network.*;
 import eu.itesla_project.iidm.network.test.FictitiousSwitchFactory;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
 public class LoadTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     Network network;
     VoltageLevel voltageLevel;
@@ -41,36 +46,33 @@ public class LoadTest {
     }
 
     @Test
-    public void invalidArguments() {
-        try {
-            voltageLevel.newLoad().setId("invalid").setP0(Float.NaN).setQ0(1.0f).setNode(1).add();
-            fail();
-        } catch (ValidationException ignored) {
-        }
-        try {
-            voltageLevel.newLoad().setId("invalid").setP0(2.0f).setQ0(Float.NaN).setNode(1).add();
-            fail();
-        } catch (ValidationException ignored) {
-        }
+    public void invalidP0() {
+        thrown.expect(ValidationException.class);
+        thrown.expectMessage("p0 is invalid");
+        voltageLevel.newLoad().setId("invalid").setP0(Float.NaN).setQ0(1.0f).setNode(1).add();
+    }
+
+    @Test
+    public void invalidQ0() {
+        thrown.expect(ValidationException.class);
+        thrown.expectMessage("q0 is invalid");
+        voltageLevel.newLoad().setId("invalid").setP0(20.0f).setQ0(Float.NaN).setNode(1).add();
     }
 
     @Test
     public void duplicateEquipment() {
         voltageLevel.newLoad().setId("duplicate").setP0(2.0f).setQ0(1.0f).setNode(1).add();
-        try {
-            voltageLevel.newLoad().setId("duplicate").setP0(2.0f).setQ0(1.0f).setNode(1).add();
-        } catch (ITeslaException ignored) {
-        }
-        try {
-            voltageLevel.newLoad().setId("duplicate").setP0(2.0f).setQ0(1.0f).setNode(1).add();
-        } catch (ITeslaException ignored) {
-        }
+        thrown.expect(ITeslaException.class);
+        thrown.expectMessage("with the id 'duplicate'");
+        voltageLevel.newLoad().setId("duplicate").setP0(2.0f).setQ0(1.0f).setNode(1).add();
+    }
+
+    @Test
+    public void duplicateId() {
         // "C" id of voltageLevel
-        try {
-            voltageLevel.newLoad().setId("C").setP0(2.0f).setQ0(1.0f).setNode(1).setConnectableBus("a").add();
-            fail();
-        } catch (ITeslaException ignored) {
-        }
+        thrown.expect(ITeslaException.class);
+        thrown.expectMessage("with the id 'C'");
+        voltageLevel.newLoad().setId("C").setP0(2.0f).setQ0(1.0f).setNode(1).setConnectableBus("a").add();
     }
 
     @Test
@@ -86,7 +88,9 @@ public class LoadTest {
     public void testRemove() {
         Load load = voltageLevel.newLoad().setId("toRemove").setP0(2.0f).setQ0(1.0f).setLoadType(LoadType.AUXILIARY).setNode(1).add();
         int loadCounts = network.getLoadCount();
+        assertNotNull(load);
         load.remove();
+        assertNotNull(load);
         assertNull(network.getLoad("toRemove"));
         assertEquals(--loadCounts, network.getLoadCount());
     }

@@ -146,6 +146,14 @@ public class GeneratorTest {
     }
 
     @Test
+    public void duplicateId() {
+        thrown.expect(ITeslaException.class);
+        thrown.expectMessage("with the id 'A'");
+        createGenerator("A", EnergySource.HYDRO, 20.0f, 11.f, 2.0f,
+                30.0f, 40.0f, true, 2.0f);
+    }
+
+    @Test
     public void testAdder() {
         voltageLevel.newGenerator()
                         .setId("gen_id")
