@@ -18,6 +18,7 @@ import org.xmlunit.diff.Diff;
 import javax.xml.transform.Source;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -49,7 +50,7 @@ public abstract class AbstractConverterTest {
     protected static void compareXml(InputStream expected, InputStream actual) {
         Source control = Input.fromStream(expected).build();
         Source test = Input.fromStream(actual).build();
-        Diff myDiff= DiffBuilder.compare(control).withTest(test).ignoreWhitespace().build();
+        Diff myDiff= DiffBuilder.compare(control).withTest(test).ignoreWhitespace().ignoreComments().build();
         boolean hasDiff = myDiff.hasDifferences();
         if (hasDiff) {
             System.err.println(myDiff.toString());
@@ -62,7 +63,7 @@ public abstract class AbstractConverterTest {
             assertEquals(new String(ByteStreams.toByteArray(expected), StandardCharsets.UTF_8),
                     new String(ByteStreams.toByteArray(actual), StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

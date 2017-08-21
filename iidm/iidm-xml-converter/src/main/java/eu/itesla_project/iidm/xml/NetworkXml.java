@@ -109,7 +109,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(file)) {
             validate(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -124,7 +124,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(file)) {
             validateWithExtensions(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -204,7 +204,7 @@ public class NetworkXml implements XmlConstants {
             }
             for (HvdcLine l : n.getHvdcLines()) {
                 if (!filter.test(l.getConverterStation1()) && filter.test(l.getConverterStation2())) {
-                   continue;
+                    continue;
                 }
                 HvdcLineXml.INSTANCE.write(l, n, context);
             }
@@ -231,7 +231,7 @@ public class NetworkXml implements XmlConstants {
         try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(xmlFile))) {
             return write(n, options, os);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -252,8 +252,10 @@ public class NetworkXml implements XmlConstants {
     public static Network read(InputStream is, XmlImportConfig config, Anonymizer anonymizer) {
         try {
             XMLStreamReader reader = XML_INPUT_FACTORY_SUPPLIER.get().createXMLStreamReader(is);
-            reader.next();
-
+            int state = reader.next();
+            while (state == XMLStreamReader.COMMENT) {
+                state = reader.next();
+            }
             String id = reader.getAttributeValue(null, "id");
             DateTime date = DateTime.parse(reader.getAttributeValue(null, "caseDate"));
             int forecastDistance = XmlUtil.readOptionalIntegerAttribute(reader, "forecastDistance", 0);
@@ -338,7 +340,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(xmlFile)) {
             return read(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -422,7 +424,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(xmlFile)) {
             update(network, is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -431,7 +433,7 @@ public class NetworkXml implements XmlConstants {
         try (GZIPOutputStream gzos = new GZIPOutputStream(bos)) {
             NetworkXml.write(network, gzos);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         return bos.toByteArray();
     }
@@ -440,7 +442,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = new GZIPInputStream(new ByteArrayInputStream(networkXmlGz))) {
             return NetworkXml.read(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
