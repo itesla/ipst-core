@@ -20,7 +20,7 @@ public class SubstationTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    Network network;
+    private Network network;
 
     @Before
     public void initNetwork() {
@@ -41,6 +41,7 @@ public class SubstationTest {
         assertEquals("sub_name", substation.getName());
         assertEquals(Country.AD, substation.getCountry());
         assertEquals("TSO", substation.getTso());
+        assertEquals(ContainerType.SUBSTATION, substation.getContainerType());
 
         // setter and getter
         substation.setCountry(Country.AF);
@@ -54,6 +55,21 @@ public class SubstationTest {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("country is invalid");
         network.newSubstation().setId("no_country").setName("sub_name").add();
+    }
+
+    @Test
+    public void addNullTag() {
+        thrown.expect(ValidationException.class);
+        Substation substation = network.newSubstation()
+                                        .setId("sub")
+                                        .setName("sub_name")
+                                        .setCountry(Country.AD)
+                                        .setTso("TSO")
+                                        .setEnsureIdUnicity(false).setGeographicalTags("geoTag1", "geoTag2")
+                                    .add();
+        thrown.expect(ValidationException.class);
+        thrown.expectMessage("geographical tag is null");
+        substation.addGeographicalTag(null);
     }
 
     @Test
