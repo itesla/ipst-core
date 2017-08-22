@@ -8,6 +8,7 @@ package eu.itesla_project.iidm.network.impl;
 
 import eu.itesla_project.commons.ITeslaException;
 import eu.itesla_project.iidm.network.*;
+import eu.itesla_project.iidm.network.test.NoEquipmentNetworkFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,24 +27,9 @@ public class LineTest {
 
     @Before
     public void setUp() {
-        network = NetworkFactory.create("test", "test");
-        Substation substation = network.newSubstation().setId("sub").setCountry(Country.FR).setTso("frtso").add();
-        voltageLevelA = substation.newVoltageLevel()
-                                        .setId("vl1").setName("vl1")
-                                        .setNominalV(440.0f)
-                                        .setHighVoltageLimit(400.0f)
-                                        .setLowVoltageLimit(200.0f)
-                                        .setTopologyKind(TopologyKind.BUS_BREAKER)
-                                    .add();
-        voltageLevelA.getBusBreakerView().newBus().setId("busA").setName("busA").add();
-        voltageLevelB = substation.newVoltageLevel()
-                                        .setId("vl2").setName("vl2")
-                                        .setNominalV(200.0f)
-                                        .setHighVoltageLimit(400.0f)
-                                        .setLowVoltageLimit(200.0f)
-                                        .setTopologyKind(TopologyKind.BUS_BREAKER)
-                                    .add();
-        voltageLevelB.getBusBreakerView().newBus().setId("busB").setName("busB").add();
+        network = NoEquipmentNetworkFactory.create();
+        voltageLevelA = network.getVoltageLevel("vl1");
+        voltageLevelB = network.getVoltageLevel("vl2");
     }
 
     @Test
