@@ -92,7 +92,6 @@ public class LineTest {
                                                 .setName("5'")
                                                 .setAcceptableDuration(5 * 60)
                                                 .setValue(1400)
-                                                .setFictitious(true)
                                                 .endTemporaryLimit()
                                             .add();
         CurrentLimits currentLimits2 = acLine.newCurrentLimits2()
@@ -105,6 +104,29 @@ public class LineTest {
                                             .add();
         assertSame(currentLimits1, acLine.getCurrentLimits1());
         assertSame(currentLimits2, acLine.getCurrentLimits2());
+
+        // add power on line
+        Terminal terminal1 = acLine.getTerminal1();
+        terminal1.setP(1.0f);
+        terminal1.setQ((float) Math.sqrt(2.0f));
+        busA.setV(1.0f);
+        // i1 = 1000
+        assertTrue(acLine.checkPermanentLimit(TwoTerminalsConnectable.Side.ONE, 0.9f));
+        assertTrue(acLine.checkPermanentLimit(TwoTerminalsConnectable.Side.ONE));
+        assertTrue(acLine.checkPermanentLimit1());
+        assertNotNull(acLine.checkTemporaryLimits(TwoTerminalsConnectable.Side.ONE, 0.9f));
+        assertNotNull(acLine.checkTemporaryLimits(TwoTerminalsConnectable.Side.ONE));
+
+        Terminal terminal2 = acLine.getTerminal2();
+        terminal2.setP(1.0f);
+        terminal2.setQ((float) Math.sqrt(2.0f));
+        busB.setV(1.0e3f);
+        // i2 = 1
+        assertFalse(acLine.checkPermanentLimit(TwoTerminalsConnectable.Side.TWO, 0.9f));
+        assertFalse(acLine.checkPermanentLimit(TwoTerminalsConnectable.Side.TWO));
+        assertFalse(acLine.checkPermanentLimit2());
+        assertNull(acLine.checkTemporaryLimits(TwoTerminalsConnectable.Side.TWO, 0.9f));
+        assertNull(acLine.checkTemporaryLimits(TwoTerminalsConnectable.Side.TWO));
     }
 
     @Test
