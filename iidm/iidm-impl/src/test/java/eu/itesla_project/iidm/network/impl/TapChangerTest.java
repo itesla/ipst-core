@@ -82,12 +82,12 @@ public class TapChangerTest {
         try {
             phaseTapChanger.setTapPosition(5);
             fail();
-        } catch (Exception ignored){
+        } catch (Exception ignored) {
         }
         try {
             phaseTapChanger.getStep(5);
             fail();
-        } catch (Exception ignored){
+        } catch (Exception ignored) {
         }
 
         // remove
