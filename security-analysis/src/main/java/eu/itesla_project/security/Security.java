@@ -49,8 +49,7 @@ public final class Security {
         return branch.getTerminal(side).getVoltageLevel().getNominalV();
     }
 
-    private static String getLimitName(Branch.Overload overload) {
-        int acceptableDuration = overload.getTemporaryLimit().getAcceptableDuration();
+    public static String getLimitName(int acceptableDuration) {
         if (acceptableDuration == Integer.MAX_VALUE) {
             return PERMANENT_LIMIT_NAME;
         } else {
@@ -77,7 +76,7 @@ public final class Security {
             violations.add(new LimitViolation(branch.getId(),
                 LimitViolationType.CURRENT,
                 o1.getPreviousLimit(),
-                getLimitName(o1),
+                getLimitName(o1.getTemporaryLimit().getAcceptableDuration()),
                 limitReduction,
                 branch.getTerminal(side).getI(),
                 getCountry(branch, side),
