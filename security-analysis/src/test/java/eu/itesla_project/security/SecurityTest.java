@@ -122,7 +122,7 @@ public class SecurityTest {
         ((Bus) network.getIdentifiable("NHV2")).setV(380f).getVoltageLevel().setLowVoltageLimit(300f).setHighVoltageLimit(500f);
         network.getLine("NHV1_NHV2_1").getTerminal1().setP(560f).setQ(550f);
         network.getLine("NHV1_NHV2_1").getTerminal2().setP(560f).setQ(550f);
-        network.getLine("NHV1_NHV2_1").newCurrentLimits1().setPermanentLimit(1500f).add();
+        network.getLine("NHV1_NHV2_1").newCurrentLimits1().setPermanentLimit(500f).add();
         network.getLine("NHV1_NHV2_1").newCurrentLimits2()
             .setPermanentLimit(1100f)
             .beginTemporaryLimit()
@@ -141,11 +141,11 @@ public class SecurityTest {
                 .setValue(1200)
             .endTemporaryLimit()
             .add();
-        network.getLine("NHV1_NHV2_2").newCurrentLimits2().setPermanentLimit(1500f).add();
+        network.getLine("NHV1_NHV2_2").newCurrentLimits2().setPermanentLimit(500f).add();
 
         List<LimitViolation> violations = Security.checkLimits(network);
 
-        assertEquals(3, violations.size());
+        assertEquals(5, violations.size());
         violations.forEach(violation -> {
             assertTrue(Arrays.asList("VLHV1", "NHV1_NHV2_1", "NHV1_NHV2_2").contains(violation.getSubjectId()));
             if ("VLHV1".equals(violation.getSubjectId())) {
@@ -157,7 +157,7 @@ public class SecurityTest {
 
         violations = Security.checkLimits(network, 1);
 
-        assertEquals(3, violations.size());
+        assertEquals(5, violations.size());
         violations.forEach(violation ->  {
             assertTrue(Arrays.asList("VLHV1", "NHV1_NHV2_1", "NHV1_NHV2_2").contains(violation.getSubjectId()));
             if ("VLHV1".equals(violation.getSubjectId())) {

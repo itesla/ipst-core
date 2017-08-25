@@ -111,6 +111,8 @@ public class LineTest {
             .add();
         assertSame(currentLimits1, acLine.getCurrentLimits1());
         assertSame(currentLimits2, acLine.getCurrentLimits2());
+        assertSame(currentLimits1, acLine.getCurrentLimits(Branch.Side.ONE));
+        assertSame(currentLimits2, acLine.getCurrentLimits(Branch.Side.TWO));
 
         // add power on line
         Terminal terminal1 = acLine.getTerminal1();

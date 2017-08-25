@@ -45,6 +45,14 @@
         "limit" : 100.0,
         "limitReduction" : 0.9,
         "value" : 110.0
+      }, {
+        "subjectId" : "GEN2",
+        "limitType" : "LOW_VOLTAGE",
+        "limit" : 100.0,
+        "limitReduction" : 0.7,
+        "value" : 115.0,
+        "country" : "FR",
+        "baseVoltage" : 400.0
       } ],
       "actionsTaken" : [ "action1", "action2" ]
     }
