@@ -6,12 +6,15 @@
  */
 package eu.itesla_project.afs.storage;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NodeEvent {
+public class NodeEvent implements Serializable {
+
+    private static final long serialVersionUID = -4617843206213760193L;
 
     public enum Type {
         NODE_CREATED,

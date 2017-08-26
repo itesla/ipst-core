@@ -59,15 +59,17 @@ public interface AppFileSystemStorage extends AutoCloseable {
 
     void setBooleanAttribute(NodeId nodeId, String name, boolean value);
 
-    double[] getDoubleArrayAttribute(NodeId nodeId, String name);
-
-    void setDoubleArrayAttribute(NodeId nodeId, String name, double[] values);
-
     Reader readStringAttribute(NodeId nodeId, String name);
 
     Writer writeStringAttribute(NodeId nodeId, String name);
 
     DataSource getDataSourceAttribute(NodeId nodeId, String name);
+
+    void addDoubleArrayAttributeChunk(NodeId nodeId, String name, DenseDoubleArray array);
+
+    void addDoubleArrayAttributeChunk(NodeId nodeId, String name, CompressedDoubleArray array);
+
+    DoubleArray getDoubleArrayAttribute(NodeId nodeId, String name);
 
     NodeId getDependency(NodeId nodeId, String name);
 
@@ -99,9 +101,9 @@ public interface AppFileSystemStorage extends AutoCloseable {
 
     // listeners
 
-    void addListerner(NodeListener listener);
+    void addListener(NodeListener listener);
 
-    void removeListerner(NodeListener listener);
+    void removeListener(NodeListener listener);
 
     @Override
     void close();

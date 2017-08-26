@@ -637,12 +637,12 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public void addListerner(NodeListener listener) {
+    public void addListener(NodeListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeListerner(NodeListener listener) {
+    public void removeListener(NodeListener listener) {
         listeners.remove(listener);
     }
 
