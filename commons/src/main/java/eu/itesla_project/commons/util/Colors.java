@@ -36,13 +36,15 @@ final public class Colors {
     }
 
     private static long[] hsvToRgb(double h, double s, double v) {
-        int h_i = (int) Math.floor(h * 6);
-        double f = h * 6 - h_i;
+        int hi = (int) Math.floor(h * 6);
+        double f = h * 6 - hi;
         double p = v * (1 - s);
         double q = v * (1 - f * s);
         double t = v * (1 - (1 - f) * s);
-        double r, g, b;
-        switch (h_i) {
+        double r;
+        double g;
+        double b;
+        switch (hi) {
             case 0:
                 r = v;
                 g = t;
@@ -76,6 +78,6 @@ final public class Colors {
             default:
                 throw new AssertionError();
         }
-        return new long[] { Math.round(r * 256), Math.round(g * 256), Math.round(b * 256) };
+        return new long[] {Math.round(r * 256), Math.round(g * 256), Math.round(b * 256)};
     }
 }

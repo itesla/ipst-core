@@ -320,7 +320,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
             throw new AfsStorageException("Node " + nodeId + " not found");
         }
         if (!nodeNameMap.containsKey(newParentNodeId)) {
-            throw new AfsStorageException("New parent node " + newParentNodeId+ " not found");
+            throw new AfsStorageException("New parent node " + newParentNodeId + " not found");
         }
         NodeId oldParentNodeId = parentNodeMap.get(nodeId);
         if (oldParentNodeId == null) {
@@ -552,7 +552,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         Objects.requireNonNull(nodeId);
         Objects.requireNonNull(name);
         if (!nodeNameMap.containsKey(nodeId)) {
-            throw new AfsStorageException("Node " + nodeId+ " not found");
+            throw new AfsStorageException("Node " + nodeId + " not found");
         }
         return dependencyNodeMap.get(new NamedLink(nodeId, name));
     }
@@ -563,10 +563,10 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
         Objects.requireNonNull(name);
         Objects.requireNonNull(toNodeId);
         if (!nodeNameMap.containsKey(nodeId)) {
-            throw new AfsStorageException("Node " + nodeId+ " not found");
+            throw new AfsStorageException("Node " + nodeId + " not found");
         }
         if (!nodeNameMap.containsKey(toNodeId)) {
-            throw new AfsStorageException("Node " + nodeId+ " not found");
+            throw new AfsStorageException("Node " + nodeId + " not found");
         }
         dependencyNodesMap.put(nodeId, add(dependencyNodesMap.get(nodeId), toNodeId));
         dependencyNodeMap.put(new NamedLink(nodeId, name), toNodeId);

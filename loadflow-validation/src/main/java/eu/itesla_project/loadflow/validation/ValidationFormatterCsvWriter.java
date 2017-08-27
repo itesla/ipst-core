@@ -42,7 +42,7 @@ public class ValidationFormatterCsvWriter extends AbstractValidationFormatterWri
     protected Column[] getColumns() {
         switch (validationType) {
             case FLOWS:
-                if ( verbose ) {
+                if (verbose) {
                     return new Column[] {
                         new Column("id"),
                         new Column("network_p1"),
@@ -84,7 +84,7 @@ public class ValidationFormatterCsvWriter extends AbstractValidationFormatterWri
                     new Column("expected_q2")
                 };
             case GENERATORS:
-                if ( verbose ) {
+                if (verbose) {
                     return new Column[] {
                         new Column("id"),
                         new Column("p"),
@@ -114,20 +114,20 @@ public class ValidationFormatterCsvWriter extends AbstractValidationFormatterWri
     }
 
     @Override
-    public void write(String branchId, double p1, double p1_calc, double q1, double q1_calc, double p2, double p2_calc, double q2, double q2_calc, 
-                      double r, double x, double g1, double g2, double b1, double b2, double rho1, double rho2, double alpha1, double alpha2, 
+    public void write(String branchId, double p1, double p1Calc, double q1, double q1Calc, double p2, double p2Calc, double q2, double q2Calc,
+                      double r, double x, double g1, double g2, double b1, double b2, double rho1, double rho2, double alpha1, double alpha2,
                       double u1, double u2, double theta1, double theta2, double z, double y, double ksi) throws IOException {
         Objects.requireNonNull(branchId);
         formatter.writeCell(branchId)
                  .writeCell(p1)
-                 .writeCell(p1_calc)
+                 .writeCell(p1Calc)
                  .writeCell(q1)
-                 .writeCell(q1_calc)
+                 .writeCell(q1Calc)
                  .writeCell(p2)
-                 .writeCell(p2_calc)
+                 .writeCell(p2Calc)
                  .writeCell(q2)
-                 .writeCell(q2_calc);
-        if ( verbose ) {
+                 .writeCell(q2Calc);
+        if (verbose) {
             formatter.writeCell(r)
                      .writeCell(x)
                      .writeCell(g1)
@@ -159,7 +159,7 @@ public class ValidationFormatterCsvWriter extends AbstractValidationFormatterWri
                  .writeCell(targetP)
                  .writeCell(targetQ)
                  .writeCell(targetV);
-        if ( verbose ) {
+        if (verbose) {
             formatter.writeCell(connected)
                      .writeCell(voltageRegulatorOn)
                      .writeCell(minQ)
