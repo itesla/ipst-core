@@ -79,7 +79,7 @@ public class HvdcLineTest {
     public void invalidR() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("r is invalid");
-        createHvecLine("invlid", "invalid", Float.NaN, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("invlid", "invalid", Float.NaN, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 440.0f, 10.0f, 20.0f, "C1", "C2");
     }
 
@@ -87,7 +87,7 @@ public class HvdcLineTest {
     public void invalidConvertersMode() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("converter mode is invalid");
-        createHvecLine("invlid", "invalid", 10.0f, null,
+        createHvdcLine("invlid", "invalid", 10.0f, null,
                 440.0f, 10.0f, 20.0f, "C1", "C2");
     }
 
@@ -95,7 +95,7 @@ public class HvdcLineTest {
     public void invalidNominalV() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("nominal voltage is invalid");
-        createHvecLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 0.0f, 10.0f, 20.0f, "C1", "C2");
     }
 
@@ -103,7 +103,7 @@ public class HvdcLineTest {
     public void invalidActivePowerSetpoint() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("for active power setpoint");
-        createHvecLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 510.0f, Float.NaN, 20.0f, "C1", "C2");
     }
 
@@ -111,7 +111,7 @@ public class HvdcLineTest {
     public void invalidMaxP() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("for maximum P");
-        createHvecLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 510.0f, 77.0f, Float.NaN, "C1", "C2");
     }
 
@@ -121,7 +121,7 @@ public class HvdcLineTest {
         assertNull(nonExistingConverterStation);
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Side 1 converter station");
-        createHvecLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 510.0f, 77.0f, 22.0f, "non_existing", "C2");
     }
 
@@ -131,24 +131,24 @@ public class HvdcLineTest {
         assertNull(nonExistingConverterStation);
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Side 2 converter station");
-        createHvecLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("invlid", "invalid", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 510.0f, 77.0f, 22.0f, "C1", "non_existing");
     }
 
     @Test
     public void duplicateHvdcLine() {
-        createHvecLine("duplicate", "duplicate", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("duplicate", "duplicate", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 10.0f, 10.0f, 20.0f, "C1", "C2");
         HvdcLine line = network.getHvdcLine("duplicate");
         assertNotNull(line);
         thrown.expect(ITeslaException.class);
-        createHvecLine("duplicate", "duplicate", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("duplicate", "duplicate", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 10.0f, 10.0f, 20.0f, "C1", "C2");
     }
 
     @Test
     public void removeHvdcLine() {
-        createHvecLine("toRemove", "toRemove", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
+        createHvdcLine("toRemove", "toRemove", 10.0f, HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER,
                 10.0f, 10.0f, 20.0f, "C1", "C2");
         HvdcLine line = network.getHvdcLine("toRemove");
         assertNotNull(line);
@@ -159,7 +159,7 @@ public class HvdcLineTest {
         assertEquals(hvdcLineCount - 1, network.getHvdcLineCount());
     }
 
-    private void createHvecLine(String id, String name, float r, HvdcLine.ConvertersMode mode, float v,
+    private void createHvdcLine(String id, String name, float r, HvdcLine.ConvertersMode mode, float v,
                                 float activePowerSetpoint, float p, String converterStationId1, String converterStationId2) {
         network.newHvdcLine()
                     .setId(id)

@@ -79,42 +79,42 @@ public class TwoWindingsTransformerTest {
     }
 
     @Test
-    public void testInvalideR() {
+    public void testInvalidR() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("r is invalid");
         createTwoWindingTransformer("invalid", "invalid", Float.NaN, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     @Test
-    public void testInvalideX() {
+    public void testInvalidX() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("x is invalid");
         createTwoWindingTransformer("invalid", "invalid", 1.0f, Float.NaN, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     @Test
-    public void testInvalideG() {
+    public void testInvalidG() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("g is invalid");
         createTwoWindingTransformer("invalid", "invalid", 1.0f, 1.0f, Float.NaN, 1.0f, 1.0f, 1.0f);
     }
 
     @Test
-    public void testInvalideB() {
+    public void testInvalidB() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("b is invalid");
         createTwoWindingTransformer("invalid", "invalid", 1.0f, 1.0f, 1.0f, Float.NaN, 1.0f, 1.0f);
     }
 
     @Test
-    public void testInvalideRatedU1() {
+    public void testInvalidRatedU1() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("rated U1 is invalid");
         createTwoWindingTransformer("invalid", "invalid", 1.0f, 1.0f, 1.0f, 1.0f, Float.NaN, 1.0f);
     }
 
     @Test
-    public void testInvalideRatedU2() {
+    public void testInvalidRatedU2() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("rated U2 is invalid");
         createTwoWindingTransformer("invalid", "invalid", 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, Float.NaN);

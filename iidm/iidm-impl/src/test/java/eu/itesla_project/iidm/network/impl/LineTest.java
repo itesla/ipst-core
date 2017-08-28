@@ -133,42 +133,42 @@ public class LineTest {
     public void invalidR() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("r is invalid");
-        createLineBetweenVoltageAB("invalide", "invalid", Float.NaN, 2.0f, 3.0f, 3.5f, 4.0f, 4.5f);
+        createLineBetweenVoltageAB("invalid", "invalid", Float.NaN, 2.0f, 3.0f, 3.5f, 4.0f, 4.5f);
     }
 
     @Test
     public void invalidX() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("x is invalid");
-        createLineBetweenVoltageAB("invalide", "invalid", 1.0f, Float.NaN, 3.0f, 3.5f, 4.0f, 4.5f);
+        createLineBetweenVoltageAB("invalid", "invalid", 1.0f, Float.NaN, 3.0f, 3.5f, 4.0f, 4.5f);
     }
 
     @Test
     public void invalidG1() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("g1 is invalid");
-        createLineBetweenVoltageAB("invalide", "invalid", 1.0f, 2.0f, Float.NaN, 3.5f, 4.0f, 4.5f);
+        createLineBetweenVoltageAB("invalid", "invalid", 1.0f, 2.0f, Float.NaN, 3.5f, 4.0f, 4.5f);
     }
 
     @Test
     public void invalidG2() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("g2 is invalid");
-        createLineBetweenVoltageAB("invalide", "invalid", 1.0f, 2.0f, 3.0f, Float.NaN, 4.0f, 4.5f);
+        createLineBetweenVoltageAB("invalid", "invalid", 1.0f, 2.0f, 3.0f, Float.NaN, 4.0f, 4.5f);
     }
 
     @Test
     public void invalidB1() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("b1 is invalid");
-        createLineBetweenVoltageAB("invalide", "invalid", 1.0f, 2.0f, 3.0f, 3.5f, Float.NaN, 4.5f);
+        createLineBetweenVoltageAB("invalid", "invalid", 1.0f, 2.0f, 3.0f, 3.5f, Float.NaN, 4.5f);
     }
 
     @Test
     public void invalidB2() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("b2 is invalid");
-        createLineBetweenVoltageAB("invalide", "invalid", 1.0f, 2.0f, 3.0f, 3.5f, 4.0f, Float.NaN);
+        createLineBetweenVoltageAB("invalid", "invalid", 1.0f, 2.0f, 3.0f, 3.5f, 4.0f, Float.NaN);
     }
 
     @Test

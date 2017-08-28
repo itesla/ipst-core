@@ -101,42 +101,42 @@ public class DanglingLineTest {
     }
 
     @Test
-    public void testInvalideR() {
+    public void testInvalidR() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("r is invalid");
         createDanglingLine("invalid", "invalid", Float.NaN, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "code");
     }
 
     @Test
-    public void testInvalideX() {
+    public void testInvalidX() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("x is invalid");
         createDanglingLine("invalid", "invalid", 1.0f, Float.NaN, 1.0f, 1.0f, 1.0f, 1.0f, "code");
     }
 
     @Test
-    public void testInvalideG() {
+    public void testInvalidG() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("g is invalid");
         createDanglingLine("invalid", "invalid", 1.0f, 1.0f, Float.NaN, 1.0f, 1.0f, 1.0f, "code");
     }
 
     @Test
-    public void testInvalideB() {
+    public void testInvalidB() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("b is invalid");
         createDanglingLine("invalid", "invalid", 1.0f, 1.0f, 1.0f, Float.NaN, 1.0f, 1.0f, "code");
     }
 
     @Test
-    public void testInvalideP0() {
+    public void testInvalidP0() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("p0 is invalid");
         createDanglingLine("invalid", "invalid", 1.0f, 1.0f, 1.0f, 1.0f, Float.NaN, 1.0f, "code");
     }
 
     @Test
-    public void testInvalideQ0() {
+    public void testInvalidQ0() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("q0 is invalid");
         createDanglingLine("invalid", "invalid", 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, Float.NaN, "code");
