@@ -242,13 +242,23 @@ class NetworkImpl extends AbstractIdentifiable<Network> implements Network, Mult
     }
 
     @Override
-    public TwoTerminalsConnectable getBranch(String branchId) {
+    public Branch getBranch(String branchId) {
         Objects.requireNonNull(branchId);
-        TwoTerminalsConnectable branch = getLine(branchId);
+        Branch branch = getLine(branchId);
         if (branch == null) {
             branch = getTwoWindingsTransformer(branchId);
         }
         return branch;
+    }
+
+    @Override
+    public Iterable<Branch> getBranches() {
+        return Iterables.concat(getLines(), getTwoWindingsTransformers());
+    }
+
+    @Override
+    public Stream<Branch> getBranchStream() {
+        return Stream.concat(getLineStream(), getTwoWindingsTransformerStream());
     }
 
     @Override
@@ -644,7 +654,7 @@ class NetworkImpl extends AbstractIdentifiable<Network> implements Network, Mult
 
     }
 
-    static class ConnectedComponentsManager extends AbstractComponentsManager<ConnectedComponentImpl> {
+    static final class ConnectedComponentsManager extends AbstractComponentsManager<ConnectedComponentImpl> {
 
         private ConnectedComponentsManager(NetworkImpl network) {
             super(network);
@@ -675,7 +685,7 @@ class NetworkImpl extends AbstractIdentifiable<Network> implements Network, Mult
         }
     }
 
-    static class SynchronousComponentsManager extends AbstractComponentsManager<ComponentImpl> {
+    static final class SynchronousComponentsManager extends AbstractComponentsManager<ComponentImpl> {
 
         private SynchronousComponentsManager(NetworkImpl network) {
             super(network);

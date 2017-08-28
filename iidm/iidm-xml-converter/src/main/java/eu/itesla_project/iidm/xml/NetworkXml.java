@@ -38,7 +38,7 @@ import java.util.zip.GZIPOutputStream;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NetworkXml implements XmlConstants {
+public final class NetworkXml implements XmlConstants {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkXml.class);
 
@@ -54,6 +54,9 @@ public class NetworkXml implements XmlConstants {
     private static final Supplier<Map<String, ExtensionXml>> EXTENSIONS_SUPPLIER
             = Suppliers.memoize(() -> new ServiceLoaderCache<>(ExtensionXml.class).getServices().stream()
                     .collect(Collectors.toMap(extensionXml -> extensionXml.getExtensionName(), e -> e)));
+
+    private NetworkXml() {
+    }
 
     private static XMLStreamWriter createXmlStreamWriter(XMLExportOptions options, OutputStream os) throws XMLStreamException {
         XMLStreamWriter writer = XML_OUTPUT_FACTORY_SUPPLIER.get().createXMLStreamWriter(os, StandardCharsets.UTF_8.toString());
@@ -393,7 +396,7 @@ public class NetworkXml implements XmlConstants {
                         String id = reader.getAttributeValue(null, "id");
                         float p = XmlUtil.readOptionalFloatAttribute(reader, "p");
                         float q = XmlUtil.readOptionalFloatAttribute(reader, "q");
-                        SingleTerminalConnectable inj = (SingleTerminalConnectable) network.getIdentifiable(id);
+                        Injection inj = (Injection) network.getIdentifiable(id);
                         inj.getTerminal().setP(p).setQ(q);
                         break;
                     }
@@ -405,7 +408,7 @@ public class NetworkXml implements XmlConstants {
                         float q1 = XmlUtil.readOptionalFloatAttribute(reader, "q1");
                         float p2 = XmlUtil.readOptionalFloatAttribute(reader, "p2");
                         float q2 = XmlUtil.readOptionalFloatAttribute(reader, "q2");
-                        TwoTerminalsConnectable branch = (TwoTerminalsConnectable) network.getIdentifiable(id);
+                        Branch branch = (Branch) network.getIdentifiable(id);
                         branch.getTerminal1().setP(p1).setQ(q1);
                         branch.getTerminal2().setP(p2).setQ(q2);
                         break;
@@ -435,7 +438,7 @@ public class NetworkXml implements XmlConstants {
     public static byte[] gzip(Network network) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (GZIPOutputStream gzos = new GZIPOutputStream(bos)) {
-            NetworkXml.write(network, gzos);
+            write(network, gzos);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -444,7 +447,7 @@ public class NetworkXml implements XmlConstants {
 
     public static Network gunzip(byte[] networkXmlGz) {
         try (InputStream is = new GZIPInputStream(new ByteArrayInputStream(networkXmlGz))) {
-            return NetworkXml.read(is);
+            return read(is);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
