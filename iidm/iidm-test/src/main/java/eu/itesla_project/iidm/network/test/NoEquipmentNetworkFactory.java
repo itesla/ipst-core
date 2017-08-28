@@ -8,7 +8,7 @@ package eu.itesla_project.iidm.network.test;
 
 import eu.itesla_project.iidm.network.*;
 
-public class NoEquipmentNetworkFactory {
+public final class NoEquipmentNetworkFactory {
 
     private NoEquipmentNetworkFactory() {
     }
