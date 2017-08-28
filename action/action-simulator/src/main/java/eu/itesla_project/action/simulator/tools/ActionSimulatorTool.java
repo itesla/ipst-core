@@ -7,7 +7,7 @@
 package eu.itesla_project.action.simulator.tools;
 
 import com.google.auto.service.AutoService;
-import eu.itesla_project.action.dsl.AbstractActionDslLoaderObserver;
+import eu.itesla_project.action.dsl.DefaultActionDslLoaderObserver;
 import eu.itesla_project.action.dsl.ActionDb;
 import eu.itesla_project.action.dsl.ActionDslLoader;
 import eu.itesla_project.action.simulator.ActionSimulator;
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -117,7 +118,7 @@ public class ActionSimulatorTool implements Tool {
         LoadFlowActionSimulatorLogPrinter logPrinter = new LoadFlowActionSimulatorLogPrinter(context.getOutputStream(), context.getErrorStream(), verbose);
 
         // security analysis print
-        SecurityAnalysisResultBuilder securityAnalysisPrinter = new SecurityAnalysisResultBuilder() {
+        AbstractSecurityAnalysisResultBuilder securityAnalysisPrinter = new AbstractSecurityAnalysisResultBuilder() {
             @Override
             public void onFinalStateResult(SecurityAnalysisResult result) {
                 context.getOutputStream().println("Final result");
@@ -137,7 +138,7 @@ public class ActionSimulatorTool implements Tool {
                         Security.printPreContingencyViolations(result, Files.newBufferedWriter(csvFile, StandardCharsets.UTF_8), csvTableFormatterFactory, filter);
                         Security.printPostContingencyViolations(result, Files.newBufferedWriter(csvFile, StandardCharsets.UTF_8, StandardOpenOption.APPEND), csvTableFormatterFactory, filter, !config.isIgnorePreContingencyViolations());
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new UncheckedIOException(e);
                     }
                 }
             }
@@ -166,7 +167,7 @@ public class ActionSimulatorTool implements Tool {
         try {
             // load actions from Groovy DSL
             ActionDb actionDb = new ActionDslLoader(dslFile.toFile())
-                    .load(network, new AbstractActionDslLoaderObserver() {
+                    .load(network, new DefaultActionDslLoaderObserver() {
                         @Override
                         public void begin(String dslFile) {
                             context.getOutputStream().println("Loading DSL '" + dslFile + "'");

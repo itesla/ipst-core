@@ -14,9 +14,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import eu.itesla_project.computation.*;
 import eu.itesla_project.computation.mpi.generated.Messages;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -28,11 +29,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class MpiComputationManagerTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MpiComputationManagerTest.class);
 
     private static final String ID_CMD_1 = "cmd1";
     private static final String INPUT_FILE_NAME_1 = "in1.txt";
@@ -74,7 +80,7 @@ public class MpiComputationManagerTest {
                             break;
                     }
                 } catch (InvalidProtocolBufferException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.toString(), e);
                 }
             }
         }
@@ -194,12 +200,12 @@ public class MpiComputationManagerTest {
     public void testExecute() throws Exception {
         final Path[] workingDirSav = new Path[1];
         String result = cm.execute(ExecutionEnvironment.createDefault(), new ExecutionHandlerTest1() {
-            @Override
-            public List<CommandExecution> before(Path workingDir) throws IOException {
-                workingDirSav[0] = workingDir;
-                return super.before(workingDir);
-            }
-        }).join();
+                @Override
+                public List<CommandExecution> before(Path workingDir) throws IOException {
+                    workingDirSav[0] = workingDir;
+                    return super.before(workingDir);
+                }
+            }).join();
         assertTrue(OUTPUT_FILE_CONTENT_1.equals(result));
         assertTrue(Files.notExists(workingDirSav[0]));
     }
@@ -209,14 +215,14 @@ public class MpiComputationManagerTest {
         final Path[] workingDirSav = new Path[1];
         try {
             cm.execute(ExecutionEnvironment.createDefault(), new ExecutionHandlerTest1() {
-                @Override
-                public List<CommandExecution> before(Path workingDir) throws IOException {
-                    workingDirSav[0] = workingDir;
-                    throw new RuntimeException("test error");
-                }
-            }).join();
+                    @Override
+                    public List<CommandExecution> before(Path workingDir) throws IOException {
+                        workingDirSav[0] = workingDir;
+                        throw new RuntimeException("test error");
+                    }
+                }).join();
             fail();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         assertTrue(Files.notExists(workingDirSav[0]));
     }
@@ -238,7 +244,7 @@ public class MpiComputationManagerTest {
                 }
             }).join();
             fail();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         assertTrue(Files.notExists(workingDirSav[0]));
     }
@@ -247,20 +253,20 @@ public class MpiComputationManagerTest {
     public void testExecute4() throws Exception {
         final Path[] workingDirSav = new Path[1];
         String result = cm.execute(ExecutionEnvironment.createDefault(), new ExecutionHandlerTest2() {
-            @Override
-            public List<CommandExecution> before(Path workingDir) throws IOException {
-                workingDirSav[0] = workingDir;
-                return super.before(workingDir);
-            }
+                @Override
+                public List<CommandExecution> before(Path workingDir) throws IOException {
+                    workingDirSav[0] = workingDir;
+                    return super.before(workingDir);
+                }
 
-            @Override
-            public String after(Path workingDir, ExecutionReport report) throws IOException {
-                String result = super.after(workingDir, report);
-                assertTrue(Files.exists(workingDir.resolve(OUTPUT_FILE_NAME_1)));
-                assertTrue(Files.exists(workingDir.resolve(OUTPUT_FILE_NAME_2)));
-                return result;
-            }
-        }).join();
+                @Override
+                public String after(Path workingDir, ExecutionReport report) throws IOException {
+                    String result = super.after(workingDir, report);
+                    assertTrue(Files.exists(workingDir.resolve(OUTPUT_FILE_NAME_1)));
+                    assertTrue(Files.exists(workingDir.resolve(OUTPUT_FILE_NAME_2)));
+                    return result;
+                }
+            }).join();
         assertTrue(OUTPUT_FILE_CONTENT_2.equals(result));
         assertTrue(Files.notExists(workingDirSav[0]));
     }

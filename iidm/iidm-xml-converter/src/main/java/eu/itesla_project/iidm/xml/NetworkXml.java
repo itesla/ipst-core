@@ -36,7 +36,7 @@ import java.util.zip.GZIPOutputStream;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NetworkXml implements XmlConstants {
+public final class NetworkXml implements XmlConstants {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkXml.class);
 
@@ -52,6 +52,9 @@ public class NetworkXml implements XmlConstants {
     private static final Supplier<Map<String, ExtensionXml>> EXTENSIONS_SUPPLIER
             = Suppliers.memoize(() -> new ServiceLoaderCache<>(ExtensionXml.class).getServices().stream()
                     .collect(Collectors.toMap(extensionXml -> extensionXml.getExtensionName(), e -> e)));
+
+    private NetworkXml() {
+    }
 
     private static XMLStreamWriter createXmlStreamWriter(XMLExportOptions options, OutputStream os) throws XMLStreamException {
         XMLStreamWriter writer = XML_OUTPUT_FACTORY_SUPPLIER.get().createXMLStreamWriter(os, StandardCharsets.UTF_8.toString());
@@ -89,14 +92,14 @@ public class NetworkXml implements XmlConstants {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Source[] sources = new Source[additionalSchemas.size() + 1];
         sources[0] = new StreamSource(NetworkXml.class.getResourceAsStream("/xsd/" + IIDM_XSD));
-        for (int i = 0 ; i < additionalSchemas.size(); i++) {
-            sources[i+1] = additionalSchemas.get(i);
+        for (int i = 0; i < additionalSchemas.size(); i++) {
+            sources[i + 1] = additionalSchemas.get(i);
         }
         try {
             Schema schema = factory.newSchema(sources);
             Validator validator = schema.newValidator();
             validator.validate(xml);
-        } catch (SAXException|IOException e) {
+        } catch (SAXException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -109,7 +112,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(file)) {
             validate(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -124,7 +127,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(file)) {
             validateWithExtensions(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -204,7 +207,7 @@ public class NetworkXml implements XmlConstants {
             }
             for (HvdcLine l : n.getHvdcLines()) {
                 if (!filter.test(l.getConverterStation1()) && filter.test(l.getConverterStation2())) {
-                   continue;
+                    continue;
                 }
                 HvdcLineXml.INSTANCE.write(l, n, context);
             }
@@ -231,7 +234,7 @@ public class NetworkXml implements XmlConstants {
         try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(xmlFile))) {
             return write(n, options, os);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -252,8 +255,10 @@ public class NetworkXml implements XmlConstants {
     public static Network read(InputStream is, XmlImportConfig config, Anonymizer anonymizer) {
         try {
             XMLStreamReader reader = XML_INPUT_FACTORY_SUPPLIER.get().createXMLStreamReader(is);
-            reader.next();
-
+            int state = reader.next();
+            while (state == XMLStreamReader.COMMENT) {
+                state = reader.next();
+            }
             String id = reader.getAttributeValue(null, "id");
             DateTime date = DateTime.parse(reader.getAttributeValue(null, "caseDate"));
             int forecastDistance = XmlUtil.readOptionalIntegerAttribute(reader, "forecastDistance", 0);
@@ -338,7 +343,7 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(xmlFile)) {
             return read(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -422,25 +427,25 @@ public class NetworkXml implements XmlConstants {
         try (InputStream is = Files.newInputStream(xmlFile)) {
             update(network, is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
     public static byte[] gzip(Network network) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (GZIPOutputStream gzos = new GZIPOutputStream(bos)) {
-            NetworkXml.write(network, gzos);
+            write(network, gzos);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         return bos.toByteArray();
     }
 
     public static Network gunzip(byte[] networkXmlGz) {
         try (InputStream is = new GZIPInputStream(new ByteArrayInputStream(networkXmlGz))) {
-            return NetworkXml.read(is);
+            return read(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

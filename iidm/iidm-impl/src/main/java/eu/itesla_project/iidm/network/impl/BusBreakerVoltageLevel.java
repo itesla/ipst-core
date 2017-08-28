@@ -28,7 +28,7 @@ import java.util.stream.Stream;
  */
 class BusBreakerVoltageLevel extends AbstractVoltageLevel {
 
-    private class SwitchAdderImpl extends IdentifiableAdderImpl<SwitchAdderImpl> implements BusBreakerView.SwitchAdder {
+    private final class SwitchAdderImpl extends AbstractIdentifiableAdder<SwitchAdderImpl> implements BusBreakerView.SwitchAdder {
 
         private String busId1;
 
@@ -85,10 +85,10 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
                 throw new ValidationException(this, "second connection bus is not set");
             }
 
-            SwitchImpl _switch = new SwitchImpl(BusBreakerVoltageLevel.this, id, getName(), SwitchKind.BREAKER, open, true, fictitious);
-            addSwitch(_switch, busId1, busId2);
-            getNetwork().getListeners().notifyCreation(_switch);
-            return _switch;
+            SwitchImpl aSwitch = new SwitchImpl(BusBreakerVoltageLevel.this, id, getName(), SwitchKind.BREAKER, open, true, fictitious);
+            addSwitch(aSwitch, busId1, busId2);
+            getNetwork().getListeners().notifyCreation(aSwitch);
+            return aSwitch;
         }
 
     }
@@ -138,11 +138,11 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
     private SwitchImpl getSwitch(String switchId, boolean throwException) {
         Integer e = getEdge(switchId, throwException);
         if (e != null) {
-            SwitchImpl _switch = graph.getEdgeObject(e);
-            if (!_switch.getId().equals(switchId)) {
+            SwitchImpl aSwitch = graph.getEdgeObject(e);
+            if (!aSwitch.getId().equals(switchId)) {
                 throw new InternalError("Must not happened");
             }
-            return _switch;
+            return aSwitch;
         }
         return null;
     }
@@ -150,7 +150,7 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
     /**
      * Bus only topology cache
      */
-    private static class BusCache {
+    private static final class BusCache {
 
         /* merged bus by id */
         private final Map<String, MergedBus> mergedBus;
@@ -186,7 +186,7 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
             int feederCount = 0;
             int branchCount = 0;
             for (TerminalExt terminal : FluentIterable.from(busSet).transformAndConcat(ConfiguredBus::getConnectedTerminals)) {
-                ConnectableImpl connectable = terminal.getConnectable();
+                AbstractConnectable connectable = terminal.getConnectable();
                 switch (connectable.getType()) {
                     case LINE:
                     case TWO_WINDINGS_TRANSFORMER:
@@ -232,8 +232,8 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
                     graph.traverse(v, new Traverser<SwitchImpl>() {
                         @Override
                         public TraverseResult traverse(int v1, int e, int v2) {
-                            SwitchImpl _switch = graph.getEdgeObject(e);
-                            if (_switch.isOpen()) {
+                            SwitchImpl aSwitch = graph.getEdgeObject(e);
+                            if (aSwitch.isOpen()) {
                                 return TraverseResult.TERMINATE;
                             } else {
                                 busSet.add(graph.getVertexObject(v2));
@@ -292,7 +292,7 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
     final CalculatedBusTopology calculatedBusTopology
             = new CalculatedBusTopology();
 
-    private static class StateImpl implements State {
+    private static final class StateImpl implements State {
 
         private BusCache cache;
 
@@ -619,12 +619,12 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
         buses.clear();
     }
 
-    private void addSwitch(SwitchImpl _switch, String busId1, String busId2) {
+    private void addSwitch(SwitchImpl aSwitch, String busId1, String busId2) {
         int v1 = getVertex(busId1, true);
         int v2 = getVertex(busId2, true);
-        getNetwork().getObjectStore().checkAndAdd(_switch);
-        int e = graph.addEdge(v1, v2, _switch);
-        switches.put(_switch.getId(), e);
+        getNetwork().getObjectStore().checkAndAdd(aSwitch);
+        int e = graph.addEdge(v1, v2, aSwitch);
+        switches.put(aSwitch.getId(), e);
     }
 
     private void removeSwitch(String switchId) {
@@ -633,8 +633,8 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
             throw new RuntimeException("Switch '" + switchId
                     + "' not found in substation voltage level '" + id + "'");
         }
-        SwitchImpl _switch = graph.removeEdge(e);
-        getNetwork().getObjectStore().remove(_switch);
+        SwitchImpl aSwitch = graph.removeEdge(e);
+        getNetwork().getObjectStore().remove(aSwitch);
     }
 
     private void removeAllSwitches() {
@@ -828,7 +828,8 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
     public void printTopology(PrintStream out, ShortIdDictionary dict) {
         out.println("-------------------------------------------------------------");
         out.println("Topology of " + BusBreakerVoltageLevel.this.id);
-        graph.print(out, bus -> {
+
+        Function<ConfiguredBus, String> vertexToString = bus -> {
             StringBuilder builder = new StringBuilder();
             builder.append(bus.getId())
                     .append(" [");
@@ -841,12 +842,16 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
             }
             builder.append("]");
             return builder.toString();
-        }, aSwitch -> {
+        };
+
+        Function<SwitchImpl, String> edgeToString = aSwitch -> {
             StringBuilder builder = new StringBuilder();
             builder.append("id=").append(aSwitch.getId())
                     .append(" status=").append(aSwitch.isOpen() ? "open" : "closed");
             return builder.toString();
-        });
+        };
+        
+        graph.print(out, vertexToString, edgeToString);
     }
 
     @Override
@@ -865,7 +870,7 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
             writer.append("  ").append(bus.getId())
                         .append(" [label=\"").append(label).append("\"]\n");
             for (TerminalExt terminal : bus.getTerminals()) {
-                ConnectableImpl connectable = terminal.getConnectable();
+                AbstractConnectable connectable = terminal.getConnectable();
                 label = connectable.getType().toString() + "\\n" + connectable.getId();
                 writer.append("  ").append(connectable.getId())
                         .append(" [label=\"").append(label).append("\"]\n");
@@ -873,7 +878,7 @@ class BusBreakerVoltageLevel extends AbstractVoltageLevel {
         }
         for (ConfiguredBus bus : graph.getVerticesObj()) {
             for (TerminalExt terminal : bus.getTerminals()) {
-                ConnectableImpl connectable = terminal.getConnectable();
+                AbstractConnectable connectable = terminal.getConnectable();
                 writer.append("  ").append(bus.getId())
                     .append(" -- ").append(connectable.getId())
                     .append(" [").append("style=\"").append(terminal.isConnected() ? "solid" : "dotted").append("\"")

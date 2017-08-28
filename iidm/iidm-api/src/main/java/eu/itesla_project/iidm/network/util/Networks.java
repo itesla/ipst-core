@@ -44,13 +44,13 @@ import eu.itesla_project.iidm.network.Terminal;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Networks {
+public final class Networks {
 
     private Networks() {
     }
 
     public static boolean isBusValid(int feederCount, int branchCount) {
-        return branchCount >=1;
+        return branchCount >= 1;
     }
 
     public static Map<String, String> getExecutionTags(Network network) {

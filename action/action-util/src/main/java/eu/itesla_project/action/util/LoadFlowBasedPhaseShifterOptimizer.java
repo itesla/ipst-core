@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public class LoadFlowBasedPhaseShifterOptimizer implements PhaseShifterOptimizer {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(LoadFlowBasedPhaseShifterOptimizer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoadFlowBasedPhaseShifterOptimizer.class);
 
     private final ComputationManager computationManager;
 
@@ -118,7 +118,7 @@ public class LoadFlowBasedPhaseShifterOptimizer implements PhaseShifterOptimizer
                     throw new AssertionError("Phase shifter should not be overload");
                 }
             }
-        } catch (IllegalAccessException|InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException e) {
             throw new RuntimeException(e);
         } finally {
             // don't forget to remove the temporary state!

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ExpressionEvaluator extends AbstractExpressionVisitor<Object, Void> {
+public class ExpressionEvaluator extends DefaultExpressionVisitor<Object, Void> {
 
     private final EvaluationContext context;
 
@@ -31,7 +31,7 @@ public class ExpressionEvaluator extends AbstractExpressionVisitor<Object, Void>
     }
 
     @Override
-    public Object visitLiteral(LiteralNode node, Void arg) {
+    public Object visitLiteral(AbstractLiteralNode node, Void arg) {
         return node.getValue();
     }
 
@@ -163,7 +163,8 @@ public class ExpressionEvaluator extends AbstractExpressionVisitor<Object, Void>
     /**
      * Utility class to compare loading on one side of a branch to loading of one side of another branch
      */
-    private static class BranchAndSide implements Comparable<BranchAndSide> {
+    private static final class BranchAndSide implements Comparable<BranchAndSide> {
+
         private final TwoTerminalsConnectable branch;
         private final TwoTerminalsConnectable.Side side;
 
@@ -172,11 +173,11 @@ public class ExpressionEvaluator extends AbstractExpressionVisitor<Object, Void>
             this.side = Objects.requireNonNull(side);
         }
 
-        public TwoTerminalsConnectable getBranch() {
+        private TwoTerminalsConnectable getBranch() {
             return branch;
         }
 
-        public TwoTerminalsConnectable.Side getSide() {
+        private TwoTerminalsConnectable.Side getSide() {
             return side;
         }
 
@@ -209,8 +210,8 @@ public class ExpressionEvaluator extends AbstractExpressionVisitor<Object, Void>
                 c = 1;
             } else { // overload1 != null && overload2 != null
                 // first compare acceptable duration
-                c = - Integer.compare(overload1.getTemporaryLimit().getAcceptableDuration(),
-                                      overload2.getTemporaryLimit().getAcceptableDuration());
+                c = -Integer.compare(overload1.getTemporaryLimit().getAcceptableDuration(),
+                                     overload2.getTemporaryLimit().getAcceptableDuration());
                 if (c == 0) {
                     // and then overload based on temporary limit
                     c = compare(i1 / overload1.getTemporaryLimit().getValue(),

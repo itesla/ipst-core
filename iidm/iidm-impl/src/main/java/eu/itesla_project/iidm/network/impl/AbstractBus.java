@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-abstract class AbstractBus extends IdentifiableImpl<Bus> {
+abstract class AbstractBus extends AbstractIdentifiable<Bus> {
 
     protected VoltageLevelExt voltageLevel;
 
@@ -58,7 +58,7 @@ abstract class AbstractBus extends IdentifiableImpl<Bus> {
         }
         float p = 0;
         for (TerminalExt terminal : getConnectedTerminals()) {
-            ConnectableImpl connectable = terminal.getConnectable();
+            AbstractConnectable connectable = terminal.getConnectable();
             switch (connectable.getType()) {
                 case BUSBAR_SECTION:
                 case SHUNT_COMPENSATOR:
@@ -89,7 +89,7 @@ abstract class AbstractBus extends IdentifiableImpl<Bus> {
         }
         float q = 0;
         for (TerminalExt terminal : getConnectedTerminals()) {
-            ConnectableImpl connectable = terminal.getConnectable();
+            AbstractConnectable connectable = terminal.getConnectable();
             switch (connectable.getType()) {
                 case BUSBAR_SECTION:
                 case LINE:
@@ -228,19 +228,16 @@ abstract class AbstractBus extends IdentifiableImpl<Bus> {
             throw new NullPointerException("visitor is null");
         }
         for (T terminal : terminals) {
-            ConnectableImpl connectable = ((TerminalExt) terminal).getConnectable();
+            AbstractConnectable connectable = ((TerminalExt) terminal).getConnectable();
             switch (connectable.getType()) {
                 case BUSBAR_SECTION:
                     visitor.visitBusbarSection((BusbarSectionImpl) connectable);
                     break;
 
                 case LINE:
-                    {
-                        LineImpl line = (LineImpl) connectable;
-                        visitor.visitLine(line, line.getTerminal1() == terminal
-                                ? TwoTerminalsConnectable.Side.ONE
-                                : TwoTerminalsConnectable.Side.TWO);
-                    }
+                    LineImpl line = (LineImpl) connectable;
+                    visitor.visitLine(line, line.getTerminal1() == terminal ? TwoTerminalsConnectable.Side.ONE
+                                                                            : TwoTerminalsConnectable.Side.TWO);
                     break;
 
                 case GENERATOR:
@@ -251,30 +248,28 @@ abstract class AbstractBus extends IdentifiableImpl<Bus> {
                     visitor.visitShuntCompensator((ShuntCompensatorImpl) connectable);
                     break;
 
-                case TWO_WINDINGS_TRANSFORMER:
-                    {
-                        TwoWindingsTransformer transformer = (TwoWindingsTransformer) connectable;
-                        visitor.visitTwoWindingsTransformer(transformer,
-                                transformer.getTerminal1() == terminal
-                                ? TwoTerminalsConnectable.Side.ONE
-                                : TwoTerminalsConnectable.Side.TWO);
-                    }
+                case TWO_WINDINGS_TRANSFORMER: {
+                    TwoWindingsTransformer transformer = (TwoWindingsTransformer) connectable;
+                    visitor.visitTwoWindingsTransformer(transformer,
+                            transformer.getTerminal1() == terminal
+                            ? TwoTerminalsConnectable.Side.ONE
+                            : TwoTerminalsConnectable.Side.TWO);
                     break;
+                }
 
-                case THREE_WINDINGS_TRANSFORMER:
-                    {
-                        ThreeWindingsTransformer transformer = (ThreeWindingsTransformer) connectable;
-                        ThreeWindingsTransformer.Side side;
-                        if (transformer.getLeg1().getTerminal() == terminal) {
-                            side = ThreeWindingsTransformer.Side.ONE;
-                        } else if (transformer.getLeg2().getTerminal() == terminal) {
-                            side = ThreeWindingsTransformer.Side.TWO;
-                        } else {
-                            side = ThreeWindingsTransformer.Side.THREE;
-                        }
-                        visitor.visitThreeWindingsTransformer(transformer, side);
+                case THREE_WINDINGS_TRANSFORMER: {
+                    ThreeWindingsTransformer transformer = (ThreeWindingsTransformer) connectable;
+                    ThreeWindingsTransformer.Side side;
+                    if (transformer.getLeg1().getTerminal() == terminal) {
+                        side = ThreeWindingsTransformer.Side.ONE;
+                    } else if (transformer.getLeg2().getTerminal() == terminal) {
+                        side = ThreeWindingsTransformer.Side.TWO;
+                    } else {
+                        side = ThreeWindingsTransformer.Side.THREE;
                     }
+                    visitor.visitThreeWindingsTransformer(transformer, side);
                     break;
+                }
 
                 case LOAD:
                     visitor.visitLoad((LoadImpl) connectable);

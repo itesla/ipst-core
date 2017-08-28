@@ -7,7 +7,7 @@
 package eu.itesla_project.afs.mapdb.storage;
 
 import eu.itesla_project.afs.storage.NodeId;
-import eu.itesla_project.commons.datasource.AbstractDataSourceObserver;
+import eu.itesla_project.commons.datasource.DefaultDataSourceObserver;
 import eu.itesla_project.commons.datasource.DataSource;
 import eu.itesla_project.commons.datasource.ObservableOutputStream;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class MapDbDataSource implements DataSource {
 
-    public static class Key implements Serializable {
+    static class Key implements Serializable {
 
         private static final long serialVersionUID = -667026329394633704L;
 
@@ -32,7 +32,7 @@ public class MapDbDataSource implements DataSource {
 
         private final String ext;
 
-        private Key(NodeId nodeId, String attributeName, String suffix, String ext) {
+        Key(NodeId nodeId, String attributeName, String suffix, String ext) {
             this.nodeId = Objects.requireNonNull(nodeId);
             this.attributeName = Objects.requireNonNull(attributeName);
             this.suffix = suffix;
@@ -86,7 +86,7 @@ public class MapDbDataSource implements DataSource {
                 os.write(ba, 0, ba.length);
             }
         }
-        return new ObservableOutputStream(os, key.toString(), new AbstractDataSourceObserver() {
+        return new ObservableOutputStream(os, key.toString(), new DefaultDataSourceObserver() {
             @Override
             public void closed(String streamName) {
                 data.put(key, os.toByteArray());
@@ -104,7 +104,7 @@ public class MapDbDataSource implements DataSource {
                 os.write(ba, 0, ba.length);
             }
         }
-        return new ObservableOutputStream(os, fileName, new AbstractDataSourceObserver() {
+        return new ObservableOutputStream(os, fileName, new DefaultDataSourceObserver() {
             @Override
             public void closed(String streamName) {
                 data2.put(fileName, os.toByteArray());

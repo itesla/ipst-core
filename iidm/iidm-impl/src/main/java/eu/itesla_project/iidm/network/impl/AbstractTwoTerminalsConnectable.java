@@ -15,7 +15,7 @@ import java.util.Objects;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-abstract class AbstractTwoTerminalsConnectable<I extends Connectable<I>> extends ConnectableImpl<I> implements CurrentLimitsOwner<Side> {
+abstract class AbstractTwoTerminalsConnectable<I extends Connectable<I>> extends AbstractConnectable<I> implements CurrentLimitsOwner<Side> {
 
     private CurrentLimits limits1;
 
@@ -139,7 +139,7 @@ abstract class AbstractTwoTerminalsConnectable<I extends Connectable<I>> extends
 
     private static boolean checkPermanentLimit(Terminal terminal, CurrentLimits limits, float limitReduction) {
         float i = terminal.getI();
-        if (limits != null && !Float.isNaN(limits.getPermanentLimit()) && !Float.isNaN(i) ) {
+        if (limits != null && !Float.isNaN(limits.getPermanentLimit()) && !Float.isNaN(i)) {
             if (i > limits.getPermanentLimit() * limitReduction) {
                 return true;
             }
@@ -147,7 +147,7 @@ abstract class AbstractTwoTerminalsConnectable<I extends Connectable<I>> extends
         return false;
     }
 
-    static class OverloadImpl implements TwoTerminalsConnectable.Overload {
+    static final class OverloadImpl implements TwoTerminalsConnectable.Overload {
 
         private final CurrentLimits.TemporaryLimit temporaryLimit;
 

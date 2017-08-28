@@ -16,6 +16,7 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,16 +24,16 @@ import java.util.stream.Collectors;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Security {
+public final class Security {
     
     private final static String PERMANENT_LIMIT_NAME = "Permanent limit";
-
-    public Security() {
-    }
 
     public enum CurrentLimitType {
         PATL,
         TATL
+    }
+
+    private Security() {
     }
 
     private static Country getCountry(TwoTerminalsConnectable branch, Terminal terminal) {
@@ -239,11 +240,11 @@ public class Security {
                                     .writeCell(Float.toString(violation.getLimit()) + (violation.getLimitReduction() != 1f ? " * " + violation.getLimitReduction() : ""))
                                     .writeCell(Math.round(Math.abs(violation.getValue()) / violation.getLimit() * 100f));
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            throw new UncheckedIOException(e);
                         }
                     });
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -368,16 +369,16 @@ public class Security {
                                                             .writeCell(Float.toString(violation.getLimit()) + (violation.getLimitReduction() != 1f ? " * " + violation.getLimitReduction() : ""))
                                                             .writeCell(Math.round(Math.abs(violation.getValue()) / violation.getLimit() * 100f));
                                                 } catch (IOException e) {
-                                                    throw new RuntimeException(e);
+                                                    throw new UncheckedIOException(e);
                                                 }
                                             });
                                 }
                             } catch (IOException e) {
-                                throw new RuntimeException(e);
+                                throw new UncheckedIOException(e);
                             }
                         });
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
         }
     }

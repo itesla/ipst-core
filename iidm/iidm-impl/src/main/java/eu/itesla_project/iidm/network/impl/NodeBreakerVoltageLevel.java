@@ -14,6 +14,7 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import eu.itesla_project.commons.ITeslaException;
+import eu.itesla_project.commons.util.Colors;
 import eu.itesla_project.math.graph.TraverseResult;
 import eu.itesla_project.math.graph.Traverser;
 import eu.itesla_project.math.graph.UndirectedGraph;
@@ -75,7 +76,7 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
 
     private final StateArray<StateImpl> states;
 
-    private class SwitchAdderImpl extends IdentifiableAdderImpl<SwitchAdderImpl> implements NodeBreakerView.SwitchAdder {
+    private final class SwitchAdderImpl extends AbstractIdentifiableAdder<SwitchAdderImpl> implements NodeBreakerView.SwitchAdder {
 
         private Integer node1;
 
@@ -163,24 +164,25 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
             if (kind == null) {
                 throw new ValidationException(this, "kind is not set");
             }
-            SwitchImpl _switch = new SwitchImpl(NodeBreakerVoltageLevel.this, id, getName(), kind, open, retained, fictitious);
-            getNetwork().getObjectStore().checkAndAdd(_switch);
-            int e = graph.addEdge(node1, node2, _switch);
+            SwitchImpl aSwitch = new SwitchImpl(NodeBreakerVoltageLevel.this, id, getName(), kind, open, retained, fictitious);
+            getNetwork().getObjectStore().checkAndAdd(aSwitch);
+            int e = graph.addEdge(node1, node2, aSwitch);
             switches.put(id, e);
             invalidateCache();
-            getNetwork().getListeners().notifyCreation(_switch);
-            return _switch;
+            getNetwork().getListeners().notifyCreation(aSwitch);
+            return aSwitch;
         }
 
     }
 
-    private class InternalConnectionAdderImpl extends IdentifiableAdderImpl<InternalConnectionAdderImpl> implements NodeBreakerView.InternalConnectionAdder {
+    private final class InternalConnectionAdderImpl extends AbstractIdentifiableAdder<InternalConnectionAdderImpl> implements NodeBreakerView.InternalConnectionAdder {
 
         private Integer node1;
 
         private Integer node2;
 
-        private InternalConnectionAdderImpl() {}
+        private InternalConnectionAdderImpl() {
+        }
 
         @Override
         protected NetworkImpl getNetwork() {
@@ -223,7 +225,7 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
     /**
      * Cached data for buses
      */
-    private static class BusCache {
+    private static final class BusCache {
 
         private final CalculatedBus[] node2bus;
 
@@ -269,8 +271,8 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
                 graph.traverse(n, new Traverser<SwitchImpl>() {
                     @Override
                     public TraverseResult traverse(int n1, int e, int n2) {
-                        SwitchImpl _switch = graph.getEdgeObject(e);
-                        if (_switch != null && terminate.apply(_switch)) {
+                        SwitchImpl aSwitch = graph.getEdgeObject(e);
+                        if (aSwitch != null && terminate.apply(aSwitch)) {
                             return TraverseResult.TERMINATE;
                         } else {
                             nodes.add(n2);
@@ -389,8 +391,8 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
 
         Bus getBus1(String switchId, boolean throwException) {
             int edge = getEdge(switchId, throwException);
-            SwitchImpl _switch = graph.getEdgeObject(edge);
-            if (!_switch.isRetained()) {
+            SwitchImpl aSwitch = graph.getEdgeObject(edge);
+            if (!aSwitch.isRetained()) {
                 if (throwException) {
                     throw new ITeslaException("Switch " + switchId + " not found");
                 }
@@ -402,8 +404,8 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
 
         Bus getBus2(String switchId, boolean throwException) {
             int edge = getEdge(switchId, throwException);
-            SwitchImpl _switch = graph.getEdgeObject(edge);
-            if (!_switch.isRetained()) {
+            SwitchImpl aSwitch = graph.getEdgeObject(edge);
+            if (!aSwitch.isRetained()) {
                 if (throwException) {
                     throw new ITeslaException("Switch " + switchId + " not found");
                 }
@@ -414,7 +416,7 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
         }
 
         Iterable<SwitchImpl> getSwitches() {
-            return Iterables.filter(graph.getEdgesObject(), sw -> (sw != null && sw.isRetained()));
+            return Iterables.filter(graph.getEdgesObject(), sw -> sw != null && sw.isRetained());
         }
 
         Stream<Switch> getSwitchStream() {
@@ -424,9 +426,9 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
         SwitchImpl getSwitch(String switchId, boolean throwException) {
             Integer edge = getEdge(switchId, false);
             if (edge != null) {
-                SwitchImpl _switch = graph.getEdgeObject(edge);
-                if (_switch.isRetained()) {
-                    return _switch;
+                SwitchImpl aSwitch = graph.getEdgeObject(edge);
+                if (aSwitch.isRetained()) {
+                    return aSwitch;
                 }
             }
             if (throwException) {
@@ -452,7 +454,7 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
                 int node = nodes.get(i);
                 TerminalExt terminal = graph.getVertexObject(node);
                 if (terminal != null) {
-                    ConnectableImpl connectable = terminal.getConnectable();
+                    AbstractConnectable connectable = terminal.getConnectable();
                     switch (connectable.getType()) {
                         case LINE:
                         case TWO_WINDINGS_TRANSFORMER:
@@ -834,7 +836,7 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
 
         int node = ((NodeTerminal) terminal).getNode();
 
-        assert node >=0 && node < graph.getVertexCount();
+        assert node >= 0 && node < graph.getVertexCount();
         assert graph.getVertexObject(node) == terminal;
 
         // remove adjacents edges
@@ -848,8 +850,8 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
         });
         for (int i = 0; i < edgesToRemove.size(); i++) {
             int e = edgesToRemove.getQuick(i);
-            SwitchImpl _switch = graph.getEdgeObject(e);
-            switches.remove(_switch.getId());
+            SwitchImpl aSwitch = graph.getEdgeObject(e);
+            switches.remove(aSwitch.getId());
             graph.removeEdge(e);
         }
         graph.setVertexObject(node, null);
@@ -929,7 +931,7 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
     boolean isConnected(TerminalExt terminal) {
         assert terminal instanceof NodeTerminal;
 
-        return (terminal.getBusView().getBus() != null);
+        return terminal.getBusView().getBus() != null;
     }
 
     void traverse(NodeTerminal terminal, VoltageLevel.TopologyTraverser traverser) {
@@ -1017,66 +1019,6 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
         }
     }
 
-    private static final double GOLDEN_RATIO_CONJUGATE = 0.618033988749895;
-
-    private static String[] generateColorScale(int n) {
-        String[] colors = new String[n];
-        Random random = new Random();
-        for (int i = 0; i < n; i++) {
-            double h = random.nextDouble();
-            h += GOLDEN_RATIO_CONJUGATE;
-            h %= 1;
-            long[] rgb = hsvToRgb(h, 0.5, 0.95);
-            String hex = String.format("#%02x%02x%02x", rgb[0], rgb[1], rgb[2]).toUpperCase();
-            colors[i] = hex;
-        }
-        return colors;
-    }
-
-    private static long[] hsvToRgb(double h, double s, double v) {
-        int h_i = (int) Math.floor(h * 6);
-        double f = h * 6 - h_i;
-        double p = v * (1 - s);
-        double q = v * (1 - f * s);
-        double t = v * (1 - (1 - f) * s);
-        double r, g, b;
-        switch (h_i) {
-            case 0:
-                r = v;
-                g = t;
-                b = p;
-                break;
-            case 1:
-                r = q;
-                g = v;
-                b = p;
-                break;
-            case 2:
-                r = p;
-                g = v;
-                b = t;
-                break;
-            case 3:
-                r = p;
-                g = q;
-                b = v;
-                break;
-            case 4:
-                r = t;
-                g = p;
-                b = v;
-                break;
-            case 5:
-                r = v;
-                g = p;
-                b = q;
-                break;
-            default:
-                throw new AssertionError();
-        }
-        return new long[] { Math.round(r * 256), Math.round(g * 256), Math.round(b * 256) };
-    }
-
     public void exportTopology(OutputStream os) throws IOException {
         Graph g = new Graph().id("\"" + NodeBreakerVoltageLevel.this.id + "\"");
         Map<Integer, Node> intToNode = new HashMap<>();
@@ -1090,14 +1032,14 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
             } else {
                 TerminalExt terminal = graph.getVertexObject(n);
                 if (terminal != null) {
-                    ConnectableImpl connectable = terminal.getConnectable();
+                    AbstractConnectable connectable = terminal.getConnectable();
                     String label = n + "\\n" + connectable.getType().toString() + "\\n" + connectable.getId();
                     node.attr("label", label);
                     g.node(node);
                 }
             }
         }
-        String[] colors = generateColorScale(busToNodes.asMap().keySet().size());
+        String[] colors = Colors.generateColorScale(busToNodes.asMap().keySet().size());
         int i = 0;
         for (String key : busToNodes.asMap().keySet()) {
             Graph newBus = new Graph().id("\"" + key + "\"");
@@ -1106,7 +1048,7 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
                 Node node = intToNode.get(nodeInt);
                 TerminalExt terminal = graph.getVertexObject(nodeInt);
                 if (terminal != null) {
-                    ConnectableImpl connectable = terminal.getConnectable();
+                    AbstractConnectable connectable = terminal.getConnectable();
                     String label = nodeInt + "\\n" + connectable.getType().toString() + "\\n" + connectable.getId();
                     node.attr("label", label);
                 }
@@ -1121,7 +1063,7 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
 //        for (int n = 0; n < graph.getVertexCount(); n++) {
 //            TerminalExt terminal = graph.getVertexObject(n);
 //            if (terminal != null) {
-//                ConnectableImpl connectable = terminal.getConnectable();
+//                AbstractConnectable connectable = terminal.getConnectable();
 //                String label = n + "\\n" + connectable.getType().toString() + "\\n" + connectable.getId();
 //                writer.append("  ").append(Integer.toString(n))
 //                        .append(" [label=\"").append(label).append("\"]\n");
@@ -1131,12 +1073,12 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
         for (int e = 0; e < graph.getEdgeCount(); e++) {
             Edge edge = new Edge(intToNode.get(graph.getEdgeVertex1(e)), intToNode.get(graph.getEdgeVertex2(e))).id(Integer.toString(e));
 
-            SwitchImpl _switch = graph.getEdgeObject(e);
-            if (_switch != null) {
+            SwitchImpl aSwitch = graph.getEdgeObject(e);
+            if (aSwitch != null) {
                 if (drawSwitchId) {
-                    edge.attr("label", _switch.getKind().toString() + "\n" + _switch.getId()).attr("fontsize", "10");
+                    edge.attr("label", aSwitch.getKind().toString() + "\n" + aSwitch.getId()).attr("fontsize", "10");
                 }
-                edge.attr("style", _switch.isOpen() ? "dotted" : "solid");
+                edge.attr("style", aSwitch.isOpen() ? "dotted" : "solid");
             }
             g.edge(edge);
         }
@@ -1144,14 +1086,14 @@ class NodeBreakerVoltageLevel extends AbstractVoltageLevel {
 //        for (int e = 0; e < graph.getEdgeCount(); e++) {
 //            writer.append("  ").append(Integer.toString(graph.getEdgeVertex1(e)))
 //                    .append(" -- ").append(Integer.toString(graph.getEdgeVertex2(e)));
-//            SwitchImpl _switch = graph.getEdgeObject(e);
-//            if (_switch != null) {
+//            SwitchImpl aSwitch = graph.getEdgeObject(e);
+//            if (aSwitch != null) {
 //                writer.append(" [");
 //                if (drawSwitchId) {
-//                    writer.append("label=\"").append(_switch.getId())
+//                    writer.append("label=\"").append(aSwitch.getId())
 //                            .append("\", fontsize=10");
 //                }
-//                writer.append("style=\"").append(_switch.isOpen() ? "dotted" : "solid").append("\"");
+//                writer.append("style=\"").append(aSwitch.isOpen() ? "dotted" : "solid").append("\"");
 //            }
 //            writer.append("]\n");
 //        }

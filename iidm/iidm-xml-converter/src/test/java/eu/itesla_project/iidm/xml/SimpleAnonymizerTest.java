@@ -6,7 +6,7 @@
  */
 package eu.itesla_project.iidm.xml;
 
-import eu.itesla_project.commons.ConverterBaseTest;
+import eu.itesla_project.commons.AbstractConverterTest;
 import eu.itesla_project.commons.config.InMemoryPlatformConfig;
 import eu.itesla_project.commons.config.PlatformConfig;
 import eu.itesla_project.commons.datasource.MemDataSource;
@@ -21,7 +21,7 @@ import java.util.Properties;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAnonymizerTest extends ConverterBaseTest {
+public class SimpleAnonymizerTest extends AbstractConverterTest {
 
     private void anonymisationTest(Network network, String xiidmRef, String anonymizedXiidmRef, String anonymizedCsvRef) throws IOException {
         // export with anonymisation on
@@ -41,7 +41,7 @@ public class SimpleAnonymizerTest extends ConverterBaseTest {
         PlatformConfig platformConfig = new InMemoryPlatformConfig(fileSystem);
 
         // re-import the IIDM XML using the CSV mapping file
-        Network network2 = new XMLImporter(platformConfig).import_(dataSource, null);
+        Network network2 = new XMLImporter(platformConfig).importData(dataSource, null);
         MemDataSource dataSource2 = new MemDataSource();
         new XMLExporter().export(network2, null, dataSource2);
 

@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class FileUtil {
+public final class FileUtil {
 
     private FileUtil() {
     }
@@ -42,7 +42,7 @@ public class FileUtil {
     public static Path createDirectory(Path directory) {
         Objects.requireNonNull(directory);
         try {
-            if (! (Files.isDirectory(directory))) {
+            if (!Files.isDirectory(directory)) {
                 Files.createDirectories(directory);
             }
         } catch (IOException e) {

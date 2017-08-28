@@ -18,7 +18,7 @@ import eu.itesla_project.commons.io.table.TableFormatterFactory;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.it>
  */
-public class ValidationFormatterCsvMultilineWriter extends ValidationFormatterWriter {
+public class ValidationFormatterCsvMultilineWriter extends AbstractValidationFormatterWriter {
 
     private final boolean verbose;
 
@@ -40,26 +40,26 @@ public class ValidationFormatterCsvMultilineWriter extends ValidationFormatterWr
 
     protected Column[] getColumns() {
         return new Column[] {
-                new Column("id"),
-                new Column("characteristic"),
-                new Column("value")
-            };
+            new Column("id"),
+            new Column("characteristic"),
+            new Column("value")
+        };
     }
 
     @Override
-    public void write(String branchId, double p1, double p1_calc, double q1, double q1_calc, double p2, double p2_calc, double q2, double q2_calc, 
-                      double r, double x, double g1, double g2, double b1, double b2, double rho1, double rho2, double alpha1, double alpha2, 
+    public void write(String branchId, double p1, double p1Calc, double q1, double q1Calc, double p2, double p2Calc, double q2, double q2Calc,
+                      double r, double x, double g1, double g2, double b1, double b2, double rho1, double rho2, double alpha1, double alpha2,
                       double u1, double u2, double theta1, double theta2, double z, double y, double ksi) throws IOException {
         Objects.requireNonNull(branchId);
         formatter.writeCell(branchId).writeCell("network_p1").writeCell(p1)
-                 .writeCell(branchId).writeCell("expected_p1").writeCell(p1_calc)
+                 .writeCell(branchId).writeCell("expected_p1").writeCell(p1Calc)
                  .writeCell(branchId).writeCell("network_q1").writeCell(q1)
-                 .writeCell(branchId).writeCell("expected_q1").writeCell(q1_calc)
+                 .writeCell(branchId).writeCell("expected_q1").writeCell(q1Calc)
                  .writeCell(branchId).writeCell("network_p2").writeCell(p2)
-                 .writeCell(branchId).writeCell("expected_p2").writeCell(p2_calc)
+                 .writeCell(branchId).writeCell("expected_p2").writeCell(p2Calc)
                  .writeCell(branchId).writeCell("network_q2").writeCell(q2)
-                 .writeCell(branchId).writeCell("expected_q2").writeCell(q2_calc);
-        if ( verbose ) {
+                 .writeCell(branchId).writeCell("expected_q2").writeCell(q2Calc);
+        if (verbose) {
             formatter.writeCell(branchId).writeCell("r").writeCell(r)
                      .writeCell(branchId).writeCell("x").writeCell(x)
                      .writeCell(branchId).writeCell("g1").writeCell(g1)
@@ -90,7 +90,7 @@ public class ValidationFormatterCsvMultilineWriter extends ValidationFormatterWr
                  .writeCell(generatorId).writeCell("targetP").writeCell(targetP)
                  .writeCell(generatorId).writeCell("targetQ").writeCell(targetQ)
                  .writeCell(generatorId).writeCell("targetV").writeCell(targetV);
-        if ( verbose ) {
+        if (verbose) {
             formatter.writeCell(generatorId).writeCell("connected").writeCell(connected)
                      .writeCell(generatorId).writeCell("voltageRegulatorOn").writeCell(voltageRegulatorOn)
                      .writeCell(generatorId).writeCell("minQ").writeCell(minQ)

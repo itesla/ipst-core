@@ -45,7 +45,7 @@ public class SecurityAnalysisResultBuilderTest {
     }
 
     private void testSARBuilder(final boolean convergent) {
-        SecurityAnalysisResultBuilder builder = new SecurityAnalysisResultBuilder() {
+        AbstractSecurityAnalysisResultBuilder builder = new AbstractSecurityAnalysisResultBuilder() {
             @Override
             public void onFinalStateResult(SecurityAnalysisResult result) {
 

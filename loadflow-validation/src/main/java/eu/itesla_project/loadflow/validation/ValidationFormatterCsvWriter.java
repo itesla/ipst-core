@@ -18,7 +18,7 @@ import eu.itesla_project.commons.io.table.TableFormatterFactory;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.it>
  */
-public class ValidationFormatterCsvWriter extends ValidationFormatterWriter {
+public class ValidationFormatterCsvWriter extends AbstractValidationFormatterWriter {
 
     private final boolean verbose;
     private final ValidationType validationType;
@@ -41,38 +41,38 @@ public class ValidationFormatterCsvWriter extends ValidationFormatterWriter {
 
     protected Column[] getColumns() {
         switch (validationType) {
-        case FLOWS:
-            if ( verbose ) {
+            case FLOWS:
+                if (verbose) {
+                    return new Column[] {
+                        new Column("id"),
+                        new Column("network_p1"),
+                        new Column("expected_p1"),
+                        new Column("network_q1"),
+                        new Column("expected_q1"),
+                        new Column("network_p2"),
+                        new Column("expected_p2"),
+                        new Column("network_q2"),
+                        new Column("expected_q2"),
+                        new Column("r"),
+                        new Column("x"),
+                        new Column("g1"),
+                        new Column("g2"),
+                        new Column("b1"),
+                        new Column("b2"),
+                        new Column("rho1"),
+                        new Column("rho2"),
+                        new Column("alpha1"),
+                        new Column("alpha2"),
+                        new Column("u1"),
+                        new Column("u2"),
+                        new Column("theta1"),
+                        new Column("theta2"),
+                        new Column("z"),
+                        new Column("y"),
+                        new Column("ksi")
+                    };
+                }
                 return new Column[] {
-                    new Column("id"),
-                    new Column("network_p1"),
-                    new Column("expected_p1"),
-                    new Column("network_q1"),
-                    new Column("expected_q1"),
-                    new Column("network_p2"),
-                    new Column("expected_p2"),
-                    new Column("network_q2"),
-                    new Column("expected_q2"),
-                    new Column("r"),
-                    new Column("x"),
-                    new Column("g1"),
-                    new Column("g2"),
-                    new Column("b1"),
-                    new Column("b2"),
-                    new Column("rho1"),
-                    new Column("rho2"),
-                    new Column("alpha1"),
-                    new Column("alpha2"),
-                    new Column("u1"),
-                    new Column("u2"),
-                    new Column("theta1"),
-                    new Column("theta2"),
-                    new Column("z"),
-                    new Column("y"),
-                    new Column("ksi")
-                };
-            }
-            return new Column[] {
                     new Column("id"),
                     new Column("network_p1"),
                     new Column("expected_p1"),
@@ -83,9 +83,9 @@ public class ValidationFormatterCsvWriter extends ValidationFormatterWriter {
                     new Column("network_q2"),
                     new Column("expected_q2")
                 };
-        case GENERATORS:
-            if ( verbose ) {
-                return new Column[] {
+            case GENERATORS:
+                if (verbose) {
+                    return new Column[] {
                         new Column("id"),
                         new Column("p"),
                         new Column("q"),
@@ -97,9 +97,9 @@ public class ValidationFormatterCsvWriter extends ValidationFormatterWriter {
                         new Column("voltageRegulatorOn"),
                         new Column("minQ"),
                         new Column("maxQ")
-                };
-            }
-            return new Column[] {
+                    };
+                }
+                return new Column[] {
                     new Column("id"),
                     new Column("p"),
                     new Column("q"),
@@ -107,27 +107,27 @@ public class ValidationFormatterCsvWriter extends ValidationFormatterWriter {
                     new Column("targetP"),
                     new Column("targetQ"),
                     new Column("targetV")
-            };
-        default:
-            throw new InternalError();
+                };
+            default:
+                throw new InternalError();
         }
     }
 
     @Override
-    public void write(String branchId, double p1, double p1_calc, double q1, double q1_calc, double p2, double p2_calc, double q2, double q2_calc, 
-                      double r, double x, double g1, double g2, double b1, double b2, double rho1, double rho2, double alpha1, double alpha2, 
+    public void write(String branchId, double p1, double p1Calc, double q1, double q1Calc, double p2, double p2Calc, double q2, double q2Calc,
+                      double r, double x, double g1, double g2, double b1, double b2, double rho1, double rho2, double alpha1, double alpha2,
                       double u1, double u2, double theta1, double theta2, double z, double y, double ksi) throws IOException {
         Objects.requireNonNull(branchId);
         formatter.writeCell(branchId)
                  .writeCell(p1)
-                 .writeCell(p1_calc)
+                 .writeCell(p1Calc)
                  .writeCell(q1)
-                 .writeCell(q1_calc)
+                 .writeCell(q1Calc)
                  .writeCell(p2)
-                 .writeCell(p2_calc)
+                 .writeCell(p2Calc)
                  .writeCell(q2)
-                 .writeCell(q2_calc);
-        if ( verbose ) {
+                 .writeCell(q2Calc);
+        if (verbose) {
             formatter.writeCell(r)
                      .writeCell(x)
                      .writeCell(g1)
@@ -159,7 +159,7 @@ public class ValidationFormatterCsvWriter extends ValidationFormatterWriter {
                  .writeCell(targetP)
                  .writeCell(targetQ)
                  .writeCell(targetV);
-        if ( verbose ) {
+        if (verbose) {
             formatter.writeCell(connected)
                      .writeCell(voltageRegulatorOn)
                      .writeCell(minQ)

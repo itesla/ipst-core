@@ -189,10 +189,10 @@ public class LoadFlowActionSimulator implements ActionSimulator {
                         LOGGER.debug("Evaluating {} to {}", ExpressionPrinter.toString(conditionExpr), Boolean.toString(ok));
 
                         variables = ExpressionVariableLister.list(conditionExpr).stream()
-                                .collect(Collectors.toMap(ExpressionPrinter::toString,
-                                                          n -> ExpressionEvaluator.evaluate(n, evalContext),
-                                                          (v1, v2) -> v1,
-                                                          TreeMap::new));
+                            .collect(Collectors.toMap(ExpressionPrinter::toString,
+                                n -> ExpressionEvaluator.evaluate(n, evalContext),
+                                (v1, v2) -> v1,
+                                TreeMap::new));
 
                         LOGGER.debug("Variables values: {}", variables);
 
@@ -204,10 +204,10 @@ public class LoadFlowActionSimulator implements ActionSimulator {
                         }
 
                         actions = ExpressionActionTakenLister.list(conditionExpr).stream()
-                                .collect(Collectors.toMap(s -> s,
-                                                          s -> context.getTimeLine().actionTaken(s),
-                                                          (s1, s2) -> s1,
-                                                          TreeMap::new));
+                            .collect(Collectors.toMap(s -> s,
+                                s -> context.getTimeLine().actionTaken(s),
+                                (s1, s2) -> s1,
+                                TreeMap::new));
                     }
 
                     if (observers != null) {
@@ -242,7 +242,7 @@ public class LoadFlowActionSimulator implements ActionSimulator {
                 }
 
                 if (actionsTaken.size() > 0) {
-                    context.setRound(context.getRound()+1);
+                    context.setRound(context.getRound() + 1);
                     return next(actionDb, context);
                 } else {
                     LOGGER.info("Still some violations and no rule match");

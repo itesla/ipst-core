@@ -15,6 +15,7 @@ import org.supercsv.prefs.CsvPreference;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +30,13 @@ public class StringAnonymizer {
 
     public static String getAlpha(int num) {
         StringBuilder result = new StringBuilder();
-        while (num > 0) {
-            num--;
-            int remainder = num % 26;
+        int n = num;
+        while (n > 0) {
+            n--;
+            int remainder = n % 26;
             char digit = (char) (remainder + 'A');
             result.insert(0, digit);
-            num = (num - remainder) / 26;
+            n = (n - remainder) / 26;
         }
         return result.toString();
     }
@@ -85,7 +87,7 @@ public class StringAnonymizer {
                 mapping.put(nextLine.get(0), nextLine.get(1));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -107,7 +109,7 @@ public class StringAnonymizer {
                 csvWriter.flush();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 }

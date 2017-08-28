@@ -14,7 +14,7 @@ import javax.xml.stream.XMLStreamWriter;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class XmlUtil {
+public final class XmlUtil {
 
     private XmlUtil() {
     }
@@ -34,7 +34,7 @@ public class XmlUtil {
             switch (event) {
                 case XMLStreamConstants.START_ELEMENT:
                     if (eventHandler != null) {
-                       eventHandler.onStartElement();
+                        eventHandler.onStartElement();
                     }
                     break;
 
