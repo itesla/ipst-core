@@ -56,19 +56,20 @@ public class DanglingLineTest {
         String id = "danglingId";
         String name = "danlingName";
         String ucteXnodeCode = "code";
-        DanglingLine danglingLine = voltageLevel.newDanglingLine()
-                                                    .setId(id)
-                                                    .setName(name)
-                                                    .setR(r)
-                                                    .setX(x)
-                                                    .setG(g)
-                                                    .setB(b)
-                                                    .setP0(p0)
-                                                    .setQ0(q0)
-                                                    .setUcteXnodeCode(ucteXnodeCode)
-                                                    .setBus("bus_vl")
-                                                    .setConnectableBus("bus_vl")
-                                                .add();
+        voltageLevel.newDanglingLine()
+                        .setId(id)
+                        .setName(name)
+                        .setR(r)
+                        .setX(x)
+                        .setG(g)
+                        .setB(b)
+                        .setP0(p0)
+                        .setQ0(q0)
+                        .setUcteXnodeCode(ucteXnodeCode)
+                        .setBus("bus_vl")
+                        .setConnectableBus("bus_vl")
+                    .add();
+        DanglingLine danglingLine = network.getDanglingLine(id);
         // adder
         assertEquals(r, danglingLine.getR(), 0.0f);
         assertEquals(x, danglingLine.getX(), 0.0f);
