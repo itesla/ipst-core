@@ -129,7 +129,7 @@ public class ReactiveCapabilityCurveTest {
     }
 
     @Test
-    public void invalidMinQBiggerThenMaxQ() {
+    public void invalidMinQGreaterThenMaxQ() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("maximum reactive power is expected to be greater than or equal to minimum reactive power");
         generator.newReactiveCapabilityCurve()
