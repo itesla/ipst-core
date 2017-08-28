@@ -85,7 +85,10 @@ public class VscTest {
 
     @Test
     public void testReactiveLimits() {
-        cs1.newMinMaxReactiveLimits().setMinQ(10.0f).setMaxQ(100.0f).add();
+        cs1.newMinMaxReactiveLimits()
+                .setMinQ(10.0f)
+                .setMaxQ(100.0f)
+            .add();
         assertEquals(100.0f, cs1.getReactiveLimits().getMaxQ(2.0f), 0.0f);
         try {
             cs1.getReactiveLimits(ReactiveCapabilityCurveImpl.class);

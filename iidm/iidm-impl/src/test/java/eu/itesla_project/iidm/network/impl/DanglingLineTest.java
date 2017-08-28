@@ -26,15 +26,23 @@ public class DanglingLineTest {
     @Before
     public void initNetwork() {
         network = NetworkFactory.create("test", "test");
-        Substation substation = network.newSubstation().setId("sub").setCountry(Country.FR).setTso("frtso").add();
+        Substation substation = network.newSubstation()
+                .setId("sub")
+                .setCountry(Country.FR)
+                .setTso("RTE")
+            .add();
         voltageLevel = substation.newVoltageLevel()
-                                    .setId("vl").setName("vl")
+                                    .setId("vl")
+                                    .setName("vl")
                                     .setNominalV(440.0f)
                                     .setHighVoltageLimit(400.0f)
                                     .setLowVoltageLimit(200.0f)
                                     .setTopologyKind(TopologyKind.BUS_BREAKER)
                                 .add();
-        voltageLevel.getBusBreakerView().newBus().setId("bus_vl").setName("bus_vl").add();
+        voltageLevel.getBusBreakerView().newBus()
+                                            .setId("bus_vl")
+                                            .setName("bus_vl")
+                                        .add();
     }
 
     @Test
@@ -92,7 +100,9 @@ public class DanglingLineTest {
         danglingLine.setQ0(q02);
         assertEquals(q02, danglingLine.getQ0(), 0.0f);
 
-        danglingLine.newCurrentLimits().setPermanentLimit(100.0f).add();
+        danglingLine.newCurrentLimits()
+                        .setPermanentLimit(100.0f)
+                    .add();
         assertEquals(100.0f, danglingLine.getCurrentLimits().getPermanentLimit(), 0.0f);
 
         Bus bus = voltageLevel.getBusBreakerView().getBus("bus_vl");

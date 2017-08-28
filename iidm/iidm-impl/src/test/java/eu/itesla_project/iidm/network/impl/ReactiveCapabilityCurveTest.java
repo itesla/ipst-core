@@ -34,9 +34,21 @@ public class ReactiveCapabilityCurveTest {
     @Test
     public void testAdder() {
         ReactiveCapabilityCurve reactiveCapabilityCurve = generator.newReactiveCapabilityCurve()
-                .beginPoint().setP(1.0f).setMaxQ(5.0f).setMinQ(1.0f).endPoint()
-                .beginPoint().setP(2.0f).setMaxQ(10.0f).setMinQ(2.0f).endPoint()
-                .beginPoint().setP(100.0f).setMaxQ(10.0f).setMinQ(2.0f).endPoint()
+                    .beginPoint()
+                        .setP(1.0f)
+                        .setMaxQ(5.0f)
+                        .setMinQ(1.0f)
+                    .endPoint()
+                    .beginPoint()
+                        .setP(2.0f)
+                        .setMaxQ(10.0f)
+                        .setMinQ(2.0f)
+                    .endPoint()
+                    .beginPoint()
+                        .setP(100.0f)
+                        .setMaxQ(10.0f)
+                        .setMinQ(2.0f)
+                    .endPoint()
                 .add();
         assertEquals(ReactiveLimitsKind.CURVE, reactiveCapabilityCurve.getKind());
         assertEquals(100.0f, reactiveCapabilityCurve.getMaxP(), 0.0f);
@@ -51,7 +63,11 @@ public class ReactiveCapabilityCurveTest {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("should have at least two points");
         generator.newReactiveCapabilityCurve()
-                    .beginPoint().setP(1.0f).setMaxQ(5.0f).setMinQ(1.0f).endPoint()
+                    .beginPoint()
+                        .setP(1.0f)
+                        .setMaxQ(5.0f)
+                        .setMinQ(1.0f)
+                    .endPoint()
                 .add();
     }
 
@@ -60,8 +76,16 @@ public class ReactiveCapabilityCurveTest {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("a point already exists for active power");
         generator.newReactiveCapabilityCurve()
-                    .beginPoint().setP(1.0f).setMaxQ(5.0f).setMinQ(1.0f).endPoint()
-                    .beginPoint().setP(1.0f).setMaxQ(5.0f).setMinQ(1.0f).endPoint()
+                    .beginPoint()
+                        .setP(1.0f)
+                        .setMaxQ(5.0f)
+                        .setMinQ(1.0f)
+                    .endPoint()
+                    .beginPoint()
+                        .setP(1.0f)
+                        .setMaxQ(5.0f)
+                        .setMinQ(1.0f)
+                    .endPoint()
                 .add();
     }
 
@@ -70,7 +94,11 @@ public class ReactiveCapabilityCurveTest {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("P is not set");
         generator.newReactiveCapabilityCurve()
-                    .beginPoint().setP(Float.NaN).setMaxQ(5.0f).setMinQ(1.0f).endPoint()
+                    .beginPoint()
+                        .setP(Float.NaN)
+                        .setMaxQ(5.0f)
+                        .setMinQ(1.0f)
+                    .endPoint()
                 .add();
     }
 
@@ -79,7 +107,11 @@ public class ReactiveCapabilityCurveTest {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("max Q is not set");
         generator.newReactiveCapabilityCurve()
-                    .beginPoint().setP(1.0f).setMaxQ(Float.NaN).setMinQ(1.0f).endPoint()
+                    .beginPoint()
+                        .setP(1.0f)
+                        .setMaxQ(Float.NaN)
+                        .setMinQ(1.0f)
+                    .endPoint()
                 .add();
     }
 
@@ -88,7 +120,11 @@ public class ReactiveCapabilityCurveTest {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("min Q is not set");
         generator.newReactiveCapabilityCurve()
-                    .beginPoint().setP(1.0f).setMaxQ(5.0f).setMinQ(Float.NaN).endPoint()
+                    .beginPoint()
+                        .setP(1.0f)
+                        .setMaxQ(5.0f)
+                        .setMinQ(Float.NaN)
+                    .endPoint()
                 .add();
     }
 

@@ -35,7 +35,8 @@ public class SubstationTest {
                                     .setName("sub_name")
                                     .setCountry(Country.AD)
                                     .setTso("TSO")
-                                    .setEnsureIdUnicity(false).setGeographicalTags("geoTag1", "geoTag2")
+                                    .setEnsureIdUnicity(false)
+                                    .setGeographicalTags("geoTag1", "geoTag2")
                                 .add();
         assertEquals("sub", substation.getId());
         assertEquals("sub_name", substation.getName());
@@ -54,7 +55,10 @@ public class SubstationTest {
     public void invalidCountry() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("country is invalid");
-        network.newSubstation().setId("no_country").setName("sub_name").add();
+        network.newSubstation()
+                .setId("no_country")
+                .setName("sub_name")
+            .add();
     }
 
     @Test
@@ -65,7 +69,8 @@ public class SubstationTest {
                                         .setName("sub_name")
                                         .setCountry(Country.AD)
                                         .setTso("TSO")
-                                        .setEnsureIdUnicity(false).setGeographicalTags("geoTag1", "geoTag2")
+                                        .setEnsureIdUnicity(false)
+                                        .setGeographicalTags("geoTag1", "geoTag2")
                                     .add();
         thrown.expect(ValidationException.class);
         thrown.expectMessage("geographical tag is null");
@@ -74,10 +79,18 @@ public class SubstationTest {
 
     @Test
     public void duplicateSubstation() {
-        network.newSubstation().setId("duplicate").setName("sub_name").setCountry(Country.AD).add();
+        network.newSubstation()
+                .setId("duplicate")
+                .setName("sub_name")
+                .setCountry(Country.AD)
+            .add();
         thrown.expect(ITeslaException.class);
         thrown.expectMessage("with the id 'duplicate'");
-        network.newSubstation().setId("duplicate").setName("sub_name").setCountry(Country.AD).add();
+        network.newSubstation()
+                .setId("duplicate")
+                .setName("sub_name")
+                .setCountry(Country.AD)
+            .add();
     }
 
 }

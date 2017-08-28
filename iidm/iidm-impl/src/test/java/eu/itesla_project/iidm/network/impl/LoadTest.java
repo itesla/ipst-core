@@ -49,22 +49,27 @@ public class LoadTest {
     public void invalidP0() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("p0 is invalid");
-        voltageLevel.newLoad().setId("invalid").setP0(Float.NaN).setQ0(1.0f).setNode(1).add();
+        createLoad("invalid", Float.NaN, 1.0f);
     }
 
     @Test
     public void invalidQ0() {
         thrown.expect(ValidationException.class);
         thrown.expectMessage("q0 is invalid");
-        voltageLevel.newLoad().setId("invalid").setP0(20.0f).setQ0(Float.NaN).setNode(1).add();
+        createLoad("invalid", 20.0f, Float.NaN);
     }
 
     @Test
     public void duplicateEquipment() {
-        voltageLevel.newLoad().setId("duplicate").setP0(2.0f).setQ0(1.0f).setNode(1).add();
+        voltageLevel.newLoad()
+                        .setId("duplicate")
+                        .setP0(2.0f)
+                        .setQ0(1.0f)
+                        .setNode(1)
+                    .add();
         thrown.expect(ITeslaException.class);
         thrown.expectMessage("with the id 'duplicate'");
-        voltageLevel.newLoad().setId("duplicate").setP0(2.0f).setQ0(1.0f).setNode(1).add();
+        createLoad("duplicate", 2.0f, 1.0f);
     }
 
     @Test
@@ -72,12 +77,18 @@ public class LoadTest {
         // "C" id of voltageLevel
         thrown.expect(ITeslaException.class);
         thrown.expectMessage("with the id 'C'");
-        voltageLevel.newLoad().setId("C").setP0(2.0f).setQ0(1.0f).setNode(1).setConnectableBus("a").add();
+        createLoad("C", 2.0f, 1.0f);
     }
 
     @Test
     public void testAdder() {
-        Load load = voltageLevel.newLoad().setId("testAdder").setP0(2.0f).setQ0(1.0f).setLoadType(LoadType.AUXILIARY).setNode(1).add();
+        Load load = voltageLevel.newLoad()
+                        .setId("testAdder")
+                        .setP0(2.0f)
+                        .setQ0(1.0f)
+                        .setLoadType(LoadType.AUXILIARY)
+                        .setNode(1)
+                    .add();
         assertEquals(2.0f, load.getP0(), 0.0f);
         assertEquals(1.0f, load.getQ0(), 0.0f);
         assertEquals("testAdder", load.getId());
@@ -86,13 +97,23 @@ public class LoadTest {
 
     @Test
     public void testRemove() {
-        Load load = voltageLevel.newLoad().setId("toRemove").setP0(2.0f).setQ0(1.0f).setLoadType(LoadType.AUXILIARY).setNode(1).add();
+        createLoad("toRemove", 2.0f, 1.0f);
+        Load load = network.getLoad("toRemove");
         int loadCounts = network.getLoadCount();
         assertNotNull(load);
         load.remove();
         assertNotNull(load);
         assertNull(network.getLoad("toRemove"));
         assertEquals(loadCounts - 1, network.getLoadCount());
+    }
+
+    private void createLoad(String id, float p0, float q0) {
+        voltageLevel.newLoad()
+                        .setId(id)
+                        .setP0(p0)
+                        .setQ0(q0)
+                        .setNode(1)
+                    .add();
     }
 
 }

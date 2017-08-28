@@ -122,15 +122,24 @@ public class TwoWindingsTransformerTest {
 
     @Test
     public void transformerNotInSameSubstation() {
-        Substation anotherSubstation = network.newSubstation().setId("subB").setName("n").setCountry(Country.AF).setTso("second").add();
-        VoltageLevel voltageLevelC = anotherSubstation.newVoltageLevel()
-                .setId("vl3").setName("vl3")
-                .setNominalV(200.0f)
-                .setHighVoltageLimit(400.0f)
-                .setLowVoltageLimit(200.0f)
-                .setTopologyKind(TopologyKind.BUS_BREAKER)
+        Substation anotherSubstation = network.newSubstation()
+                    .setId("subB")
+                    .setName("n")
+                    .setCountry(Country.FR)
+                    .setTso("RTE")
                 .add();
-        voltageLevelC.getBusBreakerView().newBus().setId("busC").setName("busC").add();
+        VoltageLevel voltageLevelC = anotherSubstation.newVoltageLevel()
+                    .setId("vl3")
+                    .setName("vl3")
+                    .setNominalV(200.0f)
+                    .setHighVoltageLimit(400.0f)
+                    .setLowVoltageLimit(200.0f)
+                    .setTopologyKind(TopologyKind.BUS_BREAKER)
+                .add();
+        voltageLevelC.getBusBreakerView().newBus()
+                    .setId("busC")
+                    .setName("busC")
+                .add();
         thrown.expect(ValidationException.class);
         thrown.expectMessage("the 2 windings of the transformer shall belong to the substation");
         substation.newTwoWindingsTransformer().setId("invalidTwt")

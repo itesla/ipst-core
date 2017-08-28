@@ -27,7 +27,11 @@ public class VoltageLevelTest {
     public void setUp() {
         network = NetworkFactory.create("test", "test");
         substation = network.newSubstation()
-                .setCountry(Country.AF).setTso("tso").setName("sub").setId("subId").add();
+                                .setCountry(Country.AF)
+                                .setTso("tso")
+                                .setName("sub")
+                                .setId("subId")
+                            .add();
     }
 
     @Test
