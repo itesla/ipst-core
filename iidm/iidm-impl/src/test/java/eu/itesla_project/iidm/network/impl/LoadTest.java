@@ -99,12 +99,12 @@ public class LoadTest {
     public void testRemove() {
         createLoad("toRemove", 2.0f, 1.0f);
         Load load = network.getLoad("toRemove");
-        int loadCounts = network.getLoadCount();
+        int loadCount = network.getLoadCount();
         assertNotNull(load);
         load.remove();
         assertNotNull(load);
         assertNull(network.getLoad("toRemove"));
-        assertEquals(loadCounts - 1, network.getLoadCount());
+        assertEquals(loadCount - 1, network.getLoadCount());
     }
 
     private void createLoad(String id, float p0, float q0) {
