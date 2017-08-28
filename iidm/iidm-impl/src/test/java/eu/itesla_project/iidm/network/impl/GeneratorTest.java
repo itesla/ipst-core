@@ -44,17 +44,17 @@ public class GeneratorTest {
         generator.setMaxP(maxP);
         assertEquals(maxP, generator.getMaxP(), 0.0f);
 
-        Float targetP = 11.0f;
-        Float targetQ = 21.0f;
-        Float targetV = 31.0f;
+        Float activePowerSetpoint = 11.0f;
+        Float reactivePowerSetpoint = 21.0f;
+        Float voltageSetpoint = 31.0f;
         Float ratedS = 41.0f;
-        generator.setTargetP(targetP);
-        generator.setTargetQ(targetQ);
-        generator.setTargetV(targetV);
+        generator.setTargetP(activePowerSetpoint);
+        generator.setTargetQ(reactivePowerSetpoint);
+        generator.setTargetV(voltageSetpoint);
         generator.setRatedS(ratedS);
-        assertEquals(targetP, generator.getTargetP(), 0.0f);
-        assertEquals(targetQ, generator.getTargetQ(), 0.0f);
-        assertEquals(targetV, generator.getTargetV(), 0.0f);
+        assertEquals(activePowerSetpoint, generator.getTargetP(), 0.0f);
+        assertEquals(reactivePowerSetpoint, generator.getTargetQ(), 0.0f);
+        assertEquals(voltageSetpoint, generator.getTargetV(), 0.0f);
         assertEquals(ratedS, generator.getRatedS(), 0.0f);
 
         generator.setVoltageRegulatorOn(false);
@@ -196,7 +196,7 @@ public class GeneratorTest {
     }
 
     private void createGenerator(String id, EnergySource source, float maxP, float minP, float ratedS,
-                                 float targetP, float targetQ, boolean regulatorOn, float targetV) {
+                                 float activePowerSetpoint, float reactivePowerSetpoint, boolean regulatorOn, float voltageSetpoint) {
         voltageLevel.newGenerator()
                         .setId(id)
                         .setVoltageRegulatorOn(regulatorOn)
@@ -204,10 +204,10 @@ public class GeneratorTest {
                         .setMaxP(maxP)
                         .setMinP(minP)
                         .setRatedS(ratedS)
-                        .setTargetP(targetP)
-                        .setTargetQ(targetQ)
+                        .setTargetP(activePowerSetpoint)
+                        .setTargetQ(reactivePowerSetpoint)
                         .setNode(1)
-                        .setTargetV(targetV)
+                        .setTargetV(voltageSetpoint)
                     .add();
     }
 }
