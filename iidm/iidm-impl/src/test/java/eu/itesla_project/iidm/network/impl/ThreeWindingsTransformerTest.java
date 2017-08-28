@@ -141,7 +141,7 @@ public class ThreeWindingsTransformerTest {
         transformer.remove();
         assertNull(network.getThreeWindingsTransformer("twt"));
         assertNotNull(transformer);
-        assertEquals(--count, network.getThreeWindingsTransformerCount());
+        assertEquals(count - 1, network.getThreeWindingsTransformerCount());
     }
 
     @Test

@@ -157,7 +157,7 @@ public class DanglingLineTest {
         int count = network.getDanglingLineCount();
         assertNotNull(danglingLine);
         danglingLine.remove();
-        assertEquals(--count, network.getDanglingLineCount());
+        assertEquals(count - 1, network.getDanglingLineCount());
         assertNull(network.getDanglingLine("toRemove"));
         assertNotNull(danglingLine);
     }

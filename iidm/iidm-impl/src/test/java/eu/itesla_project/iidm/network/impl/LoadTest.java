@@ -92,7 +92,7 @@ public class LoadTest {
         load.remove();
         assertNotNull(load);
         assertNull(network.getLoad("toRemove"));
-        assertEquals(--loadCounts, network.getLoadCount());
+        assertEquals(loadCounts - 1, network.getLoadCount());
     }
 
 }

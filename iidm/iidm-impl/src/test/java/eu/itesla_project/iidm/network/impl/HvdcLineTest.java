@@ -156,7 +156,7 @@ public class HvdcLineTest {
         line.remove();
         assertNotNull(line);
         assertNull(network.getHvdcLine("toRemove"));
-        assertEquals(--hvdcLineCount, network.getHvdcLineCount());
+        assertEquals(hvdcLineCount - 1, network.getHvdcLineCount());
     }
 
     private void createHvecLine(String id, String name, float r, HvdcLine.ConvertersMode mode, float v,

@@ -74,7 +74,7 @@ public class VscTest {
         cs1.remove();
         assertNull(network.getVscConverterStation("C1"));
         assertNotNull(cs1);
-        assertEquals(--count, network.getVscConverterStationCount());
+        assertEquals(count - 1, network.getVscConverterStationCount());
     }
 
     @Test

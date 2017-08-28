@@ -187,7 +187,7 @@ public class LineTest {
         line.remove();
         assertNotNull(line);
         assertNull(network.getLine("toRemove"));
-        assertEquals(--count, network.getLineCount());
+        assertEquals(count - 1, network.getLineCount());
     }
 
     @Test
@@ -393,7 +393,7 @@ public class LineTest {
         line.remove();
         assertNull(network.getLine("toRemove"));
         assertNotNull(line);
-        assertEquals(--count, network.getLineCount());
+        assertEquals(count - 1, network.getLineCount());
     }
 
     private void createLineBetweenVoltageAB(String id, String name, float r, float x,

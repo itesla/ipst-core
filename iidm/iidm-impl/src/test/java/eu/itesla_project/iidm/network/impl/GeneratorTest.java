@@ -191,7 +191,7 @@ public class GeneratorTest {
         assertNotNull(generator);
         generator.remove();
         assertNotNull(generator);
-        assertEquals(--count, network.getGeneratorCount());
+        assertEquals(count - 1, network.getGeneratorCount());
         assertNull(network.getGenerator("toRemove"));
     }
 

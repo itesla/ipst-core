@@ -84,7 +84,7 @@ public class ShuntCompensatorTest {
         shuntCompensator.remove();
         assertNull(network.getShunt("shunt"));
         assertNotNull(shuntCompensator);
-        assertEquals(--count, network.getShuntCount());
+        assertEquals(count - 1, network.getShuntCount());
     }
 
     @Test

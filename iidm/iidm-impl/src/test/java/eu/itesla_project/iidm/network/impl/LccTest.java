@@ -72,7 +72,7 @@ public class LccTest {
         cs1.remove();
         assertNotNull(cs1);
         assertNull(network.getLccConverterStation("C1"));
-        assertEquals(--count, network.getLccConverterStationCount());
+        assertEquals(count - 1, network.getLccConverterStationCount());
     }
 
     @Test
