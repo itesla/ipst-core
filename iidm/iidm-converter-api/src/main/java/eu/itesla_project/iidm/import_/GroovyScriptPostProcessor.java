@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -62,7 +63,7 @@ public class GroovyScriptPostProcessor implements ImportPostProcessor {
     public void process(Network network, ComputationManager computationManager) throws Exception {
         if (Files.exists(script)) {
             LOGGER.debug("Execute groovy post processor {}", script);
-            try (Reader reader = Files.newBufferedReader(script)) {
+            try (Reader reader = Files.newBufferedReader(script, StandardCharsets.UTF_8)) {
                 CompilerConfiguration conf = new CompilerConfiguration();
 
                 Binding binding = new Binding();
