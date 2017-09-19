@@ -9,9 +9,10 @@ package eu.itesla_project.afs.mapdb.storage;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import eu.itesla_project.afs.storage.AppFileSystemStorage;
-import eu.itesla_project.afs.storage.NodeId;
-import eu.itesla_project.afs.storage.PseudoClass;
+import eu.itesla_project.afs.storage.*;
+import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
+import eu.itesla_project.afs.storage.timeseries.TimeSeries;
+import eu.itesla_project.afs.storage.util.AfsStorageException;
 import eu.itesla_project.commons.datasource.DataSource;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -505,6 +506,31 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     @Override
     public DataSource getDataSourceAttribute(NodeId nodeId, String name) {
         return new MapDbDataSource(nodeId, name, dataSourceAttributeDataMap, dataSourceAttributeData2Map);
+    }
+
+    @Override
+    public List<TimeSeries> getTimeSeries(NodeId nodeId) {
+        return null;
+    }
+
+    @Override
+    public Map<String, List<ArrayChunk>> getTimeSeriesData(NodeId nodeId, Set<String> timeSeriesNames, int version) {
+        return null;
+    }
+
+    @Override
+    public void createTimeSeries(NodeId nodeId, List<TimeSeries> timeSeries) {
+
+    }
+
+    @Override
+    public void addTimeSeriesData(NodeId nodeId, int version, Map<String, List<ArrayChunk>> data) {
+
+    }
+
+    @Override
+    public void removeAllTimeSeries(NodeId nodeId) {
+
     }
 
     @Override

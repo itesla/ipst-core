@@ -6,16 +6,15 @@
  */
 package eu.itesla_project.afs.storage;
 
+import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
+import eu.itesla_project.afs.storage.timeseries.TimeSeries;
 import eu.itesla_project.commons.datasource.DataSource;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
+import java.util.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -63,6 +62,16 @@ public interface AppFileSystemStorage extends AutoCloseable {
     void setBooleanAttribute(NodeId nodeId, String name, boolean value);
 
     DataSource getDataSourceAttribute(NodeId nodeId, String name);
+
+    List<TimeSeries> getTimeSeries(NodeId nodeId);
+
+    Map<String, List<ArrayChunk>> getTimeSeriesData(NodeId nodeId, Set<String> timeSeriesNames, int version);
+
+    void createTimeSeries(NodeId nodeId, List<TimeSeries> timeSeries);
+
+    void addTimeSeriesData(NodeId nodeId, int version, Map<String, List<ArrayChunk>> data);
+
+    void removeAllTimeSeries(NodeId nodeId);
 
     NodeId getDependency(NodeId nodeId, String name);
 

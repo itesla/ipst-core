@@ -6,19 +6,14 @@
  */
 package eu.itesla_project.afs.local.storage;
 
-import eu.itesla_project.commons.datasource.DataSource;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface LocalFileStorage {
+public interface LocalFolder extends LocalNode {
 
-    String getName();
-
-    String getPseudoClass();
-
-    String getStringAttribute(String name);
-
-    DataSource getDataSourceAttribute(String name);
+    List<Path> getChildPaths();
 }

@@ -7,24 +7,26 @@
 package eu.itesla_project.afs.local.storage;
 
 import eu.itesla_project.afs.ext.base.Case;
+import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
+import eu.itesla_project.afs.storage.timeseries.TimeSeries;
 import eu.itesla_project.commons.datasource.DataSource;
 import eu.itesla_project.iidm.import_.Importer;
 import eu.itesla_project.iidm.import_.Importers;
 
 import java.nio.file.Path;
-import java.util.Objects;
+import java.util.*;
 
 /**
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LocalCaseStorage implements LocalFileStorage {
+public class LocalCase implements LocalFile {
 
     private final Path file;
 
     private final Importer importer;
 
-    public LocalCaseStorage(Path file, Importer importer) {
+    public LocalCase(Path file, Importer importer) {
         this.file = Objects.requireNonNull(file);
         this.importer = Objects.requireNonNull(importer);
     }
@@ -32,6 +34,11 @@ public class LocalCaseStorage implements LocalFileStorage {
     @Override
     public String getName() {
         return file.getFileName().toString();
+    }
+
+    @Override
+    public Path getParentPath() {
+        return file.getParent();
     }
 
     @Override
@@ -54,6 +61,21 @@ public class LocalCaseStorage implements LocalFileStorage {
     }
 
     @Override
+    public OptionalInt getIntAttribute(String name) {
+        throw new AssertionError(name);
+    }
+
+    @Override
+    public OptionalDouble getDoubleAttribute(String name) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public Optional<Boolean> getBooleanAttribute(String name) {
+        throw new AssertionError();
+    }
+
+    @Override
     public DataSource getDataSourceAttribute(String name) {
         switch (name) {
             case "dataSource":
@@ -62,5 +84,15 @@ public class LocalCaseStorage implements LocalFileStorage {
             default:
                 throw new AssertionError();
         }
+    }
+
+    @Override
+    public List<TimeSeries> getTimeSeries() {
+        throw new AssertionError();
+    }
+
+    @Override
+    public Map<String, List<ArrayChunk>> getTimeSeriesData(Set<String> names, int version) {
+        throw new AssertionError();
     }
 }
