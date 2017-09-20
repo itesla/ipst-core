@@ -132,6 +132,10 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
         }
     }
 
+    private boolean isLocalNode(Path path) {
+        return scanFolder(path, false) != null || scanFile(path, false) != null;
+    }
+
     @Override
     public List<NodeId> getChildNodes(NodeId nodeId) {
         Objects.requireNonNull(nodeId);
@@ -140,7 +144,7 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
         LocalFolder folder = scanFolder(path, false);
         if (folder != null) {
             childNodesIds.addAll(folder.getChildPaths().stream()
-                    .filter(childPath -> scanFolder(childPath, false) != null || scanFile(childPath, false) != null)
+                    .filter(childPath -> isLocalNode(childPath))
                     .map(childPath -> new PathNodeId(childPath))
                     .collect(Collectors.toList()));
         } else {
@@ -151,10 +155,14 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
 
     @Override
     public NodeId getChildNode(NodeId nodeId, String name) {
+        Objects.requireNonNull(nodeId);
         Objects.requireNonNull(name);
-        for (NodeId childNode : getChildNodes(nodeId)) {
-            if (getNodeName(childNode).equals(name)) {
-                return childNode;
+        Path path = ((PathNodeId) nodeId).getPath();
+        LocalFolder folder = scanFolder(path, false);
+        if (folder != null) {
+            Path childPath = folder.getChildPath(name);
+            if (childPath != null && isLocalNode(childPath)) {
+                return new PathNodeId(childPath);
             }
         }
         return null;
@@ -349,11 +357,7 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public void commit() {
-    }
-
-    @Override
-    public void rollback() {
+    public void flush() {
     }
 
     @Override

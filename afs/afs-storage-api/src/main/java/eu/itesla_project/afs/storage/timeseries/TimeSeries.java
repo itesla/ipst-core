@@ -8,7 +8,7 @@ package eu.itesla_project.afs.storage.timeseries;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import eu.itesla_project.afs.storage.util.AfsStorageException;
+import eu.itesla_project.afs.storage.AfsStorageException;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

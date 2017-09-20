@@ -47,6 +47,11 @@ public class DefaultLocalFolder implements LocalFolder {
     }
 
     @Override
+    public Path getChildPath(String name) {
+        return dir.resolve(name);
+    }
+
+    @Override
     public String getName() {
         return dir.equals(rootDir) ? fileSystemName : dir.getFileName().toString();
     }

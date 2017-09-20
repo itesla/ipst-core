@@ -9,10 +9,12 @@ package eu.itesla_project.afs.mapdb.storage;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import eu.itesla_project.afs.storage.*;
+import eu.itesla_project.afs.storage.AfsStorageException;
+import eu.itesla_project.afs.storage.AppFileSystemStorage;
+import eu.itesla_project.afs.storage.NodeId;
+import eu.itesla_project.afs.storage.PseudoClass;
 import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
-import eu.itesla_project.afs.storage.util.AfsStorageException;
 import eu.itesla_project.commons.datasource.DataSource;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -621,13 +623,8 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public void commit() {
+    public void flush() {
         db.commit();
-    }
-
-    @Override
-    public void rollback() {
-        db.rollback();
     }
 
     @Override

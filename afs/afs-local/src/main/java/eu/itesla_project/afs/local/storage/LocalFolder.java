@@ -16,4 +16,6 @@ import java.util.List;
 public interface LocalFolder extends LocalNode {
 
     List<Path> getChildPaths();
+
+    Path getChildPath(String name);
 }
