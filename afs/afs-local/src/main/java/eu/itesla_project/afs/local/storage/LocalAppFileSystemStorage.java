@@ -10,8 +10,8 @@ import com.google.common.collect.ImmutableList;
 import eu.itesla_project.afs.Folder;
 import eu.itesla_project.afs.storage.AppFileSystemStorage;
 import eu.itesla_project.afs.storage.NodeId;
-import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesData;
 import eu.itesla_project.commons.datasource.DataSource;
 import eu.itesla_project.computation.ComputationManager;
 
@@ -286,12 +286,12 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public Map<String, List<ArrayChunk>> getTimeSeriesData(NodeId nodeId, Set<String> timeSeriesNames, int version) {
+    public List<TimeSeriesData> getTimeSeriesData(NodeId nodeId, List<TimeSeries> timeSeries, int version) {
         Objects.requireNonNull(nodeId);
         Path path = ((PathNodeId) nodeId).getPath();
         LocalFile file = scanFile(path, true);
         if (file != null) {
-            return file.getTimeSeriesData(timeSeriesNames, version);
+            return file.getTimeSeriesData(timeSeries, version);
         }
         throw new AssertionError();
     }
@@ -302,7 +302,7 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public void addTimeSeriesData(NodeId nodeId, int version, Map<String, List<ArrayChunk>> data) {
+    public void addTimeSeriesData(NodeId nodeId, int version, List<TimeSeriesData> data) {
         throw new AssertionError();
     }
 

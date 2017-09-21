@@ -8,7 +8,6 @@ package eu.itesla_project.afs.storage.timeseries;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import eu.itesla_project.afs.storage.AfsStorageException;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -17,9 +16,10 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -49,30 +49,6 @@ public class TimeSeries {
 
     public TimeSeriesIndex getIndex() {
         return index;
-    }
-
-    public Stream<Point> stream(List<ArrayChunk> chunks) {
-        // check chunk consistency
-        //   - all included in index range
-        //   - no chunk overlap
-        //   - no missing points
-        List<ArrayChunk> sortedChunks = chunks.stream().sorted(Comparator.comparing(ArrayChunk::getOffset)).collect(Collectors.toList());
-        int pointCount = index.getPointCount();
-        int i = 0;
-        for (ArrayChunk chunk : sortedChunks) {
-            if (chunk.getOffset() != i) {
-                throw new AfsStorageException("No value found in range [" + i + ", " + chunk.getOffset() + "]");
-            }
-            if (i + chunk.getLength() > pointCount - 1) {
-                throw new AfsStorageException("Value(s) found out of index range [" + (pointCount - 1) + ", " + (i + chunk.getLength()) + "]");
-            }
-            i += chunk.getLength();
-        }
-        if (i < pointCount - 1) {
-            throw new AfsStorageException("No value found in range [" + i + ", " + (pointCount - 1) + "]");
-        }
-
-        return sortedChunks.stream().flatMap(chunk -> chunk.stream(index));
     }
 
     public static void writeJson(List<TimeSeries> timeSeriesList, Path file) {

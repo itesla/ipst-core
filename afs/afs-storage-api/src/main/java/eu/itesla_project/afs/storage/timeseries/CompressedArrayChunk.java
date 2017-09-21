@@ -9,9 +9,12 @@ package eu.itesla_project.afs.storage.timeseries;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -20,25 +23,41 @@ public class CompressedArrayChunk implements ArrayChunk {
 
     private final int offset;
 
-    private final int length;
+    private final int uncompressedLength;
 
-    private final double[] compressedValues;
+    private final double[] stepValues;
 
-    private final int[] compressedLengths;
+    private final int[] stepLengths;
 
-    public CompressedArrayChunk(int offset, int length, double[] compressedValues, int[] compressedLengths) {
+    public CompressedArrayChunk(int offset, int uncompressedLength, double[] stepValues, int[] stepLengths) {
+        if (offset < 0) {
+            throw new IllegalArgumentException("Bad offset value " + offset);
+        }
+        if (uncompressedLength < 1) {
+            throw new IllegalArgumentException("Bad uncompressed length value " + offset);
+        }
+        if (stepValues.length != stepLengths.length) {
+            throw new IllegalArgumentException("Inconsistent step arrays size: "
+                    + stepValues.length + " != " + stepLengths.length);
+        }
+        if (stepValues.length < 1) {
+            throw new IllegalArgumentException("Bad step arrays length " + stepValues.length);
+        }
+        if (stepValues.length > uncompressedLength) {
+            throw new IllegalArgumentException("Step arrays length is greater than uncompressed length");
+        }
         this.offset = offset;
-        this.length = length;
-        this.compressedValues = compressedValues;
-        this.compressedLengths = compressedLengths;
+        this.uncompressedLength = uncompressedLength;
+        this.stepValues = Objects.requireNonNull(stepValues);
+        this.stepLengths = Objects.requireNonNull(stepLengths);
     }
 
-    public double[] getCompressedValues() {
-        return compressedValues;
+    public double[] getStepValues() {
+        return stepValues;
     }
 
-    public int[] getCompressedLengths() {
-        return compressedLengths;
+    public int[] getStepLengths() {
+        return stepLengths;
     }
 
     @Override
@@ -48,7 +67,7 @@ public class CompressedArrayChunk implements ArrayChunk {
 
     @Override
     public int getLength() {
-        return length;
+        return uncompressedLength;
     }
 
     @Override
@@ -58,46 +77,60 @@ public class CompressedArrayChunk implements ArrayChunk {
 
     @Override
     public int getEstimatedSize() {
-        return Double.BYTES * compressedValues.length + Integer.BYTES * compressedLengths.length;
+        return Double.BYTES * stepValues.length + Integer.BYTES * stepLengths.length;
     }
 
     @Override
     public double getCompressionFactor() {
-        return ((double) getEstimatedSize()) / (Double.BYTES * length);
+        return ((double) getEstimatedSize()) / (Double.BYTES * uncompressedLength);
     }
 
     @Override
-    public UncompressedArrayChunk toUncompressed() {
-        double[] values = new double[length];
+    public void fillArray(double[] array) {
         int k = 0;
-        for (int i = 0; i < compressedValues.length; i++) {
-            double value = compressedValues[i];
-            for (int j = 0; j < compressedLengths[i]; j++) {
-                values[k++] = value;
+        for (int i = 0; i < stepValues.length; i++) {
+            double value = stepValues[i];
+            for (int j = 0; j < stepLengths[i]; j++) {
+                array[offset + k++] = value;
             }
         }
-        return new UncompressedArrayChunk(offset, values);
     }
 
     @Override
     public Stream<Point> stream(TimeSeriesIndex index) {
-        return IntStream.range(0, compressedValues.length).mapToObj(i -> new Point(0, index.getInstantAt(i), compressedValues[i]));
-    }
+        Objects.requireNonNull(index);
+        Iterator<Point> iterator = new Iterator<Point>() {
 
-    @Override
-    public List<ArrayChunk> split(int chunk) {
-        throw new UnsupportedOperationException("TODO");
+            private int i = offset;
+            private int step = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < uncompressedLength;
+            }
+
+            @Override
+            public Point next() {
+                Point point = new Point(i, index.getInstantAt(i), stepValues[step]);
+                i += stepLengths[step];
+                step++;
+                return point;
+            }
+        };
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(
+                iterator,
+                Spliterator.ORDERED | Spliterator.IMMUTABLE), false);
     }
 
     @Override
     public void writeJson(JsonGenerator generator) throws IOException {
         generator.writeStartObject();
         generator.writeNumberField("offset", offset);
-        generator.writeNumberField("length", length);
-        generator.writeFieldName("compressed_values");
-        generator.writeArray(compressedValues, 0, compressedValues.length);
-        generator.writeFieldName("compressed_lengths");
-        generator.writeArray(compressedLengths, 0, compressedLengths.length);
+        generator.writeNumberField("uncompressedLength", uncompressedLength);
+        generator.writeFieldName("stepValues");
+        generator.writeArray(stepValues, 0, stepValues.length);
+        generator.writeFieldName("stepLengths");
+        generator.writeArray(stepLengths, 0, stepLengths.length);
         generator.writeEndObject();
     }
 }

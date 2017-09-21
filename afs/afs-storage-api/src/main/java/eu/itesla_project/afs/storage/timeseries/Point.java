@@ -47,8 +47,13 @@ public class Point {
     public boolean equals(Object obj) {
         if (obj instanceof Point) {
             Point other = (Point) obj;
-            return instant == other.instant && instant.equals(other.instant) && value == value;
+            return index == other.index && instant.equals(other.instant) && value == value;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Point(" + index + ", " + instant + ", " + value + ")";
     }
 }

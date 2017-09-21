@@ -6,18 +6,9 @@
  */
 package eu.itesla_project.afs.storage.timeseries;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -25,8 +16,16 @@ import java.util.stream.Stream;
  */
 public interface ArrayChunk {
 
+    /**
+     * Get array chunk offset.
+     * @return array chunk offset
+     */
     int getOffset();
 
+    /**
+     * Get array chunk length
+     * @return array chunk length
+     */
     int getLength();
 
     /**
@@ -35,43 +34,36 @@ public interface ArrayChunk {
      */
     int getEstimatedSize();
 
+    /**
+     * Get compression factor. 1 means no compression.
+     * @return the compression factor
+     */
     double getCompressionFactor();
 
+    /**
+     * Check if chunk is in compressed form.
+     * @return true if chunk is in compressed form, false otherwise
+     */
     boolean isCompressed();
 
-    UncompressedArrayChunk toUncompressed();
 
+    /**
+     * Fill array with chunk values.
+     * @param array the array to fill
+     */
+    void fillArray(double[] array);
+
+    /**
+     * Get a point stream.
+     * @param index the time series index
+     * @return a point stream
+     */
     Stream<Point> stream(TimeSeriesIndex index);
 
-    List<ArrayChunk> split(int chunk);
-
+    /**
+     * Serialize this array chunk to json.
+     * @param generator a json generator (jackson)
+     * @throws IOException in case of json writin error
+     */
     void writeJson(JsonGenerator generator) throws IOException;
-
-    public static void writeJson(Map<String, Collection<ArrayChunk>> data, Path file) {
-        try (BufferedWriter writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
-            writeJson(data, writer);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    public static void writeJson(Map<String, Collection<ArrayChunk>> data, BufferedWriter writer) throws IOException {
-        JsonFactory factory = new JsonFactory();
-        try (JsonGenerator generator = factory.createGenerator(writer)) {
-            generator.useDefaultPrettyPrinter();
-            generator.writeStartArray();
-            for (Map.Entry<String, Collection<ArrayChunk>> e : data.entrySet()) {
-                generator.writeStartObject();
-                generator.writeStringField("name", e.getKey());
-                generator.writeFieldName("chunks");
-                generator.writeStartArray();
-                for (ArrayChunk chunk : e.getValue()) {
-                    chunk.writeJson(generator);
-                }
-                generator.writeEndArray();
-                generator.writeEndObject();
-            }
-            generator.writeEndArray();
-        }
-    }
 }

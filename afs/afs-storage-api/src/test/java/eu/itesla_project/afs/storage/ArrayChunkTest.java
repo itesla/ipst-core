@@ -6,12 +6,14 @@
  */
 package eu.itesla_project.afs.storage;
 
-import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
-import eu.itesla_project.afs.storage.timeseries.CompressedArrayChunk;
-import eu.itesla_project.afs.storage.timeseries.UncompressedArrayChunk;
+import eu.itesla_project.afs.storage.timeseries.*;
 import org.junit.Test;
+import org.threeten.extra.Interval;
 
-import java.util.List;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -27,20 +29,29 @@ public class ArrayChunkTest {
         assertEquals(0, chunk.getOffset());
         assertEquals(10, chunk.getLength());
         assertArrayEquals(values, chunk.getValues(), 0d);
-        assertSame(chunk, chunk.toUncompressed());
         ArrayChunk compressedChunk = chunk.tryToCompress();
         assertTrue(compressedChunk instanceof CompressedArrayChunk);
-        assertArrayEquals(values, compressedChunk.toUncompressed().getValues(), 0d);
-        List<ArrayChunk> chunks = chunk.split(4);
-        assertEquals(4, chunks.size());
-        assertEquals(3, chunks.get(0).getLength());
-        assertArrayEquals(new double[] {1d, 2d, 2d}, ((UncompressedArrayChunk) chunks.get(0)).getValues(), 0d);
-        assertEquals(3, chunks.get(1).getLength());
-        assertArrayEquals(new double[] {2d, 2d, 2d}, ((UncompressedArrayChunk) chunks.get(1)).getValues(), 0d);
-        assertEquals(3, chunks.get(2).getLength());
-        assertArrayEquals(new double[] {3d, 3d, 3d}, ((UncompressedArrayChunk) chunks.get(2)).getValues(), 0d);
-        assertEquals(1, chunks.get(3).getLength());
-        assertArrayEquals(new double[] {4d}, ((UncompressedArrayChunk) chunks.get(3)).getValues(), 0d);
+ //       assertArrayEquals(values, compressedChunk.toUncompressed().getValues(), 0d);
     }
 
+    @Test
+    public void uncompressedStreamTest() {
+        RegularTimeSeriesIndex index = new RegularTimeSeriesIndex(Interval.parse("2015-01-01T00:00:00Z/2015-01-01T00:30:00Z"),
+                                                                  Duration.ofMinutes(15),
+                                                                  1, 1);
+        assertEquals(Arrays.asList(new Point(0, Instant.parse("2015-01-01T00:00:00Z"), 1d),
+                                   new Point(1, Instant.parse("2015-01-01T00:15:00Z"), 2d),
+                                   new Point(2, Instant.parse("2015-01-01T00:30:00Z"), 3d)),
+                     new UncompressedArrayChunk(0, new double[] {1d, 2d, 3d}).stream(index).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void compressedStreamTest() {
+        RegularTimeSeriesIndex index = new RegularTimeSeriesIndex(Interval.parse("2015-01-01T00:00:00Z/2015-01-01T00:30:00Z"),
+                                                                  Duration.ofMinutes(15),
+                                                                  1, 1);
+        assertEquals(Arrays.asList(new Point(0, Instant.parse("2015-01-01T00:00:00Z"), 1d),
+                                   new Point(2, Instant.parse("2015-01-01T00:30:00Z"), 2d)),
+                     new CompressedArrayChunk(0, 3, new double[] {1d, 2d}, new int[] {2, 1}).stream(index).collect(Collectors.toList()));
+    }
 }

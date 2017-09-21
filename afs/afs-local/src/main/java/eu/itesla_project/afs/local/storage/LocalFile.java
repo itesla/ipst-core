@@ -6,11 +6,14 @@
  */
 package eu.itesla_project.afs.local.storage;
 
-import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesData;
 import eu.itesla_project.commons.datasource.DataSource;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
 
 /**
  *
@@ -32,5 +35,5 @@ public interface LocalFile extends LocalNode {
 
     List<TimeSeries> getTimeSeries();
 
-    Map<String, List<ArrayChunk>> getTimeSeriesData(Set<String> names, int version);
+    List<TimeSeriesData> getTimeSeriesData(List<TimeSeries> timeSeries, int version);
 }

@@ -13,8 +13,8 @@ import eu.itesla_project.afs.storage.AfsStorageException;
 import eu.itesla_project.afs.storage.AppFileSystemStorage;
 import eu.itesla_project.afs.storage.NodeId;
 import eu.itesla_project.afs.storage.PseudoClass;
-import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesData;
 import eu.itesla_project.commons.datasource.DataSource;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -516,7 +516,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public Map<String, List<ArrayChunk>> getTimeSeriesData(NodeId nodeId, Set<String> timeSeriesNames, int version) {
+    public List<TimeSeriesData> getTimeSeriesData(NodeId nodeId, List<TimeSeries> timeSeries, int version) {
         return null;
     }
 
@@ -526,8 +526,7 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public void addTimeSeriesData(NodeId nodeId, int version, Map<String, List<ArrayChunk>> data) {
-
+    public void addTimeSeriesData(NodeId nodeId, int version, List<TimeSeriesData> data) {
     }
 
     @Override

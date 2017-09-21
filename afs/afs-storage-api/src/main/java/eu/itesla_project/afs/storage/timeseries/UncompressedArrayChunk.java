@@ -11,9 +11,7 @@ import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -62,50 +60,39 @@ public class UncompressedArrayChunk implements ArrayChunk {
     }
 
     @Override
-    public UncompressedArrayChunk toUncompressed() {
-        return this;
+    public void fillArray(double[] array) {
+        Arrays.copyOfRange(values, offset, values.length);
     }
 
     public ArrayChunk tryToCompress() {
-        TDoubleArrayList compressedValues = new TDoubleArrayList();
-        TIntArrayList compressedLengths = new TIntArrayList();
+        TDoubleArrayList stepValues = new TDoubleArrayList();
+        TIntArrayList stepLengths = new TIntArrayList();
         for (double value : values) {
-            if (compressedValues.isEmpty()) {
-                compressedValues.add(value);
-                compressedLengths.add(1);
+            if (stepValues.isEmpty()) {
+                stepValues.add(value);
+                stepLengths.add(1);
             } else {
-                int previousIndex = compressedValues.size() - 1;
-                double previousValue = compressedValues.getQuick(previousIndex);
+                int previousIndex = stepValues.size() - 1;
+                double previousValue = stepValues.getQuick(previousIndex);
                 if (previousValue == value) {
-                    compressedLengths.set(previousIndex, compressedLengths.getQuick(previousIndex) + 1);
+                    stepLengths.set(previousIndex, stepLengths.getQuick(previousIndex) + 1);
                 } else {
-                    compressedValues.add(value);
-                    compressedLengths.add(1);
+                    stepValues.add(value);
+                    stepLengths.add(1);
                 }
                 // compression is not really interesting...
-                if (compressedValues.size() > values.length * 0.40) {
+                if (stepValues.size() > values.length * 0.40) {
                     return this;
                 }
             }
         }
-        return new CompressedArrayChunk(offset, values.length, compressedValues.toArray(), compressedLengths.toArray());
+        return new CompressedArrayChunk(offset, values.length, stepValues.toArray(), stepLengths.toArray());
     }
 
     @Override
     public Stream<Point> stream(TimeSeriesIndex index) {
+        Objects.requireNonNull(index);
         return IntStream.range(0, values.length).mapToObj(i -> new Point(i, index.getInstantAt(i), values[i]));
-    }
-
-    @Override
-    public List<ArrayChunk> split(int chunk) {
-        List<ArrayChunk> chunks = new ArrayList<>();
-        int chunkLength = (values.length / chunk) + 1;
-        for (int i = 0; i < chunk; i++) {
-            int chunkOffset = i * chunkLength;
-            double[] chunkValues = Arrays.copyOfRange(values, chunkOffset, Math.min((i + 1) * chunkLength, values.length));
-            chunks.add(new UncompressedArrayChunk(chunkOffset, chunkValues));
-        }
-        return chunks;
     }
 
     @Override
