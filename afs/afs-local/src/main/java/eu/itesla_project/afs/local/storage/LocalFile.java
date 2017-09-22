@@ -7,13 +7,10 @@
 package eu.itesla_project.afs.local.storage;
 
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
-import eu.itesla_project.afs.storage.timeseries.TimeSeriesData;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesMetadata;
 import eu.itesla_project.commons.datasource.DataSource;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
+import java.util.*;
 
 /**
  *
@@ -33,7 +30,9 @@ public interface LocalFile extends LocalNode {
 
     DataSource getDataSourceAttribute(String name);
 
-    List<TimeSeries> getTimeSeries();
+    Set<String> getTimeSeriesNames();
 
-    List<TimeSeriesData> getTimeSeriesData(List<TimeSeries> timeSeries, int version);
+    List<TimeSeriesMetadata> getTimeSeriesMetadata(Set<String> timeSeriesNames);
+
+    List<TimeSeries> getTimeSeries(Set<String> timeSeriesNames, int version);
 }

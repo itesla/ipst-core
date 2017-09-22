@@ -8,7 +8,7 @@ package eu.itesla_project.afs.local.storage;
 
 import eu.itesla_project.afs.ext.base.Case;
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
-import eu.itesla_project.afs.storage.timeseries.TimeSeriesData;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesMetadata;
 import eu.itesla_project.commons.datasource.DataSource;
 import eu.itesla_project.iidm.import_.Importer;
 import eu.itesla_project.iidm.import_.Importers;
@@ -87,12 +87,17 @@ public class LocalCase implements LocalFile {
     }
 
     @Override
-    public List<TimeSeries> getTimeSeries() {
+    public Set<String> getTimeSeriesNames() {
         throw new AssertionError();
     }
 
     @Override
-    public List<TimeSeriesData> getTimeSeriesData(List<TimeSeries> timeSeries, int version) {
+    public List<TimeSeriesMetadata> getTimeSeriesMetadata(Set<String> timeSeriesNames) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public List<TimeSeries> getTimeSeries(Set<String> timeSeriesNames, int version) {
         throw new AssertionError();
     }
 }

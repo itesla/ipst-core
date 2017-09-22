@@ -13,8 +13,9 @@ import eu.itesla_project.afs.storage.AfsStorageException;
 import eu.itesla_project.afs.storage.AppFileSystemStorage;
 import eu.itesla_project.afs.storage.NodeId;
 import eu.itesla_project.afs.storage.PseudoClass;
+import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
-import eu.itesla_project.afs.storage.timeseries.TimeSeriesData;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesMetadata;
 import eu.itesla_project.commons.datasource.DataSource;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -511,22 +512,27 @@ public class MapDbAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public List<TimeSeries> getTimeSeries(NodeId nodeId) {
+    public void createTimeSeries(NodeId nodeId, TimeSeriesMetadata metadata) {
+    }
+
+    @Override
+    public Set<String> getTimeSeriesNames(NodeId nodeId) {
         return null;
     }
 
     @Override
-    public List<TimeSeriesData> getTimeSeriesData(NodeId nodeId, List<TimeSeries> timeSeries, int version) {
+    public List<TimeSeriesMetadata> getTimeSeriesMetadata(NodeId nodeId, Set<String> timeSeriesNames) {
         return null;
     }
 
     @Override
-    public void createTimeSeries(NodeId nodeId, List<TimeSeries> timeSeries) {
-
+    public List<TimeSeries> getTimeSeries(NodeId nodeId, Set<String> timeSeriesNames, int version) {
+        return null;
     }
 
     @Override
-    public void addTimeSeriesData(NodeId nodeId, int version, List<TimeSeriesData> data) {
+    public void addTimeSeriesData(NodeId nodeId, int version, String timeSeriesName, List<ArrayChunk> chunks) {
+
     }
 
     @Override

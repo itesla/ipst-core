@@ -6,15 +6,21 @@
  */
 package eu.itesla_project.afs.storage;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
+import eu.itesla_project.afs.storage.timeseries.RegularTimeSeriesIndex;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesMetadata;
 import eu.itesla_project.commons.datasource.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.threeten.extra.Interval;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -143,6 +149,11 @@ public abstract class AbstractAppFileSystemStorageTest {
         try (InputStream is = ds.newInputStream("file1")) {
             assertEquals("word1word2", new String(ByteStreams.toByteArray(is), StandardCharsets.UTF_8));
         }
+
+        RegularTimeSeriesIndex index = new RegularTimeSeriesIndex(Interval.parse("2015-01-01T00:00:00Z/2015-01-01T01:00:00Z"), Duration.ofMinutes(15), 1, 1);
+        storage.createTimeSeries(testData2Id, new TimeSeriesMetadata("ts1", ImmutableMap.of("k1", "v1"), index));
+        storage.flush();
+        assertEquals(ImmutableSet.of("ts1"), storage.getTimeSeriesNames(testData2Id));
 
         // create project test
         NodeId projectId = storage.createNode(testFolderId, "project", PseudoClass.PROJECT_PSEUDO_CLASS);

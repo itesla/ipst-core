@@ -6,18 +6,16 @@
  */
 package eu.itesla_project.afs.storage;
 
+import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
-import eu.itesla_project.afs.storage.timeseries.TimeSeriesData;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesMetadata;
 import eu.itesla_project.commons.datasource.DataSource;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
+import java.util.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -66,13 +64,15 @@ public interface AppFileSystemStorage extends AutoCloseable {
 
     DataSource getDataSourceAttribute(NodeId nodeId, String name);
 
-    List<TimeSeries> getTimeSeries(NodeId nodeId);
+    void createTimeSeries(NodeId nodeId, TimeSeriesMetadata metadata);
 
-    List<TimeSeriesData> getTimeSeriesData(NodeId nodeId, List<TimeSeries> timeSeries, int version);
+    Set<String> getTimeSeriesNames(NodeId nodeId);
 
-    void createTimeSeries(NodeId nodeId, List<TimeSeries> timeSeries);
+    List<TimeSeriesMetadata> getTimeSeriesMetadata(NodeId nodeId, Set<String> timeSeriesNames);
 
-    void addTimeSeriesData(NodeId nodeId, int version, List<TimeSeriesData> data);
+    List<TimeSeries> getTimeSeries(NodeId nodeId, Set<String> timeSeriesNames, int version);
+
+    void addTimeSeriesData(NodeId nodeId, int version, String timeSeriesName, List<ArrayChunk> chunks);
 
     void removeAllTimeSeries(NodeId nodeId);
 

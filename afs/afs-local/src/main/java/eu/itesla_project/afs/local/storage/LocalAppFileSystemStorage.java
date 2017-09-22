@@ -10,8 +10,9 @@ import com.google.common.collect.ImmutableList;
 import eu.itesla_project.afs.Folder;
 import eu.itesla_project.afs.storage.AppFileSystemStorage;
 import eu.itesla_project.afs.storage.NodeId;
+import eu.itesla_project.afs.storage.timeseries.ArrayChunk;
 import eu.itesla_project.afs.storage.timeseries.TimeSeries;
-import eu.itesla_project.afs.storage.timeseries.TimeSeriesData;
+import eu.itesla_project.afs.storage.timeseries.TimeSeriesMetadata;
 import eu.itesla_project.commons.datasource.DataSource;
 import eu.itesla_project.computation.ComputationManager;
 
@@ -275,34 +276,45 @@ public class LocalAppFileSystemStorage implements AppFileSystemStorage {
     }
 
     @Override
-    public List<TimeSeries> getTimeSeries(NodeId nodeId) {
+    public void createTimeSeries(NodeId nodeId, TimeSeriesMetadata metadata) {
+        throw new AssertionError();
+    }
+
+    @Override
+    public Set<String> getTimeSeriesNames(NodeId nodeId) {
         Objects.requireNonNull(nodeId);
         Path path = ((PathNodeId) nodeId).getPath();
         LocalFile file = scanFile(path, true);
         if (file != null) {
-            return file.getTimeSeries();
+            return file.getTimeSeriesNames();
         }
         throw new AssertionError();
     }
 
     @Override
-    public List<TimeSeriesData> getTimeSeriesData(NodeId nodeId, List<TimeSeries> timeSeries, int version) {
+    public List<TimeSeriesMetadata> getTimeSeriesMetadata(NodeId nodeId, Set<String> timeSeriesNames) {
         Objects.requireNonNull(nodeId);
         Path path = ((PathNodeId) nodeId).getPath();
         LocalFile file = scanFile(path, true);
         if (file != null) {
-            return file.getTimeSeriesData(timeSeries, version);
+            return file.getTimeSeriesMetadata(timeSeriesNames);
         }
         throw new AssertionError();
     }
 
     @Override
-    public void createTimeSeries(NodeId nodeId, List<TimeSeries> timeSeries) {
+    public List<TimeSeries> getTimeSeries(NodeId nodeId, Set<String> timeSeriesNames, int version) {
+        Objects.requireNonNull(nodeId);
+        Path path = ((PathNodeId) nodeId).getPath();
+        LocalFile file = scanFile(path, true);
+        if (file != null) {
+            return file.getTimeSeries(timeSeriesNames, version);
+        }
         throw new AssertionError();
     }
 
     @Override
-    public void addTimeSeriesData(NodeId nodeId, int version, List<TimeSeriesData> data) {
+    public void addTimeSeriesData(NodeId nodeId, int version, String timeSeriesName, List<ArrayChunk> chunks) {
         throw new AssertionError();
     }
 
