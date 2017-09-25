@@ -32,7 +32,7 @@ class ScriptDslTaskExtension implements DslTaskExtension, DslConstants {
                     closure.resolveStrategy = Closure.OWNER_ONLY
                     closure.call()
                 } catch (MissingMethodException e) {
-                    throw new ActionDslException(e)
+                    throw new ActionDslException("Dsl extension task is forbidden in task script")
                 } finally {
                     binding.setVariable(SCRIPT_IS_RUNNING, null)
                     binding.setVariable("network", oldNetwork)

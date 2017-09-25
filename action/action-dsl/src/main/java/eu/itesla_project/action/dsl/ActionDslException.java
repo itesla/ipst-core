@@ -19,7 +19,4 @@ public class ActionDslException extends RuntimeException {
         super(message, cause);
     }
 
-    public ActionDslException(Throwable cause) {
-        super(cause);
-    }
 }

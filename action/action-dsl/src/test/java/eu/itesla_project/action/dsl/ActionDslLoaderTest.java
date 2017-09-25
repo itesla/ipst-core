@@ -72,7 +72,6 @@ public class ActionDslLoaderTest {
     public void testUnvalidate() {
         ActionDb actionDb = new ActionDslLoader(new GroovyCodeSource(getClass().getResource("/actions2.groovy"))).load(network);
         Action someAction = actionDb.getAction("someAction");
-        someAction.getId();
         exception.expect(ActionDslException.class);
         someAction.run(network, null);
     }
