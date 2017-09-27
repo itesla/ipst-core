@@ -300,8 +300,8 @@ public final class Validation {
         float targetQ = gen.getTargetQ();
         float targetV = gen.getTargetV();
         boolean voltageRegulatorOn = gen.isVoltageRegulatorOn();
-        float minQ = gen.getReactiveLimits().getMinQ(p);
-        float maxQ = gen.getReactiveLimits().getMaxQ(p);
+        float minQ = gen.getReactiveLimits().getMinQ(targetP);
+        float maxQ = gen.getReactiveLimits().getMaxQ(targetP);
         if (bus != null && !Float.isNaN(bus.getV())) {
             float v = bus.getV();
             return checkGenerators(gen.getId(), p, q, v, targetP, targetQ, targetV, voltageRegulatorOn, minQ, maxQ, config, generatorsWriter);
