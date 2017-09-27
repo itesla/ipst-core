@@ -11,11 +11,11 @@ import eu.itesla_project.action.dsl.spi.DslTaskExtension
 import eu.itesla_project.contingency.tasks.ModificationTask
 
 @AutoService(DslTaskExtension.class)
-class PhaseShifterFixTapTaskExtension implements DslTaskExtension {
+class FixPhaseShifterTapTaskExtension implements DslTaskExtension {
     @Override
     void addToSpec(MetaClass tasksSpecMetaClass, List<ModificationTask> tasks, Binding binding) {
         tasksSpecMetaClass.fixPhaseShifterTap = { String id, int position ->
-            tasks.add(new PhaseShifterFixTapTask(id, position))
+            tasks.add(new FixPhaseShifterTapTask(id, position))
         }
     }
 }

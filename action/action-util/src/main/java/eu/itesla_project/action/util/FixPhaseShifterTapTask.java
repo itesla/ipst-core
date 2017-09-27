@@ -14,14 +14,14 @@ import eu.itesla_project.iidm.network.TwoWindingsTransformer;
 
 import java.util.Objects;
 
-public class PhaseShifterFixTapTask implements ModificationTask {
+public class FixPhaseShifterTapTask implements ModificationTask {
 
     private final String phaseShifterId;
     private final int tapPosition;
 
-    public PhaseShifterFixTapTask(String phaseShifterId, int tapPosition) {
+    public FixPhaseShifterTapTask(String phaseShifterId, int tapPosition) {
         this.phaseShifterId = Objects.requireNonNull(phaseShifterId);
-        this.tapPosition = Objects.requireNonNull(tapPosition);
+        this.tapPosition = tapPosition;
     }
 
     @Override
