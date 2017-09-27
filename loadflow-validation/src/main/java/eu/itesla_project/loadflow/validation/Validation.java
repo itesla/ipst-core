@@ -79,20 +79,20 @@ public final class Validation {
 
             flowsWriter.write(id, p1, p1Calc, q1, q1Calc, p2, p2Calc, q2, q2Calc, r, x, g1, g2, b1, b2, rho1, rho2, alpha1, alpha2, u1, u2, theta1, theta2, z, y, ksi);
 
-            if (Math.abs(p1 - p1Calc) > config.getThreshold()) {
-                LOGGER.warn(id + " P1 " + p1 + " " + p1Calc);
+            if ((Double.isNaN(p1Calc) && !config.areOkMissingValues()) || Math.abs(p1 - p1Calc) > config.getThreshold()) {
+                LOGGER.warn("Flows validation error: " + id + " P1 " + p1 + " " + p1Calc);
                 ok = false;
             }
-            if (Math.abs(q1 - q1Calc) > config.getThreshold()) {
-                LOGGER.warn(id + " Q1 " + q1 + " " + q1Calc);
+            if ((Double.isNaN(q1Calc) && !config.areOkMissingValues()) || Math.abs(q1 - q1Calc) > config.getThreshold()) {
+                LOGGER.warn("Flows validation error: " + id + " Q1 " + q1 + " " + q1Calc);
                 ok = false;
             }
-            if (Math.abs(p2 - p2Calc) > config.getThreshold()) {
-                LOGGER.warn(id + " P2 " + p2 + " " + p2Calc);
+            if ((Double.isNaN(p2Calc) && !config.areOkMissingValues()) || Math.abs(p2 - p2Calc) > config.getThreshold()) {
+                LOGGER.warn("Flows validation error: " + id + " P2 " + p2 + " " + p2Calc);
                 ok = false;
             }
-            if (Math.abs(q2 - q2Calc) > config.getThreshold()) {
-                LOGGER.warn(id + " Q2 " + q2 + " " + q2Calc);
+            if ((Double.isNaN(q2Calc) && !config.areOkMissingValues()) || Math.abs(q2 - q2Calc) > config.getThreshold()) {
+                LOGGER.warn("Flows validation error: " + id + " Q2 " + q2 + " " + q2Calc);
                 ok = false;
             }
         } catch (IOException e) {
@@ -336,20 +336,20 @@ public final class Validation {
             if (Float.isNaN(p) || Float.isNaN(q)) {
                 if ((!Float.isNaN(targetP) && targetP != 0)
                     || (!Float.isNaN(targetQ) && targetQ != 0)) {
-                    LOGGER.warn(id + ": P=" + p + " targetP=" + targetP + " - Q=" + q + " targetP=" + targetQ);
+                    LOGGER.warn("Generators validation error: " + id + ": P=" + p + " targetP=" + targetP + " - Q=" + q + " targetP=" + targetQ);
                     return false;
                 } else {
                     return true;
                 }
             }
             // active power should be equal to set point
-            if (Math.abs(p + targetP) > config.getThreshold()) {
-                LOGGER.warn(id + ": P=" + p + " targetP=" + targetP);
+            if ((Float.isNaN(targetP) && !config.areOkMissingValues()) || Math.abs(p + targetP) > config.getThreshold()) {
+                LOGGER.warn("Generators validation error: " + id + ": P=" + p + " targetP=" + targetP);
                 ok = false;
             }
             // if voltageRegulatorOn="false" then reactive power should be equal to set point
-            if (!voltageRegulatorOn && Math.abs(q + targetQ) > config.getThreshold()) {
-                LOGGER.warn(id + ": voltage regulator off - Q=" + q + " targetQ=" + targetQ);
+            if (!voltageRegulatorOn && ((Float.isNaN(targetQ) && !config.areOkMissingValues()) || Math.abs(q + targetQ) > config.getThreshold())) {
+                LOGGER.warn("Generators validation error: " + id + ": voltage regulator off - Q=" + q + " targetQ=" + targetQ);
                 ok = false;
             }
             // if voltageRegulatorOn="true" then
@@ -357,10 +357,11 @@ public final class Validation {
             // or q is equal to g.getReactiveLimits().getMaxQ(p) and V is higher than g.getTargetV()
             // or V at the connected bus is equal to g.getTargetV()
             if (voltageRegulatorOn
-                && (Math.abs(q + minQ) > config.getThreshold() || (v - targetV) >= config.getThreshold())
-                && (Math.abs(q + maxQ) > config.getThreshold() || (targetV - v) >= config.getThreshold())
-                && Math.abs(v - targetV) > config.getThreshold()) {
-                LOGGER.warn(id + ": voltage regulator on - Q=" + q + " minQ=" + minQ + " maxQ=" + maxQ + " - V=" + v + " targetV=" + targetV);
+                && (((Float.isNaN(minQ) || Float.isNaN(maxQ) || Float.isNaN(targetV)) && !config.areOkMissingValues())
+                    || ((Math.abs(q + minQ) > config.getThreshold() || (v - targetV) >= config.getThreshold())
+                        && (Math.abs(q + maxQ) > config.getThreshold() || (targetV - v) >= config.getThreshold())
+                        && Math.abs(v - targetV) > config.getThreshold()))) {
+                LOGGER.warn("Generators validation error: " + id + ": voltage regulator on - Q=" + q + " minQ=" + minQ + " maxQ=" + maxQ + " - V=" + v + " targetV=" + targetV);
                 ok = false;
             }
         } catch (IOException e) {
