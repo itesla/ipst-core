@@ -84,8 +84,8 @@ public class ValidationFormatterCsvMultilineWriter extends AbstractValidationFor
     public void write(String generatorId, float p, float q, float v, float targetP, float targetQ, float targetV,
                       boolean connected, boolean voltageRegulatorOn, float minQ, float maxQ) throws IOException {
         Objects.requireNonNull(generatorId);
-        formatter.writeCell(generatorId).writeCell("p").writeCell(p)
-                 .writeCell(generatorId).writeCell("q").writeCell(q)
+        formatter.writeCell(generatorId).writeCell("p").writeCell(-p)
+                 .writeCell(generatorId).writeCell("q").writeCell(-q)
                  .writeCell(generatorId).writeCell("v").writeCell(v)
                  .writeCell(generatorId).writeCell("targetP").writeCell(targetP)
                  .writeCell(generatorId).writeCell("targetQ").writeCell(targetQ)

@@ -153,8 +153,8 @@ public class ValidationFormatterCsvWriter extends AbstractValidationFormatterWri
                       boolean connected, boolean voltageRegulatorOn, float minQ, float maxQ) throws IOException {
         Objects.requireNonNull(generatorId);
         formatter.writeCell(generatorId)
-                 .writeCell(p)
-                 .writeCell(q)
+                 .writeCell(-p)
+                 .writeCell(-q)
                  .writeCell(v)
                  .writeCell(targetP)
                  .writeCell(targetQ)

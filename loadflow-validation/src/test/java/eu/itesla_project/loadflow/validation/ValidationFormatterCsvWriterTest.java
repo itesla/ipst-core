@@ -117,7 +117,7 @@ public class ValidationFormatterCsvWriterTest {
                                                "test " + ValidationType.GENERATORS + " check",
                                                String.join(";", "id", "p", "q", "v", "targetP", "targetQ", "targetV"),
                                                String.join(";", generatorId,
-                                                           String.format(Locale.getDefault(), "%g", p), String.format(Locale.getDefault(), "%g", q),
+                                                           String.format(Locale.getDefault(), "%g", -p), String.format(Locale.getDefault(), "%g", -q),
                                                            String.format(Locale.getDefault(), "%g", v), String.format(Locale.getDefault(), "%g", targetP),
                                                            String.format(Locale.getDefault(), "%g", targetQ), String.format(Locale.getDefault(), "%g", targetV)));
         testGenerators(generatorsContent, false);
@@ -129,7 +129,7 @@ public class ValidationFormatterCsvWriterTest {
                                                "test " + ValidationType.GENERATORS + " check",
                                                String.join(";", "id", "p", "q", "v", "targetP", "targetQ", "targetV", "connected", "voltageRegulatorOn", "minQ", "maxQ"),
                                                String.join(";", generatorId,
-                                                           String.format(Locale.getDefault(), "%g", p), String.format(Locale.getDefault(), "%g", q),
+                                                           String.format(Locale.getDefault(), "%g", -p), String.format(Locale.getDefault(), "%g", -q),
                                                            String.format(Locale.getDefault(), "%g", v), String.format(Locale.getDefault(), "%g", targetP),
                                                            String.format(Locale.getDefault(), "%g", targetQ), String.format(Locale.getDefault(), "%g", targetV),
                                                            Boolean.toString(connected), Boolean.toString(voltageRegulatorOn),
