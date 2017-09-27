@@ -108,7 +108,8 @@ public class ValidationFormatterCsvMultilineWriterTest {
                                           String.join(";", branchId, "theta2", String.format(Locale.getDefault(), "%g", theta2)),
                                           String.join(";", branchId, "z", String.format(Locale.getDefault(), "%g", z)),
                                           String.join(";", branchId, "y", String.format(Locale.getDefault(), "%g", y)),
-                                          String.join(";", branchId, "ksi", String.format(Locale.getDefault(), "%g", ksi)));
+                                          String.join(";", branchId, "ksi", String.format(Locale.getDefault(), "%g", ksi)),
+                                          String.join(";", branchId, "validation", "success"));
         testFlows(flowsContent, true);
     }
 
@@ -117,7 +118,7 @@ public class ValidationFormatterCsvMultilineWriterTest {
         TableFormatterConfig config = new TableFormatterConfig(Locale.getDefault(), ';', "inv", true, true);
         try (ValidationWriter flowsWriter = new ValidationFormatterCsvMultilineWriter("test", CsvTableFormatterFactory.class, config, writer, verbose, ValidationType.FLOWS)) {
             flowsWriter.write(branchId, p1, p1Calc, q1, q1Calc, p2, p2Calc, q2, q2Calc, r, x, g1, g2, b1, b2, rho1, rho2,
-                              alpha1, alpha2, u1, u2, theta1, theta2, z, y, ksi);
+                              alpha1, alpha2, u1, u2, theta1, theta2, z, y, ksi, true);
             assertEquals(flowsContent, writer.toString().trim());
         }
     }
@@ -150,7 +151,8 @@ public class ValidationFormatterCsvMultilineWriterTest {
                                                String.join(";", generatorId, "connected", Boolean.toString(connected)),
                                                String.join(";", generatorId, "voltageRegulatorOn", Boolean.toString(voltageRegulatorOn)),
                                                String.join(";", generatorId, "minQ", String.format(Locale.getDefault(), "%g", minQ)),
-                                               String.join(";", generatorId, "maxQ", String.format(Locale.getDefault(), "%g", maxQ)));
+                                               String.join(";", generatorId, "maxQ", String.format(Locale.getDefault(), "%g", maxQ)),
+                                               String.join(";", generatorId, "validation", "success"));
         testGenerators(generatorsContent, true);
     }
 
@@ -158,7 +160,7 @@ public class ValidationFormatterCsvMultilineWriterTest {
         Writer writer = new StringWriter();
         TableFormatterConfig config = new TableFormatterConfig(Locale.getDefault(), ';', "inv", true, true);
         try (ValidationWriter generatorsWriter = new ValidationFormatterCsvMultilineWriter("test", CsvTableFormatterFactory.class, config, writer, verbose, ValidationType.GENERATORS)) {
-            generatorsWriter.write(generatorId, p, q, v, targetP, targetQ, targetV, connected, voltageRegulatorOn, minQ, maxQ);
+            generatorsWriter.write(generatorId, p, q, v, targetP, targetQ, targetV, connected, voltageRegulatorOn, minQ, maxQ, true);
             assertEquals(generatorsContent, writer.toString().trim());
         }
     }
