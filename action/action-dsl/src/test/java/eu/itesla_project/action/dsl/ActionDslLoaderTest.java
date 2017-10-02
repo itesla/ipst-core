@@ -6,6 +6,8 @@
  */
 package eu.itesla_project.action.dsl;
 
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import eu.itesla_project.contingency.Contingency;
 import eu.itesla_project.contingency.ContingencyElement;
 import eu.itesla_project.iidm.network.Network;
@@ -15,8 +17,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Mathieu Bague <mathieu.bague at rte-france.com>
@@ -74,5 +86,33 @@ public class ActionDslLoaderTest {
         Action someAction = actionDb.getAction("someAction");
         exception.expect(ActionDslException.class);
         someAction.run(network, null);
+    }
+
+    @Test
+    public void testConfigPars() {
+        try (FileSystem fileSystem = Jimfs.newFileSystem(Configuration.unix())) {
+            Files.createDirectory(fileSystem.getPath("/tmp"));
+            Path configFile = Files.createFile(fileSystem.getPath("/tmp/config.groovy"));
+            Path configFile2 = Files.createFile(fileSystem.getPath("/tmp/config_2.groovy"));
+            Files.write(configFile, Collections.singletonList("transformer_r = 2.0"), Charset.forName("UTF-8"));
+            Files.write(configFile2, Collections.singletonList("cat_life = 9"), Charset.forName("UTF-8"));
+
+            ActionDb actionDb = new ActionDslLoader(new GroovyCodeSource(getClass().getResource("/actions2.groovy"))).load(network);
+            Collection<Rule> rules = actionDb.getRules();
+            boolean tested = false;
+            for (Rule rule : rules) {
+                if (Objects.equals(rule.getId(), "TestConfig")) {
+                    assertEquals(9, rule.getLife());
+                    tested = true;
+                }
+            }
+            assertTrue(tested);
+
+            Action action = actionDb.getAction("testConfig");
+            action.run(network, null);
+            assertEquals(2, network.getTwoWindingsTransformer("NGEN_NHV1").getR(), 0.0f);
+        } catch (IOException e) {
+            fail();
+        }
     }
 }

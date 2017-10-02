@@ -324,6 +324,7 @@ class ConditionDslLoader extends DslLoader implements DslConstants {
 
             def shell = createShell(binding)
 
+            loadOtherScript(binding, shell)
             def value = shell.evaluate(dslSrc)
             if (value instanceof Identifiable) {
                 value

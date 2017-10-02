@@ -197,6 +197,7 @@ class ActionDslLoader extends DslLoader {
 
             def shell = createShell(binding)
 
+            loadOtherScript(binding, shell)
             shell.evaluate(dslSrc)
 
             observer?.end()
