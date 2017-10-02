@@ -37,4 +37,10 @@ class DslLoader {
         new GroovyShell(binding, config)
     }
 
+    protected void loadOtherScript(Binding binding, GroovyShell shell) {
+        binding.include = { absPath ->
+            shell.evaluate(new File(absPath.toString()))
+        }
+    }
+
 }
