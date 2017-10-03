@@ -22,7 +22,6 @@
     <modules>
         <module>action</module>
         <module>afs</module>
-        <module>case-repository</module>
         <module>commons</module>
         <module>computation</module>
         <module>computation-local</module>
@@ -471,7 +470,7 @@
                 <version>${logback.version}</version>
                 <scope>runtime</scope>
             </dependency>
-            
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>com.google.guava</groupId>
