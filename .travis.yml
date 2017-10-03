@@ -8,6 +8,9 @@ script:
 
 addons:
   ssh_known_hosts: sftp.dc0.gpaas.net
+  apt:
+    packages:
+      - graphviz
 before_install:
 - openssl aes-256-cbc -K $encrypted_744b8f420bdf_key -iv $encrypted_744b8f420bdf_iv
   -in id_rsa_gandi.enc -out /tmp/id_rsa_gandi -d
@@ -15,4 +18,4 @@ before_install:
 - chmod 600 /tmp/id_rsa_gandi
 - ssh-add /tmp/id_rsa_gandi
 after_success:
-- test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && mvn javadoc:javadoc && rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/target/site/apidocs  $JAVADOC_USER@sftp.dc0.gpaas.net:vhosts/www.itesla-pst.org/htdocs/javadoc/ipst-core
+- test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && mvn javadoc:javadoc && cd $TRAVIS_BUILD_DIR/target/site/apidocs && zip -r /tmp/ipst-core-javadoc.zip . && sftp $JAVADOC_USER@sftp.dc0.gpaas.net:vhosts/www.itesla-pst.org/htdocs/javadoc/ipst-core <<< $'put /tmp/ipst-core-javadoc.zip'
